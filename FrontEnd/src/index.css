@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@theme{
+  --color-teal: #009688;
+  --color-navy:#1C2A44;   
+  --color-white:#FFFFFF;
+  --color-blue:#155dfc;
+}
+
+.form{
+  @apply rounded-xl bg-white w-[480px] py-4 px-24 flex justify-center items-center flex-col ;
+}
+
+.input{
+  @apply w-full h-[48px] p-3 rounded-lg bg-white border border-teal text-navy text-sm focus:border-4 focus:border-[#00968753] focus:outline-0;
+}
+
+.label{
+  @apply text-navy capitalize text-sm block;
+}
+
+.inputContainer{
+  @apply flex justify-center  flex-col gap-1 mb-4 w-full ;
+}
+.formTitle{
+  @apply text-navy text-2xl font-bold my-4;
+}
+.bigLogo{
+  @apply w-40;
+}
+.smallLogo{
+  @apply p-2 m-0 self-center;
+}
+.formButton{
+  @apply tracking-wide capitalize bg-navy text-white w-full h-12 rounded-lg my-4 text-lg font-semibold cursor-pointer hover:scale-105;
+  
+}
+
+.rightSpan{
+  @apply  text-xs relative top-[-12px] font-light cursor-pointer;
+}
+
+
+.searchBar{
+  @apply flex flex-row items-center justify-center rounded-full ;
+  /* @apply flex flex-row items-center justify-center bg-white p-0.5 rounded-full */
+
+}
+.searchInput{
+  @apply text-white text-sm h-[48px] p-3 pl-12 w-96 rounded-full placeholder:font-light placeholder:text-lightGray placeholder:text-lg  placeholder:tracking-wider block bg-navy   bg-gradient-to-r from-blue/40 via-transparent to-blue/40 backdrop-blur-lg  border border-blue/40 shadow-xl  focus:outline-0 focus:bg-gradient-to-r focus:from-transparent focus:via-teal/80 focus:to-transparent focus:border-teal/80 transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-transparent hover:via-blue/40 hover:to-transparent;
+  /* @apply bg-teal text-white text-lg  h-[48px] p-3 pl-12 w-96 rounded-full placeholder:text-white placeholder:text-lg  placeholder:tracking-wider block bg-navy   bg-gradient-to-r from-blue/40 via-transparent to-blue/40 backdrop-blur-lg  border border-blue/40 shadow-xl  focus:outline-0 focus:bg-gradient-to-r focus:from-transparent focus:via-teal/80 focus:to-transparent focus:border-teal/80 transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-transparent hover:via-blue/40 hover:to-transparent; */
+
+}
+.searchIcon{
+  @apply  h-4 w-4 text-lg text-white relative left-10 z-10 cursor-pointer;
+}
+
+.card2{
+  @apply inline-block  w-56 p-6 rounded-2xl  bg-gradient-to-r from-blue/40 via-transparent to-blue/40 backdrop-blur-lg  border border-blue/40 shadow-xl text-white transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-transparent hover:via-blue/40 hover:to-transparent;
+}
+
+.card{
+  @apply inline-block  w-56 p-6 rounded-2xl bg-gradient-to-r from-teal/60 via-teal/10 to-teal/60 backdrop-blur-lg  border border-teal/20 shadow-xl text-white transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-teal/10 hover:via-teal/60 hover:to-teal/10;
+}
+.card3{
+  @apply inline-block  w-56 p-6 rounded-2xl bg-gradient-to-r from-transparent via-blue/40 to-transparent backdrop-blur-lg  border border-blue/40 shadow-xl text-white transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-blue/40 hover:via-transparent hover:to-blue/40;
+}
+.field{
+  @apply w-full min-h-12  px-3 py-1  flex flex-row items-center gap-2 overflow-x-hidden
+
+  /* @apply mt-1 w-full max-w-[1380px] px-6 py-2  flex flex-row items-center rounded-2xl gap-2 overflow-x-clip; */
+}
+.field2{
+  @apply w-full max-w-[1380px] px-6 py-2  flex flex-row items-center justify-center gap-2 overflow-x-clip  border-b border-teal;
+}
+.fieldColor3{
+  @apply bg-navy bg-gradient-to-r from-transparent via-blue/40 to-transparent backdrop-blur-lg  border border-blue/40 shadow-xl text-white transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-blue/40 hover:via-transparent hover:to-blue/40
+}
+.fieldColor1{
+  @apply  bg-navy/40 bg-gradient-to-r from-transparent via-teal/50 to-transparent backdrop-blur-lg  border border-teal/50 shadow-xl text-white transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-teal/50 hover:via-transparent hover:to-teal/50;
+}
+.fieldColor2{
+  @apply  bg-navy/40 bg-gradient-to-r from-teal/50 via-transparent to-teal/50 backdrop-blur-lg  border border-teal/50 shadow-xl text-white transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-transparent hover:via-teal/50 hover:to-transparent;
+}
+
+.container{
+  @apply w-full h-full bg-navy py-3 px-6 rounded-2xl bg-gradient-to-r from-blue/0 via-blue/20 to-blue/0 backdrop-blur-lg  border border-blue/20 shadow-xl;
+}
+
+.button{
+  @apply px-4 py-2 tracking-wide capitalize  text-white  rounded-lg text-lg font-semibold cursor-pointer hover:scale-105 bg-gradient-to-r from-blue to-teal;
+
+}
+.fieldButton{
+  @apply  mx-1 py-1 px-2 tracking-wide capitalize  text-white  rounded-lg  font-semibold cursor-pointer hover:scale-105 bg-gradient-to-r from-blue to-teal border border-blue;
+
+}
+.link{
+  
+  @apply w-[90%] flex flex-row items-center py-2 px-6 
+  transition-colors duration-1000 ease-in-out
+  bg-transparent hover:bg-gradient-to-r hover:from-teal-400/60  hover:to-transparent hover:backdrop-blur-md;
+}
+.closeLink{
+  @apply flex flex-row items-center justify-center p-1
+}
+
+.iconCircle{
+  @apply text-xl p-3 border border-blue/40 text-white rounded-full    bg-gradient-to-br from-transparent via-blue/40 to-transparent backdrop-blur-lg  hover:transition-colors hover:duration-500 hover:ease-in-out        hover:bg-gradient-to-r hover:from-teal-400/40 hover:via-teal-600/90 hover:to-teal-400/40;
+}
+
+.close{
+  @apply text-white text-lg z-60 bg-gradient-to-r from-blue to-teal rounded-full p-1  cursor-pointer opacity-70 hover:opacity-100 fixed 
+}
