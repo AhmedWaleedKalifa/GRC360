@@ -20,6 +20,15 @@ const routes = [
 
   },
   {
+    path: "/notifications",
+    element: <Notifications />,
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
+
+  },
+  {
     path: "dashboard",
     element: <Dashboard />,
     children: [
@@ -29,10 +38,8 @@ const routes = [
       { path: "governance", element: <Governance /> },
       { path: "incidents", element: <Incidents /> },
       { path: "logs", element: <Logs /> },
-      { path: "profile", element: <Profile /> },
       { path: "risks", element: <Risks /> },
       { path: "threats", element: <Threats /> },
-      { path: "notifications", element: <Notifications /> },
       { path: "*", element: <ErrorPage /> }
     ],
   },

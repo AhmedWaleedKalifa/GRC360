@@ -4,7 +4,7 @@ const App = () => {
     <>
       <div className=" flex items-center justify-center bg-gradient-to-b from-navy to-teal w-full h-screen">
           <div className="flex flex-col  items-center">
-          <img src="/logoL.png" alt="logo" className="bigLogo relative top-8" />
+          <img src="/logoL.png" alt="logo" className="bigLogo relative top-8" title="المستشار الرقميGRC360 "  />
           <form className="form">
             <h2 className="formTitle">
               Login

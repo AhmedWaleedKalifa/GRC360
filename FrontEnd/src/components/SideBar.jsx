@@ -1,4 +1,3 @@
-// import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHouse, faShield, faTriangleExclamation, faCircleExclamation, faGavel, faGear, faChartSimple, faFileLines, faRightFromBracket, faCaretRight, faPlay, faCaretLeft, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { Link } from "react-router-dom"
@@ -24,7 +23,7 @@ const SideBar = ({ open, setOpen ,setActive}) => {
             <div className=' h-full w-full flex flex-row justify-left  items-center'>
               {open == true ? (<img src="/logoL.png" alt="logo" className="bigLogo ml-5" />
               ) : (
-                <img src="/logoM.png" alt="logo" className="smallLogo ml-5" />
+                <img src="/logoM.png" alt="logo" className="smallLogo ml-5" title="المستشار الرقميGRC360 " />
 
               )}
             </div >
@@ -32,6 +31,7 @@ const SideBar = ({ open, setOpen ,setActive}) => {
           </header>
           <ul className=' h-screen w-full'>
             <Link 
+            title='Dashboard'
             onClick={()=>handleActivation("Main")}
               to="/dashboard"
               className={!open == true ? "closeLink" : "link"}
@@ -46,6 +46,7 @@ const SideBar = ({ open, setOpen ,setActive}) => {
 
             <Link to="/dashboard/governance"
                         onClick={()=>handleActivation("Governance")}
+                        title='Governance'
 
              className={!open == true ? "closeLink" : "link"}
             >
@@ -58,6 +59,7 @@ const SideBar = ({ open, setOpen ,setActive}) => {
 
             <Link to="/dashboard/risks"
                         onClick={()=>handleActivation("Risks")}
+                        title='Risks'
 
             className={!open == true ? "closeLink" : "link"}
             >
@@ -70,8 +72,25 @@ const SideBar = ({ open, setOpen ,setActive}) => {
             </Link>
 
 
+          
+            <Link to="/dashboard/compliance" 
+                        onClick={()=>handleActivation("Compliance")}
+                        title='Compliance'
+
+            className={!open == true ? "closeLink" : "link"}
+            >
+
+              {open == true ? (<FontAwesomeIcon icon={faShield} className='text-white mr-2 text-lg' />
+
+              )
+                : (<FontAwesomeIcon icon={faShield}
+                  className="iconCircle" />)
+              }
+              {open && <li className='   text-white text-lg list-none'>Compliance</li>}
+            </Link>
             <Link to="/dashboard/incidents"
                         onClick={()=>handleActivation("Incidents")}
+                        title='Incidents'
 
             className={!open == true ? "closeLink" : "link"}
             >
@@ -86,24 +105,10 @@ const SideBar = ({ open, setOpen ,setActive}) => {
             </Link>
 
 
-            <Link to="/dashboard/compliance" 
-                        onClick={()=>handleActivation("Compliance")}
-
-            className={!open == true ? "closeLink" : "link"}
-            >
-
-              {open == true ? (<FontAwesomeIcon icon={faShield} className='text-white mr-2 text-lg' />
-
-              )
-                : (<FontAwesomeIcon icon={faShield}
-                  className="iconCircle" />)
-              }
-              {open && <li className='   text-white text-lg list-none'>Compliance</li>}
-            </Link>
-
 
             <Link to="/dashboard/threats"
                         onClick={()=>handleActivation("Threats")}
+                        title='Threats'
 
             className={!open == true ? "closeLink" : "link"}
             >
@@ -118,6 +123,7 @@ const SideBar = ({ open, setOpen ,setActive}) => {
 
             <Link to="/dashboard/logs"
                         onClick={()=>handleActivation("Logs")}
+                        title='Logs'
 
             className={!open == true ? "closeLink" : "link"}
             >
@@ -130,7 +136,7 @@ const SideBar = ({ open, setOpen ,setActive}) => {
             </Link>
             <Link to="/dashboard/configurations"
                         onClick={()=>handleActivation("Configurations")}
-
+              title="Configurations"
             className={!open == true ? "closeLink" : "link"}
             >
               {open == true ? (<FontAwesomeIcon icon={faGear} className='text-white mr-2 text-lg' />
@@ -146,7 +152,10 @@ const SideBar = ({ open, setOpen ,setActive}) => {
           </ul>
           <footer className={open == true ? 'h-46 w-full flex items-center' : "h-46  flex items-center"}>
             <Link to="/" className={!open == true ? "closeLink" : "link"}
-            >
+                                   title='Logout'
+
+           >
+              
               {open == true ? (<FontAwesomeIcon icon={faRightFromBracket} className='text-white mr-2 text-lg' />)
                 : (<FontAwesomeIcon icon={faRightFromBracket}
                   className="iconCircle" />)

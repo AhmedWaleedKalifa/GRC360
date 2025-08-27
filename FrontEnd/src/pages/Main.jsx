@@ -1,17 +1,31 @@
 import React from 'react'
 import Field from '../components/Field'
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Card from '../components/Card'
+import CardSlider from "../components/CardSlider"
 function Main() {
   return (
     <>
-    <div className='text-white font-bold text-8xl'>Main</div>
-    <Field  model={2} text={"Identify the security official responsible for the development and implementation of the policies Identify the security official responsible for the development and implementation of the policies"} dueDate={"2025-06-15"}owner={"Fraud Analyst"} status={"Open"}/>
-    <Field  />
-    <Field  model={2} text={"Identify the security official responsible for the development and implementation of the policies"} status={"Due soon"}/>
-    <Field  />
-    <Field  model={2}/>
-    <Field />
-    <Field model={2}/>
+    <>
+       
+      
+        <CardSlider
+        caption={{text:'upcoming',icon:"faCalendarDay"}}
+          titles={["","Type", "Title", "owner","Due Date","status"]}
+          fields={[
+            [{ type: "i", text: "faChartSimple", size: 1 },{ type: "b", text: "Risk Review", size: 6 }, { type: "t", text: "Insider Trading", size: 25 }, { type: "t", text: "bob", size: 8 },{ type: "t", text: "6/15/25", size: 4 },{ type: "b", text: "overRide", size: 4, clickFunction:()=>{console.log("Over Ride")} }] ,
+            [{ type: "i", text: "faChartSimple", size: 1 },{ type: "b", text: "Risk Review", size: 6 }, { type: "t", text: "Insider Trading", size: 25 }, { type: "t", text: "bob", size: 8 },{ type: "t", text: "6/15/25", size: 4 },{ type: "b", text: "overRide", size: 4 }] ,
+            [{ type: "i", text: "faChartSimple", size: 1 },{ type: "b", text: "Risk Review", size: 6 }, { type: "t", text: "Insider Trading", size: 25 }, { type: "t", text: "bob", size: 8 },{ type: "t", text: "6/15/25", size: 4 },{ type: "b", text: "overRide", size: 4 }] ,
+            [{ type: "i", text: "faChartSimple", size: 1 },{ type: "b", text: "Risk Review", size: 6 }, { type: "t", text: "Insider Trading", size: 25 }, { type: "t", text: "bob", size: 8 },{ type: "t", text: "6/15/25", size: 4 },{ type: "b", text: "overRide", size: 4 }] ,
+            [{ type: "i", text: "faChartSimple", size: 1 },{ type: "b", text: "Risk Review", size: 6 }, { type: "t", text: "Insider Trading", size: 25 }, { type: "t", text: "bob", size: 8 },{ type: "t", text: "6/15/25", size: 4 },{ type: "b", text: "overRide", size: 4 }] ,
+            [{ type: "i", text: "faChartSimple", size: 1 },{ type: "b", text: "Risk Review", size: 6 }, { type: "t", text: "Insider Trading", size: 25 }, { type: "t", text: "bob", size: 8 },{ type: "t", text: "6/15/25", size: 4 },{ type: "b", text: "overRide", size: 4 }] ,
+            [{ type: "i", text: "faChartSimple", size: 1 },{ type: "b", text: "Risk Review", size: 6 }, { type: "t", text: "Insider Trading", size: 25 }, { type: "t", text: "bob", size: 8 },{ type: "t", text: "6/15/25", size: 4 },{ type: "b", text: "overRide", size: 4 }] ,
+            [{ type: "i", text: "faChartSimple", size: 1 },{ type: "b", text: "Risk Review", size: 6 }, { type: "t", text: "Insider Trading", size: 25 }, { type: "t", text: "bob", size: 8 },{ type: "t", text: "6/15/25", size: 4 },{ type: "b", text: "overRide", size: 4 }] ,
+
+          ]}
+        />
+
+    </>  
     </>
   )
 }

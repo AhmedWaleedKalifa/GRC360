@@ -7,6 +7,24 @@
   --color-blue:#155dfc;
 }
 
+*{
+  .super-thin::-webkit-scrollbar {
+    width: 2px;   
+    height: 2px;
+  }
+  
+  .super-thin::-webkit-scrollbar-thumb {
+    background-color: teal/60; 
+    border-radius: 9999px;
+  }
+  
+  .super-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+:root{
+  height: 100%;
+}
 .form{
   @apply rounded-xl bg-white w-[480px] py-4 px-24 flex justify-center items-center flex-col ;
 }
@@ -55,24 +73,30 @@
   @apply  h-4 w-4 text-lg text-white relative left-10 z-10 cursor-pointer;
 }
 
-.card2{
-  @apply inline-block  w-56 p-6 rounded-2xl  bg-gradient-to-r from-blue/40 via-transparent to-blue/40 backdrop-blur-lg  border border-blue/40 shadow-xl text-white transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-transparent hover:via-blue/40 hover:to-transparent;
-}
+
 
 .card{
-  @apply inline-block  w-56 p-6 rounded-2xl bg-gradient-to-r from-teal/60 via-teal/10 to-teal/60 backdrop-blur-lg  border border-teal/20 shadow-xl text-white transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-teal/10 hover:via-teal/60 hover:to-teal/10;
+  @apply inline-block  min-w-56 h-36 p-6 ;
 }
-.card3{
-  @apply inline-block  w-56 p-6 rounded-2xl bg-gradient-to-r from-transparent via-blue/40 to-transparent backdrop-blur-lg  border border-blue/40 shadow-xl text-white transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-blue/40 hover:via-transparent hover:to-blue/40;
+.cardStyle1{
+  @apply  rounded-2xl bg-gradient-to-r from-blue/40 via-transparent to-blue/40 backdrop-blur-lg  border border-blue/40 shadow-xl text-white transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-transparent hover:via-blue/40 hover:to-transparent;
 }
+.cardStyle2{
+  @apply  rounded-2xl bg-gradient-to-r from-transparent via-blue/40 to-transparent backdrop-blur-lg  border border-blue/40 shadow-xl text-white transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-blue/40 hover:via-transparent hover:to-blue/40;
+}
+.cardStyle3{
+  @apply rounded-2xl bg-gradient-to-r from-teal/50 via-teal/10 to-teal/50 backdrop-blur-lg  border border-teal/40 shadow-xl text-white transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-teal/10 hover:via-teal/60 hover:to-teal/10;
+}
+.cardStyle4{
+  @apply rounded-2xl bg-gradient-to-r from-teal/10 via-teal/60 to-teal/10      hover:bg-gradient-to-r hover:from-teal/50 hover:via-teal/10 hover:to-teal/50 hover:backdrop-blur-lg  border border-teal/40 shadow-xl text-white transition-colors duration-500 ease-in-out;
+}
+
 .field{
-  @apply w-full min-h-12  px-3 py-1  flex flex-row items-center gap-2 overflow-x-hidden
+  @apply w-full min-h-10   py-1  flex flex-row items-center gap-2 overflow-x-hidden max-w-[1230px]
 
   /* @apply mt-1 w-full max-w-[1380px] px-6 py-2  flex flex-row items-center rounded-2xl gap-2 overflow-x-clip; */
 }
-.field2{
-  @apply w-full max-w-[1380px] px-6 py-2  flex flex-row items-center justify-center gap-2 overflow-x-clip  border-b border-teal;
-}
+
 .fieldColor3{
   @apply bg-navy bg-gradient-to-r from-transparent via-blue/40 to-transparent backdrop-blur-lg  border border-blue/40 shadow-xl text-white transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-blue/40 hover:via-transparent hover:to-blue/40
 }
@@ -84,29 +108,35 @@
 }
 
 .container{
-  @apply w-full h-full bg-navy py-3 px-6 rounded-2xl bg-gradient-to-r from-blue/0 via-blue/20 to-blue/0 backdrop-blur-lg  border border-blue/20 shadow-xl;
+  @apply  h-full min-h-[610px] bg-navy p-6 rounded-2xl bg-gradient-to-r from-blue/0 via-blue/20 to-blue/0 backdrop-blur-lg  border border-blue/20 shadow-xl;
 }
 
 .button{
-  @apply px-4 py-2 tracking-wide capitalize  text-white  rounded-lg text-lg font-semibold cursor-pointer hover:scale-105 bg-gradient-to-r from-blue to-teal;
+  @apply px-4 py-2 tracking-wide capitalize  text-white  rounded-lg text-lg font-semibold cursor-pointer hover:scale-105 ;
 
 }
-.fieldButton{
-  @apply  mx-1 py-1 px-2 tracking-wide capitalize  text-white  rounded-lg  font-semibold cursor-pointer hover:scale-105 bg-gradient-to-r from-blue to-teal border border-blue;
+.buttonStyle{
+  @apply bg-gradient-to-r from-blue to-teal;
+}
+.buttonStyle2{
+  @apply bg-gradient-to-r from-teal to-blue;
+}
+.smallButton{
+  @apply  mx-1 py-1 px-2 tracking-normal capitalize text-sm text-white  rounded-lg  font-medium cursor-pointer hover:scale-105 bg-gradient-to-r from-blue to-teal border border-blue;
 
 }
 .link{
   
   @apply w-[90%] flex flex-row items-center py-2 px-6 
   transition-colors duration-1000 ease-in-out
-  bg-transparent hover:bg-gradient-to-r hover:from-teal-400/60  hover:to-transparent hover:backdrop-blur-md;
+  bg-transparent hover:bg-gradient-to-r hover:from-teal/60  hover:to-transparent hover:backdrop-blur-md;
 }
 .closeLink{
   @apply flex flex-row items-center justify-center p-1
 }
 
 .iconCircle{
-  @apply text-xl p-3 border border-blue/40 text-white rounded-full    bg-gradient-to-br from-transparent via-blue/40 to-transparent backdrop-blur-lg  hover:transition-colors hover:duration-500 hover:ease-in-out        hover:bg-gradient-to-r hover:from-teal-400/40 hover:via-teal-600/90 hover:to-teal-400/40;
+  @apply text-xl p-3 border bg-navy border-blue/40 text-white rounded-full    bg-gradient-to-br from-transparent via-blue/40 to-transparent backdrop-blur-lg  hover:transition-colors hover:duration-500 hover:ease-in-out        hover:bg-gradient-to-r hover:from-teal/40 hover:via-teal/90 hover:to-teal/40;
 }
 
 .close{
