@@ -3,73 +3,90 @@ import SideBar from "../components/SideBar";
 import NavBar from "../components/NavBar";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRotateRight, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+
 export default function Dashboard() {
 
-  const [open,setOpen]=useState(true);
-  const [active,setActive]=useState("Main");
-  const [showHome, setShowHome] = useState(false); // state for scroll
-  const [width, setWidth] = useState(); // state for scroll
+  const [open, setOpen] = useState(true);
+  const [active, setActive] = useState("Main");
+  const [lastRefreshed, setLastRefreshed] = useState(null);
+  const [showRefreshNotification, setShowRefreshNotification] = useState(false);
 
-  let flag=false;
-  
-  console.log(window.innerHeight)
-  if(window.innerHeight>720){
-    flag=true
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   }
-useEffect(()=>{
-  const handleScroll=()=>{
-    if(window.scrollY>400){
-      setShowHome(true)
-    }else{
-      setShowHome(false)
+
+  const handleRefresh = () => {
+    const now = new Date().toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+
+    localStorage.setItem("lastRefreshed", now);
+    setLastRefreshed(now);
+    setShowRefreshNotification(true);
+
+    // Show notification for 4 seconds, then reload
+    setTimeout(() => {
+      setShowRefreshNotification(false);
+      // Reload after the notification has been shown
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    }, 4000);
+  };
+
+
+
+
+
+  useEffect(() => {
+    const savedTime = localStorage.getItem("lastRefreshed");
+    if (savedTime) {
+      setLastRefreshed(savedTime);
     }
-  };
-  window.addEventListener("scroll", handleScroll);
+  }, []);
 
-  return () => {
-    window.removeEventListener("scroll", handleScroll);
-  };
-}, []);
 
-useEffect(()=>{
-  const handleScroll=()=>{
-    setWidth(window.innerWidth);
-
-  };
-  window.addEventListener("New width", handleScroll);
-
-  return () => {
-    window.removeEventListener("New width", handleScroll);
-  };
-}, []);
   return (
     <>
-{showHome&&<FontAwesomeIcon 
-  icon={faHouse} 
-  className={`fixed bottom-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue to-teal z-80 p-2 rounded-2xl transition-opacity duration-300  ${
-    showHome ? "opacity-60 cursor-pointer hover:opacity-100" : "opacity-0 hidden"
-  }`}   onClick={() => {window.scrollTo({ top: 0, behavior: "smooth" });
-  setShowHome(false);}
-}
+      <NavBar active={active} open={open} />
 
-/>}
-<NavBar  active={active} open={open} />
-
-      <div className="min-h-screen w-full bg-navy"   style={ flag ? { height: "100%" } : {height:"100vh"}}>
-      <div className="flex flex-row h-screen w-full items-center">
-        
       <SideBar open={open} setOpen={setOpen} setActive={setActive} />
-        <div className="w-full h-full flex flex-col justify-center">
-          <div className="w-full  h-full flex flex-col  py-6   items-center   bg-navy  bg-gradient-to-br from-black/40 via-transparent to-blue-700/20 backdrop-blur-md shadow-xl ">
-         
-          <main   style={{ maxWidth: `${open?width*.95-256:width*.95-88}px` }}>
 
-            <Outlet/>
-          </main>
-          </div>
-        </div>
+      <div className="  w-full  min-h-[calc(100vh-20*4px)] flex flex-row    justify-center  bg-navy  bg-gradient-to-br from-[#000520]/60 via-[#000520]/30 to-blue-700/20 overflow-auto p-3">
+        {open ? (
+          <div className="  w-64 h-full shrink-0 z-0  opacity-0 "></div>
+        ) : (
+          <div className="w-20 h-full shrink-0 z-0  opacity-0 "></div>
+        )}
+
+        <main>
+          <Outlet />
+        </main>
       </div>
+
+      <div className="fixed bottom-8 right-1.5   flex flex-col gap-1.5 z-80 items-center px-1 py-1.5 border bg-navy bg-gradient-to-r from-gray-600/40 to-navy border-gray-600 rounded-2xl    ">
+        <FontAwesomeIcon
+          icon={faArrowUp}
+          className="smallIcon"
+          onClick={scrollToTop}
+        />
+        <FontAwesomeIcon icon={faArrowRotateRight}
+          className='smallIcon'
+          onClick={handleRefresh}
+        />
+        {showRefreshNotification && (
+          <div className="text-white text-sm font-medium bg-gradient-to-r bg-blue rounded-2xl p-2">
+            <div>refreshed:</div>
+            <div>{lastRefreshed}</div>
+          </div>
+        )}
       </div>
     </>
   );

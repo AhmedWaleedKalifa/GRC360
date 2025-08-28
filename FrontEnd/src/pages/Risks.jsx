@@ -7,11 +7,11 @@ function Risks() {
   return (
 <>
         <div className=' text-white font-bold text-4xl mb-5' >Risk Register</div>
-        <div className='flex flex-row items-center gap-4'>
-          <Card title="Total Risks" value="6" model={4}/>
-          <Card title="Open Risks" value="3" model={1} />
-          <Card title="High Severity" value="4" model={4}/>
-          <Card title="Reviewed This Month" value="3" model={1} />
+        <div className='flex flex-row items-center gap-4 flex-wrap'>
+          <Card title="Total Risks" value="6" model={1}/>
+          <Card title="Open Risks" value="3" model={2} />
+          <Card title="High Severity" value="4" model={1}/>
+          <Card title="Reviewed This Month" value="3" model={2} />
 
         </div>
         <div className='flex flex-row items-center justify-between w-full '>

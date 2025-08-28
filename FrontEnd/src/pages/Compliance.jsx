@@ -7,9 +7,9 @@ const Compliance = () => {
   return (
     <>
         <div className=' text-white font-bold text-4xl mb-5' >Compliance</div>
-        <div className='flex flex-row items-center gap-4 mb-8'>
+        <div className='flex flex-row items-center gap-4 mb-8 flex-wrap'>
           <Card title="Frameworks" value="6" model={1} />
-          <Card title="Requirements" value="12" model={4} />
+          <Card title="Requirements" value="12" model={2} />
           <Card title="Controls" value="24" model={1} />
 
         </div>

@@ -8,11 +8,11 @@ function Governance() {
   return (
     <>
         <div className=' text-white font-bold text-4xl mb-5' >Governance</div>
-        <div className='flex flex-row items-center gap-4'>
+        <div className='flex flex-row items-center gap-4 flex-wrap'>
           <Card title="Total Documents" value="6" model={1} />
-          <Card title="Active" value="6" model={4} />
+          <Card title="Active" value="6" model={2} />
           <Card title="Expiring Soon" value="0" model={1}/>
-          <Card title="Pending Approval" value="0" model={4} />
+          <Card title="Pending Approval" value="0" model={2} />
 
         </div>
         <div className='flex flex-row items-center justify-between w-full '>

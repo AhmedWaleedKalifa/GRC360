@@ -17,22 +17,22 @@ function Field({mode=1, values=[{type:"t",text:"unknown",size:4,clickFunction:()
             key={index}
             style={{ width: `${Math.trunc(result * element.size)}%` }}
             onClick={element.clickFunction}
-            className={' flex   items-center gap-2 truncate overflow-x-ellipsis  whitespace-nowrap h-full '}
+            className={' flex   items-center gap-2 truncate   overflow-hidden  whitespace-nowrap h-full '}
           >
             {element.type=="i"
               ? (
                 <>
                   <FontAwesomeIcon
                     icon={solidIcons[element.text]}
-                    className="text-white text-lg  shrink-0 capitalize"
+                    className="text-white text-lg  shrink-0 capitalize truncate   overflow-hidden"
                   />
                 </>
               ):element.type=='b'?(
-                <div className='smallButton shrink-0 '>{element.text}</div>
+                <div className='smallButton shrink-0 truncate   overflow-hidden'>{element.text}</div>
 
               )
               : (
-                <div className='text-white text-sm overflow-ellipsis shrink-0 capitalize' >{element.text}</div>
+                <div className='text-white text-sm truncate   overflow-hidden shrink-0 capitalize' >{element.text}</div>
               )
             }
           </div>
