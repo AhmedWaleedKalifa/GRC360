@@ -10,14 +10,9 @@ export default function Dashboard() {
   const [active,setActive]=useState("Main");
   const [showHome, setShowHome] = useState(false); // state for scroll
 
-  let width
+  let width= window.innerWidth;
   let flag=false;
-  if(!open){
-     width=1350;
-  }else{
-     width=1168;
-
-  }
+  
   console.log(window.innerHeight)
   if(window.innerHeight>720){
     flag=true
@@ -48,13 +43,13 @@ useEffect(()=>{
 
 />}
 
-      <div className="h-screen w-full bg-navy"   style={ flag ? { height: "100%" } : {height:"100vh"}}>
-      <div className="flex flex-row h-full w-full items-center">
+      <div className="min-h-screen w-full bg-navy"   style={ flag ? { height: "100%" } : {height:"100vh"}}>
+      <div className="flex flex-row h-screen w-full items-center">
         
       <SideBar open={open} setOpen={setOpen} setActive={setActive} />
-        <div className="w-full h-full  flex flex-col justify-center">
+        <div className="w-full h-full flex flex-col justify-center">
           <NavBar  active={active} />
-          <div className="w-full h-full  flex flex-col  py-6   items-center   bg-navy  bg-gradient-to-br from-black/40 via-transparent to-blue-700/20 backdrop-blur-md shadow-xl">
+          <div className="w-full  h-full flex flex-col  py-6   items-center   bg-navy  bg-gradient-to-br from-black/40 via-transparent to-blue-700/20 backdrop-blur-md shadow-xl">
          
           <main   style={{ maxWidth: `${width}px` }}>
 

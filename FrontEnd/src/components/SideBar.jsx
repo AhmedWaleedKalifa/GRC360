@@ -13,9 +13,11 @@ const SideBar = ({ open, setOpen ,setActive}) => {
   return (
     <>
 
-      <aside className='flex flex-row shrink-0 z-50 items-center justify-center bg-transparent' >
+      <aside className='flex flex-row shrink-0 z-50 items-center justify-center bg-transparent transition-all duration-300' >
         {open == true ? (<div className="w-64 h-full shrink-0  z-0"></div>) : (<div className="w-22 h-full shrink-0 z-0"></div>)}
-        <FontAwesomeIcon onClick={handleClick} icon={open == true ? faChevronLeft : faChevronRight} className={open == true ? 'left-59.5 close' : ' left-18 close'} />
+        <FontAwesomeIcon onClick={handleClick} icon={open == true ? faChevronLeft : faChevronRight} className={`close fixed top-4  ${
+    open ? "left-[240px]" : "left-[72px]"
+  }`} />
 
         <div className={open == true ? "fixed left-0 top-0 h-screen w-64 bg-navy flex flex-col items-center border border-blue/40  bg-gradient-to-bl from-blue/40 via-transparent to-blue/40 backdrop-blur-md shadow-xl"
           : "fixed  left-0 top-0 h-screen w-22 bg-navy flex flex-col items-center border border-blue/20  bg-gradient-to-bl from-blue/20 via-transparent to-blue/20 backdrop-blur-md shadow-xl"}>
