@@ -9,7 +9,7 @@ function SearchBar({active}) {
                 <FontAwesomeIcon icon={faMagnifyingGlass} className='searchIcon' />
 
             </label>
-            <input type="text" id='search' name="search" placeholder={"Search "+active} className='searchInput' />
+            <input type="text" id='search' name="search" placeholder={" Search "+active} className='searchInput' />
         </div>
     )
 }

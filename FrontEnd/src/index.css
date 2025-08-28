@@ -8,22 +8,39 @@
 }
 
 *{
-  .super-thin::-webkit-scrollbar {
-    width: 2px;   
-    height: 2px;
-  }
-  
-  .super-thin::-webkit-scrollbar-thumb {
-    background-color: teal/60; 
-    border-radius: 9999px;
-  }
-  
-  .super-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
+  color:white;
+  caret-color:#155dfc ;
 }
+::selection{
+  @apply bg-navy 
+}
+
 :root{
   height: 100%;
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* light gray */
+
+}
+
+/* Scrollbar thumb (draggable part) */
+::-webkit-scrollbar-thumb {
+  background: #009688cc; /* navy color */
+  border-radius: 10px;
+  border: 3px solid #f1f1f1;
+
+  
+}
+
+/* On hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #009688; /* teal */
 }
 .form{
   @apply rounded-xl bg-white w-[480px] py-4 px-24 flex justify-center items-center flex-col ;
@@ -65,7 +82,7 @@
 
 }
 .searchInput{
-  @apply text-white text-sm h-[48px] p-3 pl-12 w-96 rounded-full placeholder:font-light placeholder:text-lightGray placeholder:text-lg  placeholder:tracking-wider block bg-navy   bg-gradient-to-r from-blue/40 via-transparent to-blue/40 backdrop-blur-lg  border border-blue/40 shadow-xl  focus:outline-0 focus:bg-gradient-to-r focus:from-transparent focus:via-teal/80 focus:to-transparent focus:border-teal/80 transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-transparent hover:via-blue/40 hover:to-transparent;
+  @apply text-white text-lg  h-[48px] p-3 pl-12 w-96 rounded-full placeholder:font-light placeholder:text-lightGray placeholder:text-lg  placeholder:tracking-wider block bg-navy   bg-gradient-to-r from-blue/40 via-transparent to-blue/40 backdrop-blur-lg  border border-blue/40 shadow-xl  focus:outline-0 focus:bg-gradient-to-r focus:from-transparent focus:via-teal/80 focus:to-transparent focus:border-teal/80 transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-transparent hover:via-blue/40 hover:to-transparent;
   /* @apply bg-teal text-white text-lg  h-[48px] p-3 pl-12 w-96 rounded-full placeholder:text-white placeholder:text-lg  placeholder:tracking-wider block bg-navy   bg-gradient-to-r from-blue/40 via-transparent to-blue/40 backdrop-blur-lg  border border-blue/40 shadow-xl  focus:outline-0 focus:bg-gradient-to-r focus:from-transparent focus:via-teal/80 focus:to-transparent focus:border-teal/80 transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-transparent hover:via-blue/40 hover:to-transparent; */
 
 }
@@ -92,7 +109,7 @@
 }
 
 .field{
-  @apply w-full min-h-10   py-1  flex flex-row items-center gap-2 overflow-x-hidden max-w-[1230px]
+  @apply w-full min-h-10   py-1  flex flex-row items-center gap-2 overflow-x-hidden 
 
   /* @apply mt-1 w-full max-w-[1380px] px-6 py-2  flex flex-row items-center rounded-2xl gap-2 overflow-x-clip; */
 }
@@ -107,8 +124,8 @@
   @apply  bg-navy/40 bg-gradient-to-r from-teal/50 via-transparent to-teal/50 backdrop-blur-lg  border border-teal/50 shadow-xl text-white transition-colors duration-500 ease-in-out hover:bg-gradient-to-r hover:from-transparent hover:via-teal/50 hover:to-transparent;
 }
 
-.container{
-  @apply  h-full min-h-[610px] bg-navy p-6 rounded-2xl bg-gradient-to-r from-blue/0 via-blue/20 to-blue/0 backdrop-blur-lg  border border-blue/20 shadow-xl;
+main{
+  @apply  h-full min-h-[610px] w-[95%] min-w-96 bg-navy p-6 rounded-2xl bg-gradient-to-r from-blue/0 via-blue/20 to-blue/0 backdrop-blur-lg  border border-blue/20 shadow-xl;
 }
 
 .button{
