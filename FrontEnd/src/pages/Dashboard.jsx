@@ -9,8 +9,8 @@ export default function Dashboard() {
   const [open,setOpen]=useState(true);
   const [active,setActive]=useState("Main");
   const [showHome, setShowHome] = useState(false); // state for scroll
+  const [width, setWidth] = useState(); // state for scroll
 
-  let width= window.innerWidth;
   let flag=false;
   
   console.log(window.innerHeight)
@@ -29,6 +29,18 @@ useEffect(()=>{
 
   return () => {
     window.removeEventListener("scroll", handleScroll);
+  };
+}, []);
+
+useEffect(()=>{
+  const handleScroll=()=>{
+    setWidth(window.innerWidth);
+
+  };
+  window.addEventListener("New width", handleScroll);
+
+  return () => {
+    window.removeEventListener("New width", handleScroll);
   };
 }, []);
   return (
