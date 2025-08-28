@@ -49,9 +49,9 @@ useEffect(()=>{
         
       <SideBar open={open} setOpen={setOpen} setActive={setActive} />
         <div className="w-full h-full flex flex-col justify-center">
-          <div className="w-full  h-full flex flex-col  py-6   items-center   bg-navy  bg-gradient-to-br from-black/40 via-transparent to-blue-700/20 backdrop-blur-md shadow-xl">
+          <div className="w-full  h-full flex flex-col  py-6   items-center   bg-navy  bg-gradient-to-br from-black/40 via-transparent to-blue-700/20 backdrop-blur-md shadow-xl ">
          
-          <main   style={{ maxWidth: `${width}px` }}>
+          <main   style={{ maxWidth: `${open?width*.95-256:width*.95-88}px` }}>
 
             <Outlet/>
           </main>
