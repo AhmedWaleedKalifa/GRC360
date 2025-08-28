@@ -42,13 +42,13 @@ useEffect(()=>{
 }
 
 />}
+<NavBar  active={active} open={open} />
 
       <div className="min-h-screen w-full bg-navy"   style={ flag ? { height: "100%" } : {height:"100vh"}}>
       <div className="flex flex-row h-screen w-full items-center">
         
       <SideBar open={open} setOpen={setOpen} setActive={setActive} />
         <div className="w-full h-full flex flex-col justify-center">
-          <NavBar  active={active} />
           <div className="w-full  h-full flex flex-col  py-6   items-center   bg-navy  bg-gradient-to-br from-black/40 via-transparent to-blue-700/20 backdrop-blur-md shadow-xl">
          
           <main   style={{ maxWidth: `${width}px` }}>
