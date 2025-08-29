@@ -59,19 +59,19 @@ export default function Dashboard() {
 
       <SideBar open={open} setOpen={setOpen} setActive={setActive} />
 
-      <div className="  w-full  min-h-[calc(100vh-20*4px)] flex flex-row    justify-center  bg-navy  bg-gradient-to-br from-[#000520]/60 via-[#000520]/30 to-blue-700/20 overflow-auto p-3">
-        {open ? (
-          <div className="  w-64 h-full shrink-0 z-0  opacity-0 "></div>
-        ) : (
-          <div className="w-20 h-full shrink-0 z-0  opacity-0 "></div>
-        )}
+      <main className="w-full min-h-[calc(100vh-60px)] flex flex-row bg-navy bg-gradient-to-br from-[#000520]/60 via-[#000520]/30 to-blue-700/20 overflow-auto p-3">
+  {open ? (
+    <div className="w-64 shrink-0"></div>
+  ) : (
+    <div className="w-20 shrink-0"></div>
+  )}
 
-        <main>
-          <Outlet />
-        </main>
-      </div>
+  <div className="container">
+    <Outlet />
+  </div>
+</main>
 
-      <div className="fixed bottom-8 right-1.5   flex flex-col gap-1.5 z-80 items-center px-1 py-1.5 border bg-navy bg-gradient-to-r from-gray-600/40 to-navy border-gray-600 rounded-2xl    ">
+      <div className="fixed bottom-8 right-1.5   flex flex-col gap-1.5 z-80 items-center px-1 py-1.5 border bg-navy bg-gradient-to-r from-gray-600/40 to-navy border-gray-600 rounded-2xl backdrop-blur-lg   ">
         <FontAwesomeIcon
           icon={faArrowUp}
           className="smallIcon"

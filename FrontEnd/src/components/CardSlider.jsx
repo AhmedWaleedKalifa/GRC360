@@ -32,6 +32,7 @@ function cardSlider({ titles, fields, caption = { text: "", icon: "" } }) {
                     }>
                     {titles.map((element, index) => (
                         <div
+                            title={element}
                             key={index}
                             style={{ width: `${Math.trunc(result * array[index])}%` }}
 

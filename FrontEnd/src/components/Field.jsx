@@ -14,6 +14,7 @@ function Field({mode=1, values=[{type:"t",text:"unknown",size:4,clickFunction:()
       <div className={mode == 1 ? "fieldColor1 field px-3" : mode == 2 ? "fieldColor2 field px-3" : "fieldColor3 field px-3"}>
         {values.map((element, index) => (
           <div
+            title={element.text}
             key={index}
             style={{ width: `${Math.trunc(result * element.size)}%` }}
             onClick={element.clickFunction}
@@ -23,6 +24,7 @@ function Field({mode=1, values=[{type:"t",text:"unknown",size:4,clickFunction:()
               ? (
                 <>
                   <FontAwesomeIcon
+                    title={element.text}
                     icon={solidIcons[element.text]}
                     className="text-white text-lg  shrink-0 capitalize truncate   overflow-hidden"
                   />
@@ -32,7 +34,7 @@ function Field({mode=1, values=[{type:"t",text:"unknown",size:4,clickFunction:()
 
               )
               : (
-                <div className='text-white text-sm truncate   overflow-hidden shrink-0 capitalize' >{element.text}</div>
+                <div className='text-white text-sm truncate   overflow-hidden shrink-0 capitalize' title={element.text}>{element.text}</div>
               )
             }
           </div>

@@ -13,18 +13,9 @@ const SideBar = ({ open, setOpen, setActive }) => {
   return (
     <>
 
-      <aside className='flex flex-row shrink-0 z-50 items-center justify-center ' >
-        {<div
-          className="fixed left-0 top-0 h-screen bg-navy flex flex-col items-center border border-blue/40 bg-gradient-to-bl from-blue/40 via-transparent to-blue/40 backdrop-blur-md shadow-xl"
-          style={{ width: open ? "256px" : "88px" }} // 16rem = 256px (w-64), 5.5rem = 88px (w-22)
-        ></div>}
-        <FontAwesomeIcon
-          onClick={handleClick}
-          icon={open ? faChevronLeft : faChevronRight}
-          className="close fixed top-4 "
-          style={{ left: open ? "240px" : "72px" }}
-        />
-
+      <aside className='fixed left-0 flex flex-row shrink-0 z-50 items-center justify-center ' >
+       
+   
         <div className={open == true ? "fixed left-0 top-0 h-screen w-64 bg-navy flex flex-col items-center border border-blue/40  bg-gradient-to-bl from-blue/40 via-transparent to-blue/40 backdrop-blur-md shadow-xl"
           : "fixed  left-0 top-0 h-screen w-22 bg-navy flex flex-col items-center border border-blue/20  bg-gradient-to-bl from-blue/20 via-transparent to-blue/20 backdrop-blur-md shadow-xl"}>
           <header className=' shrink-0 h-30 w-full '>
@@ -37,6 +28,14 @@ const SideBar = ({ open, setOpen, setActive }) => {
             </div >
 
           </header>
+          <div className='w-full flex flex-row items-end justify-end relative bottom-5'>
+     <FontAwesomeIcon
+          onClick={handleClick}
+          icon={open ? faChevronLeft : faChevronRight}
+          className="close shrink-0 relative left-4"
+        />
+     </div>
+ 
           <ul className=' h-screen w-full'>
             <Link
               title='Dashboard'

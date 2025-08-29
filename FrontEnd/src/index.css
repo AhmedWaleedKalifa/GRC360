@@ -23,7 +23,7 @@
   height: 100%;
   width: 100%;
   scroll-behavior: smooth;
-
+  @apply text-sm 2xl:text-lg xl:text-base lg:text-base md:text-base sm:text-sm
 }
 
 body{
@@ -104,15 +104,7 @@ body{
 }
 
 
-.searchBar{
-  @apply flex flex-row items-center justify-center rounded-full ;
-  /* @apply flex flex-row items-center justify-center bg-white p-0.5 rounded-full */
 
-}
-.searchInput{
-  @apply text-white text-lg  h-[48px] p-3 pl-12 w-96 rounded-full placeholder:font-light placeholder:text-lightGray placeholder:text-lg  placeholder:tracking-wider block bg-navy   bg-gradient-to-r from-blue/40 via-transparent to-blue/40 backdrop-blur-lg  border border-blue/40 shadow-xl focus:outline-none focus:border focus:border-blue ;
-
-}
 .searchIcon{
   @apply  h-4 w-4 text-lg text-white relative left-10 z-10 cursor-pointer;
 }
@@ -163,22 +155,69 @@ body{
   @apply flex flex-row items-center justify-center p-1
 }
 
-.iconCircle{
+/* .iconCircle{
   @apply text-xl p-3 border bg-navy border-blue/40 text-white rounded-full    bg-gradient-to-br from-transparent via-blue/40 to-transparent backdrop-blur-lg ;
-}
+} */
 
 .close{
-  @apply text-white text-lg z-60 bg-gradient-to-r from-blue to-teal rounded-full p-1  cursor-pointer opacity-70 hover:opacity-100 fixed 
+  @apply text-white text-lg z-60 bg-gradient-to-r from-blue to-teal rounded-full p-1  cursor-pointer opacity-70 hover:opacity-100  
 }
 
 
 
 /* Dashboard Parts */
 
-main{
-  @apply p-8 m-8 h-full w-full min-h-[710px]  min-w-96   bg-navy  rounded-2xl bg-gradient-to-r from-blue/0 via-blue/20 to-blue/0 backdrop-blur-lg  border border-blue/20 shadow-xl overflow-auto ;
+.container {
+  @apply flex-1 p-8 my-8 mx-8 min-h-[710px] min-w-[300px] bg-navy 
+         rounded-2xl bg-gradient-to-r from-blue/0 via-blue/20 to-blue/0
+         backdrop-blur-lg border border-blue/20 shadow-xl overflow-auto;
 }
-
 .smallIcon{
   @apply z-80 p-1 text-sm rounded-2xl cursor-pointer opacity-65 hover:opacity-100 bg-gradient-to-r from-blue to-teal 
 }
+
+
+
+.iconCircle {
+  @apply text-xl p-3 border bg-navy border-blue/40 text-white rounded-full 
+         bg-gradient-to-br from-transparent via-blue/40 to-transparent backdrop-blur-lg;
+}
+
+@media (max-height: 650px) {
+  .iconCircle {
+    @apply text-lg p-2;  /* smaller text and padding */
+  }
+}
+
+.searchBar {
+  @apply flex flex-row items-center justify-center rounded-full;
+}
+
+@media (max-height: 650px) {
+  .searchBar {
+    @apply p-1 text-sm;   /* smaller padding & text */
+  }
+}
+
+.searchInput {
+  @apply text-white text-lg h-[80%] p-3 pl-12 w-96 rounded-full 
+         placeholder:font-light placeholder:text-lightGray 
+         placeholder:text-lg placeholder:tracking-wider block 
+         bg-navy bg-gradient-to-r from-blue/40 via-transparent to-blue/40 
+         backdrop-blur-lg border border-blue/40 shadow-xl 
+         focus:outline-none focus:border focus:border-blue;
+}
+
+@media (max-height: 650px) {
+  .searchInput {
+    @apply text-sm p-2 pl-8 w-72;  /* smaller font, padding & width */
+    @apply placeholder:text-sm;    /* smaller placeholder */
+  }
+  .searchIcon{
+    @apply  h-4 w-4 text-sm text-white relative left-8 z-10 cursor-pointer;
+  }
+  
+  
+  
+}
+
