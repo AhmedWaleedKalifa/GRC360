@@ -1,223 +1,185 @@
-
-
 @import "tailwindcss";
+
 /* colors */
-@theme{
+@theme {
   --color-teal: #009688;
-  --color-navy:#1C2A44;   
-  --color-lightGray:#F5F7Fa;
-  --color-white:#FFFFFF;
-  --color-blue:#155dfc;
+  --color-navy: #1C2A44;
+  --color-lightGray: #F5F7Fa;
+  --color-white: #FFFFFF;
+  --color-blue: #155dfc;
 }
+
 /* General Styles */
 
-*{
-  color:white;
-  caret-color:#155dfc ;
-}
-::selection{
-  @apply bg-navy 
+* {
+  @apply scroll-smooth caret-blue 
 }
 
-:root{
-  height: 100%;
-  width: 100%;
-  scroll-behavior: smooth;
-  @apply text-sm 2xl:text-lg xl:text-base lg:text-base md:text-base sm:text-sm
+div{
+  @apply text-white
+}
+::selection {
+  @apply bg-navy
 }
 
-body{
-  height: 100%;
-  width: 100%;
-  overflow-x: hidden;
-  margin: 0;
-  border:0;
-  padding:0;
+:root {
+  @apply text-sm 2xl:text-lg xl:text-base lg:text-base md:text-sm sm:text-sm
 }
+
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 6px;
+  @apply w-3 h-2
 }
-::-webkit-scrollbar-track {
-  background: #f1f1f1; 
 
+::-webkit-scrollbar-track {
+  @apply bg-lightGray
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #009688cc; 
-  border-radius: 10px;
-  border: 3px solid #f1f1f1;
-
-  
+  @apply rounded-2xl bg-teal/80 border-2 border-lightGray
 }
 
 /* Components Styles*/
 
-.card{
-  @apply inline-block  min-w-44 h-32 p-5 ;
-}
-.cardStyle1{
-  @apply  rounded-2xl bg-gradient-to-r from-blue/40 via-transparent to-blue/40 backdrop-blur-lg  border border-blue/40 shadow-xl text-white transition-colors duration-500 ease-in-out;
-}
-.cardStyle2{
-  @apply  rounded-2xl bg-gradient-to-r from-transparent via-blue/40 to-transparent backdrop-blur-lg  border border-blue/40 shadow-xl text-white transition-colors duration-500 ease-in-out ;
-}
-.cardStyle3{
-  @apply rounded-2xl bg-gradient-to-r from-teal/50 via-teal/10 to-teal/50 backdrop-blur-lg  border border-teal/40 shadow-xl text-white transition-colors duration-500 ease-in-out;
-}
-.cardStyle4{
-  @apply rounded-2xl bg-gradient-to-r from-teal/10 via-teal/60 to-teal/10  border border-teal/40 shadow-xl text-white transition-colors duration-500 ease-in-out;
+/* card style */
+
+.card {
+  @apply inline-block min-w-44 h-32 p-5;
 }
 
-
-.form{
-  @apply rounded-xl bg-white w-[480px] py-4 px-24 flex justify-center items-center flex-col ;
+.cardStyle1 {
+  @apply rounded-2xl bg-gradient-to-r from-blue/40 via-transparent to-blue/40 backdrop-blur-lg border border-blue/40 shadow-xl;
 }
 
-.input{
-  @apply w-full h-[48px] p-3 rounded-lg bg-white border border-teal text-navy text-sm focus:border-4 focus:border-[#00968753] focus:outline-0;
+.cardStyle2 {
+  @apply rounded-2xl bg-gradient-to-r from-transparent via-blue/40 to-transparent backdrop-blur-lg border border-blue/40 shadow-xl;
 }
 
-.label{
+/* form style */
+
+.form {
+  @apply rounded-xl bg-white w-[480px] py-4 px-24 flex justify-center items-center flex-col;
+}
+
+.formTitle {
+  @apply text-navy text-2xl font-bold my-4;
+}
+
+.label {
   @apply text-navy capitalize text-sm block;
 }
 
-.inputContainer{
-  @apply flex justify-center  flex-col gap-1 mb-4 w-full ;
-}
-.formTitle{
-  @apply text-navy text-2xl font-bold my-4;
-}
-.bigLogo{
-  @apply w-40;
-}
-.smallLogo{
-  @apply p-2 m-0 self-center;
-}
-.formButton{
-  @apply tracking-wide capitalize bg-navy text-white w-full h-12 rounded-lg my-4 text-lg font-semibold cursor-pointer ;
-  
+.input {
+  @apply w-full h-[48px] p-3 rounded-lg bg-white border border-teal text-navy text-sm focus:border-4 focus:border-[#00968753] focus:outline-0;
 }
 
-.rightSpan{
-  @apply  text-xs relative top-[-12px] font-light cursor-pointer;
+.inputContainer {
+  @apply flex justify-center flex-col gap-1 mb-4 w-full;
 }
 
-
-
-.searchIcon{
-  @apply  h-4 w-4 text-lg text-white relative left-10 z-10 cursor-pointer;
-}
-
-
-
-
-
-.field{
-  @apply w-full min-h-10   py-1  flex flex-row items-center gap-2 overflow-x-hidden 
-
-  /* @apply mt-1 w-full max-w-[1380px] px-6 py-2  flex flex-row items-center rounded-2xl gap-2 overflow-x-clip; */
-}
-
-.fieldColor3{
-  @apply bg-navy bg-gradient-to-r from-transparent via-blue/40 to-transparent backdrop-blur-lg  border border-blue/40 shadow-xl text-white transition-colors duration-500 ease-in-out 
-}
-.fieldColor1{
-  @apply  bg-navy/40 bg-gradient-to-r from-transparent via-teal/50 to-transparent backdrop-blur-lg  border border-teal/50 shadow-xl text-white transition-colors duration-500 ease-in-out ;
-}
-.fieldColor2{
-  @apply  bg-navy/40 bg-gradient-to-r from-teal/50 via-transparent to-teal/50 backdrop-blur-lg  border border-teal/50 shadow-xl text-white transition-colors duration-500 ease-in-out ;
-}
-
-
-
-.button{
-  @apply px-4 py-2 tracking-wide capitalize  text-white  rounded-lg text-lg font-semibold cursor-pointer  ;
+.formButton {
+  @apply tracking-wide capitalize bg-navy w-full h-12 rounded-lg my-4 text-lg font-semibold cursor-pointer;
 
 }
-.buttonStyle{
-  @apply bg-gradient-to-r from-blue to-teal;
-}
-.buttonStyle2{
-  @apply bg-gradient-to-r from-teal to-blue;
-}
-.smallButton{
-  @apply  mx-1 py-1 px-2 tracking-normal capitalize text-sm text-white  rounded-lg  font-medium cursor-pointer  bg-gradient-to-r from-blue to-teal border border-blue z-100;
 
-}
-.link{
-  
-  @apply w-[90%] flex flex-row items-center py-2 px-6 
-  transition-colors duration-1000 ease-in-out
-  bg-transparent ;
-}
-.closeLink{
-  @apply flex flex-row items-center justify-center p-1
-}
+/* searchbar style */
 
-/* .iconCircle{
-  @apply text-xl p-3 border bg-navy border-blue/40 text-white rounded-full    bg-gradient-to-br from-transparent via-blue/40 to-transparent backdrop-blur-lg ;
-} */
-
-.close{
-  @apply text-white text-lg z-60 bg-gradient-to-r from-blue to-teal rounded-full p-1  cursor-pointer opacity-70 hover:opacity-100  
-}
-
-
-
-/* Dashboard Parts */
-
-.container {
-  @apply flex-1 p-8 my-8 mx-8 min-h-[710px] min-w-[300px] bg-navy 
-         rounded-2xl bg-gradient-to-r from-blue/0 via-blue/20 to-blue/0
-         backdrop-blur-lg border border-blue/20 shadow-xl overflow-auto;
-}
-.smallIcon{
-  @apply z-80 p-1 text-sm rounded-2xl cursor-pointer opacity-65 hover:opacity-100 bg-gradient-to-r from-blue to-teal 
-}
-
-
-
-.iconCircle {
-  @apply text-xl p-3 border bg-navy border-blue/40 text-white rounded-full 
-         bg-gradient-to-br from-transparent via-blue/40 to-transparent backdrop-blur-lg;
-}
-
-@media (max-height: 650px) {
-  .iconCircle {
-    @apply text-lg p-2;  /* smaller text and padding */
-  }
+.searchIcon {
+  @apply h-4 w-4 text-lg relative left-10 z-10 cursor-pointer;
 }
 
 .searchBar {
   @apply flex flex-row items-center justify-center rounded-full;
 }
 
+.searchInput {
+  @apply text-lg h-[80%] p-3 pl-12 w-96 rounded-full placeholder:font-light placeholder:text-lightGray placeholder:text-lg placeholder:tracking-wider block bg-navy bg-gradient-to-r from-blue/40 via-transparent to-blue/40 backdrop-blur-lg border border-blue/40 shadow-xl focus:outline-none focus:border focus:border-blue;
+}
+
 @media (max-height: 650px) {
   .searchBar {
-    @apply p-1 text-sm;   /* smaller padding & text */
+    @apply p-1 text-sm;
+  }
+  .searchInput {
+    @apply text-sm p-2 pl-8 w-72 placeholder:text-sm;
+
+  }
+  .searchIcon {
+    @apply h-4 w-4 text-sm relative left-8 z-10 cursor-pointer;
   }
 }
 
-.searchInput {
-  @apply text-white text-lg h-[80%] p-3 pl-12 w-96 rounded-full 
-         placeholder:font-light placeholder:text-lightGray 
-         placeholder:text-lg placeholder:tracking-wider block 
-         bg-navy bg-gradient-to-r from-blue/40 via-transparent to-blue/40 
-         backdrop-blur-lg border border-blue/40 shadow-xl 
-         focus:outline-none focus:border focus:border-blue;
+/* logo style  */
+.bigLogo {
+  @apply w-40;
+}
+
+.smallLogo {
+  @apply p-2 m-0 self-center;
+}
+
+/* field style  */
+
+.field {
+  @apply w-full min-h-10 py-1 flex flex-row items-center gap-2 overflow-x-hidden
+}
+
+.fieldColor1 {
+  @apply bg-navy/40 bg-gradient-to-r from-transparent via-teal/50 to-transparent backdrop-blur-lg border border-teal/50 shadow-xl transition-colors duration-500 ease-in-out;
+}
+
+.fieldColor2 {
+  @apply bg-navy/40 bg-gradient-to-r from-teal/50 via-transparent to-teal/50 backdrop-blur-lg border border-teal/50 shadow-xl transition-colors duration-500 ease-in-out;
+}
+
+/* buttons styles  */
+
+.button {
+  @apply px-4 py-2 tracking-wide capitalize rounded-lg text-lg font-semibold cursor-pointer;
+
+}
+
+.buttonStyle {
+  @apply bg-gradient-to-r from-blue to-teal;
+}
+
+.smallButton {
+  @apply py-1 px-2 tracking-normal capitalize text-sm rounded-lg font-medium cursor-pointer z-100;
+
+}
+
+/* link style  */
+
+.link {
+
+  @apply w-[90%] flex flex-row items-center py-2 px-6 transition-colors duration-1000 ease-in-out bg-transparent;
+}
+
+.closeLink {
+  @apply flex flex-row items-center justify-center p-1
+}
+
+/* sidebar parts  */
+.close {
+  @apply text-lg z-60 bg-gradient-to-r from-blue to-teal rounded-full p-1 cursor-pointer opacity-70 hover:opacity-100
+}
+
+/* Dashboard Parts */
+
+.container {
+  @apply flex flex-col gap-8 p-8 my-8 mx-auto min-h-[710px] min-w-[300px] bg-navy rounded-2xl bg-gradient-to-r from-blue/0 via-blue/20 to-blue/0 backdrop-blur-lg border border-blue/20 shadow-xl overflow-auto lg:min-w-auto overflow-x-hidden ;
+}
+
+/* icons styles  */
+.smallIcon {
+  @apply z-80 p-1 text-sm rounded-2xl cursor-pointer opacity-65 hover:opacity-100 bg-gradient-to-r from-blue to-teal
+}
+
+.iconCircle {
+  @apply text-xl p-3 border bg-navy border-blue/40 rounded-full bg-gradient-to-br from-transparent via-blue/40 to-transparent backdrop-blur-lg;
 }
 
 @media (max-height: 650px) {
-  .searchInput {
-    @apply text-sm p-2 pl-8 w-72;  /* smaller font, padding & width */
-    @apply placeholder:text-sm;    /* smaller placeholder */
+  .iconCircle {
+    @apply text-lg p-2;
   }
-  .searchIcon{
-    @apply  h-4 w-4 text-sm text-white relative left-8 z-10 cursor-pointer;
-  }
-  
-  
-  
 }
-

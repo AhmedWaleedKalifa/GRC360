@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRotateRight, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
 export default function Dashboard() {
-
   const [open, setOpen] = useState(true);
   const [active, setActive] = useState("Main");
   const [lastRefreshed, setLastRefreshed] = useState(null);
@@ -30,20 +29,13 @@ export default function Dashboard() {
     localStorage.setItem("lastRefreshed", now);
     setLastRefreshed(now);
     setShowRefreshNotification(true);
-
-    // Show notification for 4 seconds, then reload
     setTimeout(() => {
       setShowRefreshNotification(false);
-      // Reload after the notification has been shown
       setTimeout(() => {
         window.location.reload();
       }, 100);
     }, 4000);
   };
-
-
-
-
 
   useEffect(() => {
     const savedTime = localStorage.getItem("lastRefreshed");
@@ -52,26 +44,22 @@ export default function Dashboard() {
     }
   }, []);
 
-
   return (
     <>
       <NavBar active={active} open={open} />
-
       <SideBar open={open} setOpen={setOpen} setActive={setActive} />
+      <main className="w-full pr-8 lg:pr-8 md:pr-4 min-h-[calc(100vh-60px)] flex flex-row bg-navy bg-gradient-to-br from-[#000520]/60 via-[#000520]/30 to-blue-700/20 ">
+        {open ? (
+          <div className="w-64 shrink-0 mr-8 lg:mr-8 md:mr-4" ></div>
+        ) : (
+          <div className="w-20 shrink-0 mr-4 lg:mr-8 md:mr-4"></div>
+        )}
+        <div className="container">
+          <Outlet />
+        </div>
+      </main>
 
-      <main className="w-full min-h-[calc(100vh-60px)] flex flex-row bg-navy bg-gradient-to-br from-[#000520]/60 via-[#000520]/30 to-blue-700/20 overflow-auto p-3">
-  {open ? (
-    <div className="w-64 shrink-0"></div>
-  ) : (
-    <div className="w-20 shrink-0"></div>
-  )}
-
-  <div className="container">
-    <Outlet />
-  </div>
-</main>
-
-      <div className="fixed bottom-8 right-1.5   flex flex-col gap-1.5 z-80 items-center px-1 py-1.5 border bg-navy bg-gradient-to-r from-gray-600/40 to-navy border-gray-600 rounded-2xl backdrop-blur-lg   ">
+      <div className="fixed bottom-8 right-1.5 flex flex-col gap-1.5 z-80 items-center px-1 py-1.5 border bg-navy bg-gradient-to-r from-gray-600/40 to-navy border-gray-600 rounded-2xl backdrop-blur-lg">
         <FontAwesomeIcon
           icon={faArrowUp}
           className="smallIcon"
@@ -82,12 +70,12 @@ export default function Dashboard() {
           onClick={handleRefresh}
         />
         {showRefreshNotification && (
-          <div className="text-white text-sm font-medium bg-gradient-to-r bg-blue rounded-2xl p-2">
-            <div>refreshed:</div>
-            <div>{lastRefreshed}</div>
+          <div className="absolute right-10 bottom-0 text-sm font-medium p-2 w-40 border-2  bg-navy bg-gradient-to-r from-gray-600/40 to-navy border-gray-600 rounded-2xl backdrop-blur-lg">
+            <div>refreshed at: {lastRefreshed}</div>
           </div>
         )}
       </div>
+      
     </>
   );
 }

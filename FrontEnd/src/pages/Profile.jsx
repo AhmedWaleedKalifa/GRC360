@@ -9,27 +9,24 @@ function profile() {
   return (
     <div className='w-full h-screen bg-navy flex flex-col '>
 
-    <Link to="/dashboard">
-      <FontAwesomeIcon icon={faArrowLeftLong} className='iconCircle bg-navy m-4'/>      
-
+      <Link to="/dashboard">
+        <FontAwesomeIcon icon={faArrowLeftLong} className='iconCircle bg-navy m-4' />
       </Link>
-    <div className='container mx-auto '>
-        <div className=' text-white font-bold text-4xl mb-5' >Profile</div>
+      <div className='container mx-auto '>
+        <div className='font-bold text-4xl mb-5' >Profile</div>
         <div className='flex flex-row items-center gap-4'>
           <Card title="Total Documents" value="6" />
           <Card title="Active" value="6" model={2} />
           <Card title="Expiring Soon" value="0" />
           <Card title="Pending Approval" value="0" model={2} />
-
         </div>
         <div className='flex flex-row items-center justify-between w-full '>
-          <div className='text-white  text-ml '>Governance Items</div>
+          <div className='text-ml '>Governance Items</div>
           <div className='button my-4 '>
             <FontAwesomeIcon icon={faPlus} className=' mr-1' />
             Add Item
           </div >
         </div>
-        
       </div>
     </div>
   )

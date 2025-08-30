@@ -32,7 +32,7 @@ const routes = [
     path: "dashboard",
     element: <Dashboard />,
     children: [
-      {index:true,element:<Main/>},
+      { index: true, element: <Main /> },
       { path: "compliance", element: <Compliance /> },
       { path: "configurations", element: <Configurations /> },
       { path: "governance", element: <Governance /> },
@@ -44,17 +44,5 @@ const routes = [
     ],
   },
 ];
-
-// const routes = [
-//   {
-//     path: "/",
-//     element: <App />,
-//     errorElement: <ErrorPage />,
-//   },
-//   {
-//     path: "profile/:name",
-//     element: <Profile />,
-//   },
-// ];
 
 export default routes;

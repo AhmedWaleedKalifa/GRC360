@@ -2,12 +2,7 @@ import * as solidIcons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 
-function Field({mode=1, values=[{type:"t",text:"unknown",size:4,clickFunction:()=>{}},{type:"i",text:"faHouse",size:4,function:()=>{}},{type:"b",text:"click",size:4,function:()=>{}}]} ) {
-  let result = 0.00;
-  values.forEach((e) => {
-    result += e.size;
-  });
-  result=100/result
+function Field({ mode = 1, sizes,colors,values = [{ type: "t", text: "unknown", clickFunction: () => { } }, { type: "i", text: "faHouse", function: () => { } }, { type: "b", text: "click", function: () => { } }] }) {
 
   return (
     <>
@@ -16,25 +11,33 @@ function Field({mode=1, values=[{type:"t",text:"unknown",size:4,clickFunction:()
           <div
             title={element.text}
             key={index}
-            style={{ width: `${Math.trunc(result * element.size)}%` }}
+            style={{ width: `${Math.trunc(sizes[index])}%`}}
             onClick={element.clickFunction}
-            className={' flex   items-center gap-2 truncate   overflow-hidden  whitespace-nowrap h-full '}
+            className={'flex items-center gap-2 truncate overflow-hidden whitespace-nowrap h-full'}
           >
-            {element.type=="i"
-              ? (
-                <>
+            {element.type == "i"
+              ? 
+              (
                   <FontAwesomeIcon
                     title={element.text}
                     icon={solidIcons[element.text]}
-                    className="text-white text-lg  shrink-0 capitalize truncate   overflow-hidden"
-                  />
-                </>
-              ):element.type=='b'?(
-                <div className='smallButton shrink-0 truncate   overflow-hidden'>{element.text}</div>
+                    className=' text-base shrink-0 capitalize truncate overflow-hidden'
+                    style={{ color: colors?.[index] || "white" }}
 
-              )
-              : (
-                <div className='text-white text-sm truncate   overflow-hidden shrink-0 capitalize' title={element.text}>{element.text}</div>
+                  />
+              ) : element.type == 'b' ?
+              (
+                <button className='smallButton  shrink-0 truncate overflow-hidden' 
+                style={{ background: colors[index]||"linear-gradient(to right,#155dfc ,#009688 )"}}
+
+                >{element.text}</button>
+
+              ): 
+              (
+                <div className=' text-sm  truncate overflow-hidden shrink-0 capitalize' style={{ color: colors?.[index] || "white" }}
+                title={element.text}
+                
+                >{element.text}</div>
               )
             }
           </div>
