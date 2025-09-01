@@ -16,7 +16,6 @@ function CardSlider({
 }) {
   const containerRef = useRef(null);
 
-  // compute percentage sizes
   let result = 0.0;
   let array = [];
   if (sizes) {
@@ -30,12 +29,10 @@ function CardSlider({
     array[index] = array[index] * result;
   });
 
-  // scroll the container so the selected item is vertically centered
   useEffect(() => {
     const container = containerRef.current;
     if (!container || selectedId === undefined || selectedId === null) return;
 
-    // ensure we compare as strings (IDs can be numbers or strings)
     const selector = `[data-field-id="${selectedId}"]`;
     const el = container.querySelector(selector);
     if (!el) {
@@ -48,16 +45,12 @@ function CardSlider({
     const containerRect = container.getBoundingClientRect();
     const elRect = el.getBoundingClientRect();
 
-    // distance from top of container to top of element (in px)
     const offset = elRect.top - containerRect.top;
 
-    // compute scroll delta that will place element in center
     const scrollDelta = offset - (container.clientHeight / 2) + (el.clientHeight / 2);
 
-    // apply scroll (smooth because of CSS)
     container.scrollTop = container.scrollTop + scrollDelta;
-  }, [selectedId, fields]); // run when selected changes or fields change
-
+  }, [selectedId, fields]);
   return (
     <>
       <div>
@@ -86,11 +79,10 @@ function CardSlider({
         <div
           className="cardSliderBody"
           ref={containerRef}
-          style={{ maxHeight: height }} // numeric -> px; string would also work
+          style={{ maxHeight: height }} 
         >
           {fields.map((e, index) => (
             <Field
-              // remove the per-item ref assignment (we find by data-field-id)
               color={colors[index]}
               sizes={array}
               key={index}

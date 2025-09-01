@@ -17,7 +17,7 @@ function Main() {
   return (
     <>
 
-      <CardSlider
+      <CardSlider 
         caption={{ text: 'upcoming', icon: "faCalendarDay" }}
         titles={["Type", "Title", "owner", "Due Date", "status"]}
         colors={[""]}

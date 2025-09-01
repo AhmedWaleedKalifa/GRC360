@@ -12,6 +12,7 @@ function Risks() {
   const [colors, setColors] = useState([]);
   const [selectedId,setSelectedId]=useState();
   const data = json.risks;
+
   const date=new Date()
   useEffect(() => {
     const newFields = [];
@@ -36,9 +37,7 @@ function Risks() {
       if (String(e.id) === id) {
 
         newColors.push("#ff000080");
-      } else {
-        newColors.push("#ffffff");
-      }
+      } 
 
       newIds.push(e.id);
     });

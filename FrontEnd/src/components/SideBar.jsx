@@ -1,9 +1,11 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHouse, faShield, faTriangleExclamation, faCircleExclamation, faGavel, faGear, faChartSimple, faFileLines, faRightFromBracket, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { useEffect } from 'react';
 
 const SideBar = ({ open, setOpen, setActive,active}) => {
+  const location = useLocation();
+
   function handleClick() {
     setOpen(!open);
     localStorage.setItem("open",open)
@@ -13,6 +15,34 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
     setActive(e);
 
   }
+  useEffect(() => {
+    if (location.pathname.startsWith("/dashboard/risks")) {
+      setActive("Risks");
+      localStorage.setItem("active", "Risks");
+    } else if (location.pathname.startsWith("/dashboard/governance")) {
+      setActive("Governance");
+      localStorage.setItem("active", "Governance");
+    } else if (location.pathname.startsWith("/dashboard/compliance")) {
+      setActive("Compliance");
+      localStorage.setItem("active", "Compliance");
+    } else if (location.pathname.startsWith("/dashboard/incidents")) {
+      setActive("Incidents");
+      localStorage.setItem("active", "Incidents");
+    } else if (location.pathname.startsWith("/dashboard/threats")) {
+      setActive("Threats");
+      localStorage.setItem("active", "Threats");
+    } else if (location.pathname.startsWith("/dashboard/logs")) {
+      setActive("Logs");
+      localStorage.setItem("active", "Logs");
+    } else if (location.pathname.startsWith("/dashboard/configurations")) {
+      setActive("Configurations");
+      localStorage.setItem("active", "Configurations");
+    } else if (location.pathname === "/dashboard") {
+      setActive("Main");
+      localStorage.setItem("active", "Main");
+    }
+  }, [location.pathname, setActive]);
+
   useEffect(() => {
     if (open) {
       localStorage.setItem("open", open);

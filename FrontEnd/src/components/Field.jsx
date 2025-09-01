@@ -16,7 +16,7 @@ const Field = forwardRef(({ mode = 1, sizes, id, color, navigation = "", values 
   return (
     <div
     ref={ref}
-      data-field-id={id}                // <- ADD THIS
+      data-field-id={id}               
       className={
         mode === 1 ? "fieldColor1 field px-3"
           : mode === 2 ? "fieldColor2 field px-3"
