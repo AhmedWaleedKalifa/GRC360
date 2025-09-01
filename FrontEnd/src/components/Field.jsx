@@ -16,7 +16,7 @@ const Field = forwardRef(({ mode = 1, sizes, id, color, navigation = "", values 
   return (
     <div
     ref={ref}
-      data-field-id={id}               
+      data-field-id={id}                // <- ADD THIS
       className={
         mode === 1 ? "fieldColor1 field px-3"
           : mode === 2 ? "fieldColor2 field px-3"
@@ -33,7 +33,7 @@ const Field = forwardRef(({ mode = 1, sizes, id, color, navigation = "", values 
           title={String(element.text)}
           key={index}
           style={{ width: `${Math.trunc(sizes[index] || 0)}%` }}
-          
+         
         >
           {element.type === "i" ? (
             <FontAwesomeIcon
