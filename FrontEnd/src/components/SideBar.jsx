@@ -55,7 +55,7 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                       backgroundImage: `linear-gradient(
                         to right,
                         #1976D260, 
-                         #161B2260
+                         #00000000
                       )`,
                     }
                   : {}
@@ -75,7 +75,7 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                       backgroundImage: `linear-gradient(
                         to right,
                         #1976D260, 
-                         #161B2260
+                         #00000000
                       )`,
                     }
                   : {}
@@ -96,7 +96,7 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                       backgroundImage: `linear-gradient(
                         to right,
                         #1976D260, 
-                         #161B2260
+                         #00000000
                       )`,
                     }
                   : {}
@@ -119,7 +119,7 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                       backgroundImage: `linear-gradient(
                         to right,
                         #1976D260, 
-                         #161B2260
+                         #00000000
                       )`,
                     }
                   : {}
@@ -143,7 +143,7 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                       backgroundImage: `linear-gradient(
                         to right,
                         #1976D260, 
-                         #161B2260
+                         #00000000
                       )`,
                     }
                   : {}
@@ -167,7 +167,7 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                       backgroundImage: `linear-gradient(
                         to right,
                         #1976D260, 
-                         #161B2260
+                         #00000000
                       )`,
                     }
                   : {}
@@ -190,7 +190,7 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                       backgroundImage: `linear-gradient(
                         to right,
                         #1976D260, 
-                         #161B2260
+                         #00000000
                       )`,
                     }
                   : {}
@@ -213,7 +213,7 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                       backgroundImage: `linear-gradient(
                         to right,
                         #1976D260, 
-                         #161B2260
+                         #00000000
                       )`,
                     }
                   : {}

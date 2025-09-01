@@ -12,6 +12,7 @@ import Threats from "./pages/Threats";
 import Notifications from "./pages/Notifications";
 import PageTemplate from "./pages/PageTemplate";
 import Login from "./pages/Login";
+import EditConfigurations from "./pages/EditConfigurations";
 const routes = [
   {
     path: "/",
@@ -31,6 +32,7 @@ const routes = [
       { path: "incidents", element: <Incidents /> },
       { path: "logs", element: <Logs /> },
       { path: "risks/:id?", element: <Risks  /> },
+      { path: "editConfigurations/:id?", element: <EditConfigurations  /> },
       { path: "threats", element: <Threats /> },
       { path: "*", element: <ErrorPage /> }
     ],

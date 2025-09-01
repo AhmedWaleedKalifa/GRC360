@@ -4,15 +4,22 @@ import Card from '../components/Card'
 import CardSlider from "../components/CardSlider"
 import { useParams } from 'react-router-dom'
 import json from "../json.json"
+import { useEffect, useState } from 'react'
 function Risks() {
-  const {id}=useParams();
-  const data=json.risks
+  const { id } = useParams();
+  const [fields, setFields] = useState([]);
+  const [ids, setIds] = useState([]);
+  const [colors, setColors] = useState([]);
+  const [selectedId,setSelectedId]=useState();
+  const data = json.risks;
+  const date=new Date()
+  useEffect(() => {
+    const newFields = [];
+    const newIds = [];
+    const newColors = [];
 
-  let fields=[];
-  let ids=[]
-  let colors=[]
     data.forEach((e) => {
-      fields.push([
+      newFields.push([
         { type: "t", text: e.id },
         { type: "t", text: e.title },
         { type: "t", text: e.category },
@@ -20,56 +27,77 @@ function Risks() {
         { type: "t", text: e.status },
         { type: "t", text: e.likelihood },
         { type: "t", text: e.impact },
-        {type: "t",text:e.severity},
-        {type: "t",text:e.lastReviewed},
-        { type: "i", text: "faPen",color:"#26A7F6" },
-         { type: "i", text: "faTrash",color:"#F44336" }
-
+        { type: "t", text: e.severity },
+        { type: "t", text: e.lastReviewed },
+        { type: "i", text: "faPen", color: "#26A7F6" },
+        { type: "i", text: "faTrash", color: "#F44336" },
       ]);
-      ids.push(e.id);
+      setSelectedId(id);
+      if (String(e.id) === id) {
 
-     
+        newColors.push("#ff000080");
+      } else {
+        newColors.push("#ffffff");
+      }
+
+      newIds.push(e.id);
     });
-  
-    
-  
-  
+
+    setFields(newFields);
+    setIds(newIds);
+    setColors(newColors);
+  }, [id, data]);
+
   return (
     <>
+      <h1>
+        <FontAwesomeIcon icon={faChartSimple} className="h1Icon" />
+        Risk Register
+      </h1>
 
-{/* {id =="1" ? (
-       <div className='text-8xl'>1</div>
-      ) : id == "2" ? (
-        <div className='text-8xl'>2</div>
-      ) : (
-        <div className='text-8xl'>3</div>
-      )} */}
-      <h1 ><FontAwesomeIcon icon={faChartSimple} className='h1Icon' />Risk Register{id?id:""}</h1>
-      <div className='cardsContainer'>
-        <Card title="Total Risks" value="6" model={1} />
-        <Card title="Open Risks" value="3" model={2} />
-        <Card title="High Severity" value="4" model={1} />
-        <Card title="Reviewed This Month" value="3" model={2} />
+      <div className="cardsContainer">
+        <Card title="Total Risks" value={data.length} model={1} />
+        <Card title="Open Risks" value={data.filter((e)=>{return e.status=="Open"}).length} model={2} />
+        <Card title="High Severity" value={data.filter((e)=>{return e.severity=="High"}).length} model={1} />
+        <Card title="Reviewed This Month" value={data.filter((e)=>{
+          return e.lastReviewed.at(5)+e.lastReviewed.at(6)== ((String(date.getMonth()).length)=="1"?"0"+String(date.getMonth()):String(date.getMonth()))
+          }).length}
+           model={2} />
       </div>
-      <div className='h2AndButtonContainer '>
-        <h2>Risk</h2>
-        <div className='button buttonStyle '>
-          <FontAwesomeIcon icon={faPlus} className=' mr-1' />
+
+      <div className="h2AndButtonContainer">
+        <h2>Risks</h2>
+        <div className="button buttonStyle">
+          <FontAwesomeIcon icon={faPlus} className="mr-1" />
           Add Risks
-        </div >
+        </div>
       </div>
-     
-        <CardSlider
-          titles={["ID", "title", "Category", "Owner", "status", "Likelihood", "Impact", "Severity", "Last Reviewed", "Actions "," "]}
-          sizes={[1, 8, 8, 8, 8, 8, 8, 8, 8, 8,2,2]}
-          ids={ids}
-          fields={fields}
-          colors={colors}
-          navigation={"/dashboard/risks"}
-        />
-      
-   
-    </>)
+
+      <CardSlider
+        titles={[
+          "ID",
+          "title",
+          "Category",
+          "Owner",
+          "status",
+          "Likelihood",
+          "Impact",
+          "Severity",
+          "Last Reviewed",
+          "Actions ",
+          " ",
+        ]}
+        sizes={[1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 2, 2]}
+        ids={ids}
+        fields={fields}
+        colors={colors}
+        selectedId={selectedId}
+
+        navigation={"/dashboard/risks"}
+      />
+    </>
+  );
 }
+
 
 export default Risks

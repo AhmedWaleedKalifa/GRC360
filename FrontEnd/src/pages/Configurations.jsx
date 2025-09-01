@@ -24,6 +24,7 @@ function Configurations() {
         sizes={[1,1,1]}
         height={"500"}
         ids={ids}
+        navigation={"/dashboard/editConfigurations"}
         fields={fields}
         
       />
