@@ -87,7 +87,7 @@ function Risks() {
           "Actions ",
           " ",
         ]}
-        sizes={[1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 2, 2]}
+        sizes={[2, 8, 8, 8, 8, 8, 8, 8, 8, 8, 2, 2]}
         ids={ids}
         fields={fields}
         colors={colors}
