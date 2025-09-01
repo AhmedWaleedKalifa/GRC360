@@ -7,13 +7,13 @@ function NavBar({ active, open }) {
   return (
     <>
 
-      <nav className={`sticky min-h-20 h-20 ${open ? "pl-68" : "pl-24"} flex flex-row items-center justify-between bg-gradient-to-br bg-navy from-black/40 via-transparent to-white/5 backdrop-blur-md shadow-xl px-8`}>
+      <nav style={{paddingLeft:`${open ? "272" : "96"}px`}}>
         <SearchBar active={active} />
-        <div className='w-[50%] h-full flex flex-row items-center justify-end px-8'>
-          <Link to="/notifications" title="Notifications">
-            <FontAwesomeIcon icon={faBell} className='iconCircle mr-2.5' />
+        <div className='navContainer'>
+          <Link to="/pages/notifications" title="Notifications">
+            <FontAwesomeIcon icon={faBell} className='iconCircle' />
           </Link>
-          <Link to="/profile" title="Profile">
+          <Link to="/pages/profile" title="Profile">
             <FontAwesomeIcon icon={faCircleUser} className='iconCircle' />
           </Link>
         </div>

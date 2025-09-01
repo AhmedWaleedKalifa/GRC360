@@ -23,7 +23,7 @@ const Form = ({ title = " ", actionPath, isLogo, method = 'post', inputArray }) 
           <button className="formButton">Login</button>
           <div className="flex flex-row justify-between items-center w-full">
             <p className="text-xs text-charcoal">Don't have an account?</p>
-            <span className="text-navy text-xs font-light cursor-pointer">Sign up</span>
+            <span className="text-first text-xs font-light cursor-pointer">Sign up</span>
           </div>
         </form>
       </div>

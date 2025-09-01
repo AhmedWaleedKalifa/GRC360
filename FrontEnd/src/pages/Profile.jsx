@@ -1,34 +1,72 @@
-import { faArrowLeftLong, faPlus } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
-import Card from '../components/Card'
-import CardSlider from '../components/CardSlider'
-import { Link } from 'react-router-dom'
+import Input from '../components/Input'
 
 function profile() {
   return (
-    <div className='w-full h-screen bg-navy flex flex-col '>
+    <>
+        <div className='profile'>
+          <div className='profileHeader'><span>Welcome User</span></div>
+          <div className='profileBr'></div>
+          <div className='profileInfo'>
+            <img className='profileInfoImage'/>
+            <div className='profileInfoTextContainer'>
+              <span className='profileInfoFirstSpan'>
+                User Name
+              </span>
+              <span className='profileInfoSecondSpan'>
+                User@gmail.com
+              </span>
+            </div>
+          </div>
 
-      <Link to="/dashboard">
-        <FontAwesomeIcon icon={faArrowLeftLong} className='iconCircle bg-navy m-4' />
-      </Link>
-      <div className='container mx-auto '>
-        <div className='font-bold text-4xl mb-5' >Profile</div>
-        <div className='flex flex-row items-center gap-4'>
-          <Card title="Total Documents" value="6" />
-          <Card title="Active" value="6" model={2} />
-          <Card title="Expiring Soon" value="0" />
-          <Card title="Pending Approval" value="0" model={2} />
+          <div className='profileButtonContainer'>
+              <div className='button buttonStyle'>Edit</div>
+          </div>
+          <div className='profileInputGrid'>
+          <div className="profileInputContainer">
+              <label htmlFor="fullName" className="profileFormLabel">Full Name:</label>
+              <input type="text" name="fullName" className="profileFormInput" placeholder='Your Full Name' value="User" />
+            </div>
+          </div>
+          
+          <div className='profileInputGrid'>
+          <div className="profileInputContainer">
+              <label htmlFor="nickName" className="profileFormLabel">Nick Name:</label>
+              <input type="text" name="nickName" className="profileFormInput" placeholder='Your Nick Name' value="User" />
+            </div>
+          </div>
+          <div className='profileInputGrid'>
+          <div className="profileInputContainer">
+              <label htmlFor="email" className="profileFormLabel">Email:</label>
+              <input type="email" name="email" className="profileFormInput" placeholder='Your Email' value="User@gmail.com" />
+            </div>
+          </div>
+
+          <div className='profileInputGrid'>
+          <div className="profileInputContainer">
+              <label htmlFor="country" className="profileFormLabel">Country:</label>
+              <input type="text" name="country" className="profileFormInput" placeholder='Your Country' value="User Country" />
+            </div>
+          </div>
+          <div className='profileInputGrid'>
+          <div className="profileInputContainer">
+              <label htmlFor="language" className="profileFormLabel">Language:</label>
+              <input type="text" name="language" className="profileFormInput" placeholder='Your language' />
+            </div>
+          </div>
+          <div className='profileInputGrid'>
+          <div className="profileInputContainer">
+              <label htmlFor="password" className="profileFormLabel">Password:</label>
+              <input type="password" name="password" className="profileFormInput" placeholder='Your Password' />
+            </div>
+          </div>
+      
+    
+          
+         
         </div>
-        <div className='flex flex-row items-center justify-between w-full '>
-          <div className='text-ml '>Governance Items</div>
-          <div className='button my-4 '>
-            <FontAwesomeIcon icon={faPlus} className=' mr-1' />
-            Add Item
-          </div >
-        </div>
-      </div>
-    </div>
+    </>
+
   )
 }
 

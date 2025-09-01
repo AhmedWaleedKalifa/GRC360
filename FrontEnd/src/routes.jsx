@@ -1,4 +1,3 @@
-import App from "./App";
 import ErrorPage from "./pages/ErrorPage";
 import Dashboard from "./pages/Dashboard";
 import Main from "./pages/Main";
@@ -11,23 +10,16 @@ import Profile from "./pages/Profile"
 import Risks from "./pages/Risks";
 import Threats from "./pages/Threats";
 import Notifications from "./pages/Notifications";
-
+import PageTemplate from "./pages/PageTemplate";
+import Login from "./pages/Login";
 const routes = [
   {
     path: "/",
-    element: <App />,
+    element: <Login />,
     errorElement: <ErrorPage />,
 
   },
-  {
-    path: "/notifications",
-    element: <Notifications />,
-  },
-  {
-    path: "/profile",
-    element: <Profile />,
-
-  },
+ 
   {
     path: "dashboard",
     element: <Dashboard />,
@@ -38,11 +30,22 @@ const routes = [
       { path: "governance", element: <Governance /> },
       { path: "incidents", element: <Incidents /> },
       { path: "logs", element: <Logs /> },
-      { path: "risks", element: <Risks /> },
+      { path: "risks/:id?", element: <Risks  /> },
       { path: "threats", element: <Threats /> },
       { path: "*", element: <ErrorPage /> }
     ],
   },
+
+  {
+    path: "pages",
+    element: <PageTemplate />,
+    children: [
+      { path: "notifications", element: <Notifications /> },
+      { path: "profile", element: <Profile /> },
+      { path: "*", element: <ErrorPage /> }
+    ],
+  },
+  
 ];
 
 export default routes;

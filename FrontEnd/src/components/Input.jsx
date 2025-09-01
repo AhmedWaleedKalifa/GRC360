@@ -1,6 +1,6 @@
 import React from 'react'
 
-const input = ({ id, label, type = "text", isInput, value, setValue, span }) => {
+const input = ({ id, label, type = "text", isInput, value="", setValue="", span=false }) => {
   function handleChange(e) {
     if (type === "file") {
       const file = e.target.files[0];

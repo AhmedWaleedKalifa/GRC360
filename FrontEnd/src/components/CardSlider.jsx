@@ -2,7 +2,7 @@ import React from 'react'
 import Field from './Field'
 import * as solidIcons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-function cardSlider({ titles,sizes, fields,colors, caption = { text: "", icon: "" } }) {
+function cardSlider({ height=323,titles,sizes, fields,colors=[],ids,navigation, caption = { text: "", icon: "" } }) {
     let result = 0.0;
     let array = [];
     if (sizes) {
@@ -20,18 +20,18 @@ function cardSlider({ titles,sizes, fields,colors, caption = { text: "", icon: "
         <>
             <div>
 
-            <div className='w-[99%] flex flex-col justify-center rounded-2xl rounded-b-none bg-teal/90 mx-auto'>
+            <div className='cardSliderHeader'>
                 {(caption.text != "" && caption.icon != "") &&
-                    <div className='capitalize font-bold text-3xl p-3.5 border-b-2 border-navy flex flex-row items-center gap-1'>
-                        {caption.icon != "" && <FontAwesomeIcon icon={solidIcons[caption.icon]} className=' ' />}
+                    <div className='cardSliderCaption'>
+                        {caption.icon != "" && <FontAwesomeIcon icon={solidIcons[caption.icon]} />}
                         {caption.text != "" && <span c>{caption.text}</span>}
                     </div>
                 }
                 <div
-                    className={`w-full min-h-10 py-1 flex flex-row items-center gap-2 overflow-x-hidden border-2 font-semibold tracking-wider capitalize px-3 pr-5 
+                    className={`cardSliderTitles
                             ${caption.text !== "" && caption.icon !== ""
-                            ? "rounded-none border-none bg-teal/90"
-                            : "rounded-2xl rounded-b-none border-teal bg-teal"}`
+                            ? "cardSliderTitlesNoCaptions"
+                            : "cardSliderTitlesCaptions"}`
                     }
 
                 >
@@ -40,21 +40,26 @@ function cardSlider({ titles,sizes, fields,colors, caption = { text: "", icon: "
                             title={element}
                             key={index}
                             style={{ width: `${Math.trunc(array[index])}%` }}
-                            className='text-sm truncate overflow-hidden shrink-1'>{element}</div>
+                            className='cardSliderTitleDiv'>{element}</div>
                     ))}
                 </div>
             </div>
 
 
 
-            <div className="w-[99%] border-2 rounded-t-none flex flex-col overflow-y-auto max-h-[323px] [scrollbar-width:thin] overflow-x-auto mx-auto rounded-2xl border-teal bg-gradient-to-r from-teal/40 via-teal/40  to-teal/40 backdrop-blur-lg shadow-xl [scrollbar-color:#f1f1f1_#00000000] scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent  scrollbar-gutter-stable super-thin">
+            <div className="cardSliderBody"
+                style={{maxHeight:height}}
+            >
+                
                 {fields.map((e, index) => (
                     <Field
-                        colors={colors}
+                        color={colors[index]}
                         sizes={array}
                         key={index}
                         values={e}
                         mode={index % 2 == 0 ? 1 : 2}
+                        navigation={navigation}
+                        id={ids?.[index]}
                     />
                 ))}
             </div>

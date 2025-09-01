@@ -3,95 +3,74 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import Card from '../components/Card'
 import CardSlider from '../components/CardSlider'
+import Progress from '../components/Progress'
+import Chart from "../components/Chart"
+import json from "../json.json"
 function Incidents() {
+  const data=json.incidents
+
+  let fields=[];
+  let ids=[]
+    data.forEach((e) => {
+      fields.push([
+        { type: "t", text: e.title },
+        { type: "t", text: e.reportedAt },
+        { type: "t", text: e.status },
+      ]);
+      ids.push(e.id);
+    });
+  
+    let fields2=[];
+  let ids2=[]
+  data.forEach((e) => {
+    fields2.push([
+      { type: "t", text: e.title },
+      { type: "t", text: e.category },
+      { type: "t", text: e.status },
+      { type: "t", text: e.severity },
+      { type: "t", text: e.reportedAt },
+      { type: "t", text: e.owner },
+      { type: "t", text: e.description },
+      { type: "i", text: "faPen",color:"#26A7F6" },
+      { type: "i", text: "faTrash",color:"#F44336" }
+
+    ]);
+    ids2.push(e.id);
+  });
   return (
     <>
-      <div className='   font-bold text-4xl ' ><FontAwesomeIcon icon={faTriangleExclamation} className='mr-2' /> Incidents</div>
-      <div className='flex flex-row items-center gap-4 flex-wrap '>
-        <Card title="Total Incidents" value="6" model={1} />
-        <Card title="Open" value="2" model={2} />
-        <Card title="Closed" value="3" model={1} />
-        <Card title="High Severity" value="3" model={2} />
-      </div>
-      <div >
-        <CardSlider
+      <h1 ><FontAwesomeIcon icon={faTriangleExclamation} className='h1Icon' /> Incidents</h1>
+
+    <div className='cardsContainer'>
+      <Card title="Frameworks" value="6" model={1} color={"#ffbb28"} />
+      <Card title="Requirements" value="12" model={2} color={"#00C49F"} />
+      <Card title="Controls" value="24" model={1} color={"#F44336"} />
+    </div>
+
+    <div className='flex flex-row items-center gap-5 w-full '>
+      <Chart title={"Incidents by Status"} array={[{name:"closed",value:2,color:"#00C49F"},{name:"Investigating",value:3,color:"#0088FE"},{name:"open",value:1,color:"#FFBB28"}]} />
+      <Progress  title={" Resolution Progress"} footer={"incidents closed"} num={3} all={6}/>
+      <div className='w-full'><CardSlider
+      caption={{ text: "Recent Incidents", icon: "faClock" }}
+      titles={["title", "time", "status"]}
+      sizes={[5,5,2]}
+      colors={["","",""]}
+      ids={ids}
+      fields={fields}
+      
+    /></div>
+    </div>
+    
+    <CardSlider
           caption={{ text: "All Incidents", icon: "faFolder" }}
           sizes={[6,2,4,3,5,3,7,2,.8]}    
-          colors={["","","","","","","","#F44336","#26A7F6"]}      
+          colors={["","","","","","","","#F44336",""]}      
           titles={["Title", "Category", "Status", "Severity", "Reported At	", "Owner", "Description", "Actions", ""]}
-          fields={[
-            [
-              { type: "t", text: "Wire Fraud Attempt" },
-              { type: "t", text: "Financial" },
-              { type: "b", text: "Open"},
-              { type: "b", text: "High"},
-              { type: "t", text: "8/5/2025, 1:00:00 PM"},
-              { type: "t", text: "Fraud Analyst" },
-              { type: "t", text: "Suspicious wire transfer flagged…" },
-              { type: "i", text: "faPen" },
-              { type: "i", text: "faTrash" }
-            ],
-            [
-              { type: "t", text: "ATM Skimming Device Found"},
-              { type: "t", text: "IT"},
-              { type: "b", text: "Closed"},
-              { type: "b", text: "Medium" },
-              { type: "t", text: "8/4/2025, 12:00:00 PM"},
-              { type: "t", text: "IT Security"},
-              { type: "t", text: "Physical skimming device found…"},
-              { type: "i", text: "faPen" },
-              { type: "i", text: "faTrash"}
-            ],
-            [
-              { type: "t", text: "Unauthorized SWIFT Access"},
-              { type: "t", text: "IT" },
-              { type: "b", text: "Investigating"},
-              { type: "b", text: "High"},
-              { type: "t", text: "8/3/2025, 11:00:00 AM"},
-              { type: "t", text: "IT Security"},
-              { type: "t", text: "Detected unauthorized access…" },
-              { type: "i", text: "faPen" },
-              { type: "i", text: "faTrash" }
-            ],
-            [
-              { type: "t", text: "Phishing Email Reported"},
-              { type: "t", text: "Cyber" },
-              { type: "b", text: "Closed" },
-              { type: "b", text: "Medium" },
-              { type: "t", text: "8/2/2025, 10:00:00 AM" },
-              { type: "t", text: "SOC Analyst"},
-              { type: "t", text: "Phishing email reported by staff…"},
-              { type: "i", text: "faPen"},
-              { type: "i", text: "faTrash"}
-            ],
-            [
-              { type: "t", text: "Data Breach"},
-              { type: "t", text: "IT"},
-              { type: "b", text: "Open"},
-              { type: "b", text: "High"},
-              { type: "t", text: "8/1/2025, 9:00:00 AM"},
-              { type: "t", text: "Compliance Officer"},
-              { type: "t", text: "Sensitive data exposure detected…" },
-              { type: "i", text: "faPen" },
-              { type: "i", text: "faTrash"}
-            ],
-            [
-              { type: "t", text: "Physical Intrusion"},
-              { type: "t", text: "Physical"},
-              { type: "b", text: "Closed"},
-              { type: "b", text: "Medium"},
-              { type: "t", text: "7/31/2025, 8:00:00 AM"},
-              { type: "t", text: "Facilities"},
-              { type: "t", text: "Unauthorized person entered premises…"},
-              { type: "i", text: "faPen"},
-              { type: "i", text: "faTrash"}
-            ]
-          ]
-          }
+          ids={ids2}
+          fields={fields2}
         />
-      </div>
-
-    </>
+  </>
+   
   )
 }
 

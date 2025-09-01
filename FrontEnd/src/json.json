@@ -1,0 +1,2546 @@
+{
+    "risks": [
+      {
+        "id": 1,
+        "title": "Wire Transfer Fraud",
+        "category": "Financial",
+        "status": "Open",
+        "severity": "High",
+        "impact": "High",
+        "likelihood": "Possible",
+        "owner": "Fraud Analyst",
+        "createdAt": "2025-08-01T08:00:00Z",
+        "lastReviewed": "2025-08-01",
+        "type": "Operational"
+      },
+      {
+        "id": 2,
+        "title": "ATM Skimming",
+        "category": "IT",
+        "status": "Mitigated",
+        "severity": "Medium",
+        "impact": "Medium",
+        "likelihood": "Possible",
+        "owner": "IT Security",
+        "createdAt": "2025-07-15T09:00:00Z",
+        "lastReviewed": "2025-07-20",
+        "type": "Operational"
+      },
+      {
+        "id": 3,
+        "title": "Regulatory Non-Compliance",
+        "category": "Regulatory",
+        "status": "Open",
+        "severity": "High",
+        "impact": "High",
+        "likelihood": "Likely",
+        "owner": "Compliance Officer",
+        "createdAt": "2025-07-20T10:00:00Z",
+        "lastReviewed": "2025-07-25",
+        "type": "Strategic"
+      },
+      {
+        "id": 4,
+        "title": "Insider Trading",
+        "category": "Strategic",
+        "status": "Closed",
+        "severity": "High",
+        "impact": "High",
+        "likelihood": "Rare",
+        "owner": "Legal Counsel",
+        "createdAt": "2025-06-10T11:00:00Z",
+        "lastReviewed": "2025-06-15",
+        "type": "Compliance"
+      },
+      {
+        "id": 5,
+        "title": "Cloud Misconfiguration",
+        "category": "IT",
+        "status": "Open",
+        "severity": "High",
+        "impact": "High",
+        "likelihood": "Possible",
+        "owner": "Cloud Admin",
+        "createdAt": "2025-08-05T12:00:00Z",
+        "lastReviewed": "2025-08-06",
+        "type": "Operational"
+      },
+      {
+        "id": 6,
+        "title": "Phishing Attack",
+        "category": "Cyber",
+        "status": "Mitigated",
+        "severity": "Medium",
+        "impact": "Medium",
+        "likelihood": "Likely",
+        "owner": "SOC Analyst",
+        "createdAt": "2025-08-02T13:00:00Z",
+        "lastReviewed": "2025-08-03",
+        "type": "Operational"
+      }
+    ],
+    "governanceItems": [
+      {
+        "id": 1,
+        "name": "Board Charter",
+        "type": "Charter",
+        "owner": "Alice",
+        "status": "Active",
+        "effectiveDate": "2025-08-01",
+        "expiryDate": "2026-08-01",
+        "nextReview": "2025-08-15",
+        "lastReviewed": "2025-06-15",
+        "approvalStatus": "Approved",
+        "approver": "Alice",
+        "confidentiality": "Internal",
+        "changeSummary": "Annual review completed.",
+        "relatedRisks": [
+          1,
+          3
+        ],
+        "relatedComplianceFrameworks": [
+          "SOX",
+          "PCI DSS"
+        ]
+      },
+      {
+        "id": 2,
+        "name": "Audit Policy",
+        "type": "Policy",
+        "owner": "Bob",
+        "status": "Active",
+        "effectiveDate": "2025-07-01",
+        "expiryDate": "2026-07-01",
+        "nextReview": "2025-07-15",
+        "lastReviewed": "2025-06-20",
+        "approvalStatus": "Approved",
+        "approver": "Bob",
+        "confidentiality": "Internal",
+        "changeSummary": "Scope updated.",
+        "relatedRisks": [
+          2,
+          4
+        ],
+        "relatedComplianceFrameworks": [
+          "SOX"
+        ]
+      },
+      {
+        "id": 3,
+        "name": "IT Security Policy",
+        "type": "Policy",
+        "owner": "Carol",
+        "status": "Active",
+        "effectiveDate": "2025-08-10",
+        "expiryDate": "2026-08-10",
+        "nextReview": "2025-08-25",
+        "lastReviewed": "2025-07-01",
+        "approvalStatus": "Approved",
+        "approver": "Dan",
+        "confidentiality": "Internal",
+        "changeSummary": "Added MFA requirements.",
+        "relatedRisks": [
+          5,
+          6
+        ],
+        "relatedComplianceFrameworks": [
+          "NIST CSF"
+        ]
+      },
+      {
+        "id": 4,
+        "name": "Business Continuity Plan",
+        "type": "Plan",
+        "owner": "Dan",
+        "status": "Active",
+        "effectiveDate": "2025-08-15",
+        "expiryDate": "2026-08-15",
+        "nextReview": "2025-08-28",
+        "lastReviewed": "2025-07-05",
+        "approvalStatus": "Approved",
+        "approver": "Eve",
+        "confidentiality": "Confidential",
+        "changeSummary": "Pandemic response added.",
+        "relatedRisks": [
+          3,
+          4
+        ],
+        "relatedComplianceFrameworks": [
+          "ISO 27001"
+        ]
+      },
+      {
+        "id": 5,
+        "name": "Incident Response Plan",
+        "type": "Plan",
+        "owner": "Eve",
+        "status": "Active",
+        "effectiveDate": "2025-08-20",
+        "expiryDate": "2026-08-20",
+        "nextReview": "2025-09-01",
+        "lastReviewed": "2025-07-10",
+        "approvalStatus": "Approved",
+        "approver": "Frank",
+        "confidentiality": "Confidential",
+        "changeSummary": "Ransomware response added.",
+        "relatedRisks": [
+          6
+        ],
+        "relatedComplianceFrameworks": [
+          "PCI DSS"
+        ]
+      },
+      {
+        "id": 6,
+        "name": "SWIFT Security Policy",
+        "type": "Policy",
+        "owner": "Compliance Officer",
+        "status": "Active",
+        "effectiveDate": "2025-01-01",
+        "expiryDate": "2026-01-01",
+        "nextReview": "2025-12-01",
+        "lastReviewed": "2025-06-01",
+        "approvalStatus": "Approved",
+        "approver": "CRO",
+        "confidentiality": "Internal",
+        "changeSummary": "Annual review completed.",
+        "relatedRisks": [
+          1,
+          5
+        ],
+        "relatedComplianceFrameworks": [
+          "PCI DSS",
+          "SOX"
+        ]
+      }
+    ],
+    "complianceFrameworks": [
+      {
+        "id": "pci-dss",
+        "framework": "PCI DSS",
+        "requirements": [
+          {
+            "id": "pci-1",
+            "name": "Install and maintain a firewall",
+            "reference": "1.1",
+            "controls": [
+              {
+                "id": "ctrl-1",
+                "name": "Establish firewall and router configuration standards",
+                "status": "Compliant",
+                "owner": "IT Security",
+                "lastReviewed": "2025-07-01",
+                "reference": "1.1.1",
+                "notes": "Reviewed quarterly"
+              },
+              {
+                "id": "ctrl-2",
+                "name": "Review firewall and router rule sets at least every six months",
+                "status": "In Progress",
+                "owner": "Network Admin",
+                "lastReviewed": "2025-07-10",
+                "reference": "1.1.7",
+                "notes": "Pending next audit"
+              }
+            ]
+          },
+          {
+            "id": "pci-2",
+            "name": "Do not use vendor-supplied defaults",
+            "reference": "2.1",
+            "controls": [
+              {
+                "id": "ctrl-3",
+                "name": "Always change vendor-supplied defaults before installing a system on the network",
+                "status": "Compliant",
+                "owner": "IT Security",
+                "lastReviewed": "2025-07-15",
+                "reference": "2.1.1",
+                "notes": "All systems checked"
+              },
+              {
+                "id": "ctrl-4",
+                "name": "Develop configuration standards for all system components",
+                "status": "Non-Compliant",
+                "owner": "IT Security",
+                "lastReviewed": "2025-07-20",
+                "reference": "2.2.1",
+                "notes": "Remediation required"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sox",
+        "framework": "SOX",
+        "requirements": [
+          {
+            "id": "sox-1",
+            "name": "Control Environment",
+            "reference": "C1",
+            "controls": [
+              {
+                "id": "ctrl-5",
+                "name": "Demonstrate commitment to integrity and ethical values",
+                "status": "Compliant",
+                "owner": "Management",
+                "lastReviewed": "2025-07-01",
+                "reference": "COSO 1.1",
+                "notes": "Annual review"
+              },
+              {
+                "id": "ctrl-6",
+                "name": "Exercise oversight responsibility",
+                "status": "Compliant",
+                "owner": "HR",
+                "lastReviewed": "2025-07-05",
+                "reference": "COSO 1.2",
+                "notes": "Updated"
+              }
+            ]
+          },
+          {
+            "id": "sox-2",
+            "name": "Risk Assessment",
+            "reference": "C2",
+            "controls": [
+              {
+                "id": "ctrl-7",
+                "name": "Specify suitable objectives",
+                "status": "Compliant",
+                "owner": "Risk Management",
+                "lastReviewed": "2025-07-10",
+                "reference": "COSO 6.1",
+                "notes": "Reviewed"
+              },
+              {
+                "id": "ctrl-8",
+                "name": "Identify and analyze risks",
+                "status": "In Progress",
+                "owner": "Internal Audit",
+                "lastReviewed": "2025-07-15",
+                "reference": "COSO 7.1",
+                "notes": "Ongoing"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "iso27001",
+        "framework": "ISO 27001",
+        "requirements": [
+          {
+            "id": "iso-1",
+            "name": "Information Security Policies",
+            "reference": "A.5",
+            "controls": [
+              {
+                "id": "ctrl-9",
+                "name": "Policies for information security",
+                "status": "Non-Compliant",
+                "owner": "Compliance",
+                "lastReviewed": "2025-08-06",
+                "reference": "A.5.1.1",
+                "notes": "Update required"
+              },
+              {
+                "id": "ctrl-10",
+                "name": "Review of the policies for information security",
+                "status": "Compliant",
+                "owner": "Compliance",
+                "lastReviewed": "2025-08-01",
+                "reference": "A.5.1.2",
+                "notes": "All staff notified"
+              }
+            ]
+          },
+          {
+            "id": "iso-2",
+            "name": "Organization of Information Security",
+            "reference": "A.6",
+            "controls": [
+              {
+                "id": "ctrl-11",
+                "name": "Information security roles and responsibilities",
+                "status": "Compliant",
+                "owner": "IT Security",
+                "lastReviewed": "2025-07-20",
+                "reference": "A.6.1.1",
+                "notes": "Defined"
+              },
+              {
+                "id": "ctrl-12",
+                "name": "Contact with authorities",
+                "status": "In Progress",
+                "owner": "Legal",
+                "lastReviewed": "2025-07-25",
+                "reference": "A.6.1.3",
+                "notes": "Drafting agreements"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nist-csf",
+        "framework": "NIST CSF",
+        "requirements": [
+          {
+            "id": "nist-1",
+            "name": "Asset Management",
+            "reference": "ID.AM",
+            "controls": [
+              {
+                "id": "ctrl-13",
+                "name": "Physical devices and systems within the organization are inventoried",
+                "status": "Compliant",
+                "owner": "Asset Manager",
+                "lastReviewed": "2025-07-10",
+                "reference": "ID.AM-1",
+                "notes": "Inventory complete"
+              },
+              {
+                "id": "ctrl-14",
+                "name": "Software platforms and applications within the organization are inventoried",
+                "status": "Compliant",
+                "owner": "Asset Manager",
+                "lastReviewed": "2025-07-12",
+                "reference": "ID.AM-2",
+                "notes": "Ownership assigned"
+              }
+            ]
+          },
+          {
+            "id": "nist-2",
+            "name": "Business Environment",
+            "reference": "ID.BE",
+            "controls": [
+              {
+                "id": "ctrl-15",
+                "name": "The organization’s role in the supply chain is identified and communicated",
+                "status": "Compliant",
+                "owner": "Management",
+                "lastReviewed": "2025-07-15",
+                "reference": "ID.BE-1",
+                "notes": "Reviewed"
+              },
+              {
+                "id": "ctrl-16",
+                "name": "The organization’s place in critical infrastructure and its sector is identified",
+                "status": "In Progress",
+                "owner": "Operations",
+                "lastReviewed": "2025-07-18",
+                "reference": "ID.BE-2",
+                "notes": "Analysis ongoing"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "gdpr",
+        "framework": "GDPR",
+        "requirements": [
+          {
+            "id": "gdpr-1",
+            "name": "Lawfulness, fairness and transparency",
+            "reference": "Art. 5",
+            "controls": [
+              {
+                "id": "ctrl-17",
+                "name": "Personal data shall be processed lawfully, fairly and in a transparent manner",
+                "status": "Compliant",
+                "owner": "Legal",
+                "lastReviewed": "2025-07-05",
+                "reference": "Art. 5(1)(a)",
+                "notes": "Published"
+              },
+              {
+                "id": "ctrl-18",
+                "name": "Consent management for data processing",
+                "status": "In Progress",
+                "owner": "Compliance",
+                "lastReviewed": "2025-07-10",
+                "reference": "Art. 7",
+                "notes": "System upgrade"
+              }
+            ]
+          },
+          {
+            "id": "gdpr-2",
+            "name": "Data minimization",
+            "reference": "Art. 5(1)(c)",
+            "controls": [
+              {
+                "id": "ctrl-19",
+                "name": "Personal data shall be adequate, relevant and limited",
+                "status": "Compliant",
+                "owner": "Data Officer",
+                "lastReviewed": "2025-07-15",
+                "reference": "Art. 5(1)(c)",
+                "notes": "Reviewed"
+              },
+              {
+                "id": "ctrl-20",
+                "name": "Retention policy enforcement",
+                "status": "Non-Compliant",
+                "owner": "IT",
+                "lastReviewed": "2025-07-20",
+                "reference": "Art. 5(1)(e)",
+                "notes": "Policy update needed"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hipaa",
+        "framework": "HIPAA",
+        "requirements": [
+          {
+            "id": "hipaa-1",
+            "name": "Security Management Process",
+            "reference": "164.308(a)(1)",
+            "controls": [
+              {
+                "id": "ctrl-21",
+                "name": "Conduct an accurate and thorough assessment of the potential risks and vulnerabilities",
+                "status": "Compliant",
+                "owner": "Compliance",
+                "lastReviewed": "2025-07-01",
+                "reference": "164.308(a)(1)(ii)(A)",
+                "notes": "Annual review"
+              },
+              {
+                "id": "ctrl-22",
+                "name": "Implement security measures sufficient to reduce risks and vulnerabilities",
+                "status": "In Progress",
+                "owner": "Compliance",
+                "lastReviewed": "2025-07-05",
+                "reference": "164.308(a)(1)(ii)(B)",
+                "notes": "Remediation ongoing"
+              }
+            ]
+          },
+          {
+            "id": "hipaa-2",
+            "name": "Assigned Security Responsibility",
+            "reference": "164.308(a)(2)",
+            "controls": [
+              {
+                "id": "ctrl-23",
+                "name": "Identify the security official responsible for the development and implementation of the policies",
+                "status": "Compliant",
+                "owner": "HR",
+                "lastReviewed": "2025-07-10",
+                "reference": "164.308(a)(2)",
+                "notes": "Officer assigned"
+              },
+              {
+                "id": "ctrl-24",
+                "name": "Document the security official’s role and responsibilities",
+                "status": "Compliant",
+                "owner": "HR",
+                "lastReviewed": "2025-07-12",
+                "reference": "164.308(a)(2)-doc",
+                "notes": "Documentation complete"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "incidents": [
+      {
+        "id": 1,
+        "title": "Wire Fraud Attempt",
+        "category": "Financial",
+        "status": "Open",
+        "severity": "High",
+        "reportedAt": "2025-08-05T10:00:00Z",
+        "owner": "Fraud Analyst",
+        "description": "Suspicious wire transfer flagged by system."
+      },
+      {
+        "id": 2,
+        "title": "ATM Skimming Device Found",
+        "category": "IT",
+        "status": "Closed",
+        "severity": "Medium",
+        "reportedAt": "2025-08-04T09:00:00Z",
+        "owner": "IT Security",
+        "description": "Physical skimming device found on ATM."
+      },
+      {
+        "id": 3,
+        "title": "Unauthorized SWIFT Access",
+        "category": "IT",
+        "status": "Investigating",
+        "severity": "High",
+        "reportedAt": "2025-08-03T08:00:00Z",
+        "owner": "IT Security",
+        "description": "Detected unauthorized access attempt to SWIFT system."
+      },
+      {
+        "id": 4,
+        "title": "Phishing Email Reported",
+        "category": "Cyber",
+        "status": "Closed",
+        "severity": "Medium",
+        "reportedAt": "2025-08-02T07:00:00Z",
+        "owner": "SOC Analyst",
+        "description": "Phishing email reported by staff."
+      },
+      {
+        "id": 5,
+        "title": "Data Breach",
+        "category": "IT",
+        "status": "Open",
+        "severity": "High",
+        "reportedAt": "2025-08-01T06:00:00Z",
+        "owner": "Compliance Officer",
+        "description": "Sensitive data exposure detected."
+      },
+      {
+        "id": 6,
+        "title": "Physical Intrusion",
+        "category": "Physical",
+        "status": "Closed",
+        "severity": "Medium",
+        "reportedAt": "2025-07-31T05:00:00Z",
+        "owner": "Facilities",
+        "description": "Unauthorized person entered premises."
+      }
+    ],
+    "threats": [
+      {
+        "id": 1,
+        "message": "Suspicious login from Russia detected",
+        "severity": "High",
+        "timestamp": "2025-08-09T10:15:00Z"
+      },
+      {
+        "id": 2,
+        "message": "Malware signature found on ATM endpoint",
+        "severity": "Medium",
+        "timestamp": "2025-08-09T09:50:00Z"
+      },
+      {
+        "id": 3,
+        "message": "Multiple failed login attempts",
+        "severity": "Low",
+        "timestamp": "2025-08-09T09:30:00Z"
+      },
+      {
+        "id": 4,
+        "message": "Unusual outbound traffic detected",
+        "severity": "Medium",
+        "timestamp": "2025-08-09T09:10:00Z"
+      },
+      {
+        "id": 5,
+        "message": "Phishing domain blocked",
+        "severity": "Low",
+        "timestamp": "2025-08-09T08:50:00Z"
+      },
+      {
+        "id": 6,
+        "message": "Ransomware signature detected",
+        "severity": "High",
+        "timestamp": "2025-08-09T08:30:00Z"
+      }
+    ],
+    "auditLogs": [
+      {
+        "id": 1,
+        "action": "edit",
+        "entity": "risk",
+        "entityId": 1,
+        "user": "admin",
+        "timestamp": "2025-08-09T09:00:00Z",
+        "details": "Changed status from Open to Mitigated"
+      },
+      {
+        "id": 2,
+        "action": "add",
+        "entity": "incident",
+        "entityId": 5,
+        "user": "itsec",
+        "timestamp": "2025-08-09T09:10:00Z",
+        "details": "Added new incident: Data Breach"
+      },
+      {
+        "id": 3,
+        "action": "delete",
+        "entity": "governanceItem",
+        "entityId": 2,
+        "user": "bob",
+        "timestamp": "2025-08-09T09:20:00Z",
+        "details": "Deleted Audit Policy"
+      },
+      {
+        "id": 4,
+        "action": "edit",
+        "entity": "complianceControl",
+        "entityId": 101,
+        "user": "itsec",
+        "timestamp": "2025-08-09T09:30:00Z",
+        "details": "Updated firewall rule review status"
+      },
+      {
+        "id": 5,
+        "action": "add",
+        "entity": "threat",
+        "entityId": 6,
+        "user": "soc",
+        "timestamp": "2025-08-09T09:40:00Z",
+        "details": "Added ransomware signature threat"
+      },
+      {
+        "id": 6,
+        "action": "edit",
+        "entity": "risk",
+        "entityId": 3,
+        "user": "compliance",
+        "timestamp": "2025-08-09T09:50:00Z",
+        "details": "Changed likelihood from Likely to Possible"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-12T10:06:25.870Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-12T10:06:25.918Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-12T10:06:28.389Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-12T10:10:49.748Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-12T10:11:21.081Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-12T10:11:21.491Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:04:34.060Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:04:34.290Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:06:34.013Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:06:43.941Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:06:44.192Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:06:54.700Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:06:55.050Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:02.742Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:03.074Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:06.081Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:06.444Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:07.697Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:09.804Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:10.055Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:12.936Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:13.280Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:15.074Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:17.017Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:17.267Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:21.085Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:21.337Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:36.923Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:37.176Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:49.992Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:07:50.244Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:25:06.131Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:25:18.518Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:25:30.177Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:26:18.127Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:26:19.681Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:26:32.360Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:27:49.323Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:28:00.138Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:28:00.477Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:28:51.120Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:28:51.454Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:29:06.154Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:29:06.493Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:32:19.308Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:32:19.557Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:32:23.058Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:32:44.517Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:35:11.100Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:35:17.178Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:41:53.184Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:41:53.426Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:43:34.033Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T17:43:34.286Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T18:09:04.071Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T18:09:04.337Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T18:09:21.120Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T18:09:36.687Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T18:09:37.108Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T18:09:38.452Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T18:09:42.432Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T18:09:42.696Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T18:09:45.724Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T18:09:46.068Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T18:15:52.793Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T18:17:47.668Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-14T18:17:48.002Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T07:53:30.097Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T07:53:30.116Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T10:57:31.698Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T12:04:57.823Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T12:05:10.288Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T12:10:26.321Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T12:10:49.745Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T14:09:12.427Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T14:09:12.462Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T14:41:32.435Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T14:41:49.047Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T14:41:49.066Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T14:42:17.102Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T16:04:48.105Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T16:20:03.360Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T16:20:36.990Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T16:20:37.006Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T16:26:29.213Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T16:26:31.175Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T16:28:59.933Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T16:28:59.953Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T16:39:12.141Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T16:46:13.965Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T16:46:45.765Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T16:46:45.794Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T18:12:17.917Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T19:19:55.829Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T19:20:24.593Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T19:20:24.615Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-24T19:33:01.485Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T07:53:48.522Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T07:53:48.546Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T09:04:37.604Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T09:05:00.255Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T09:05:00.272Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T09:28:06.568Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T10:33:40.067Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T10:34:06.399Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T11:00:39.953Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T11:01:27.461Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T11:30:56.570Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T11:31:23.006Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T11:31:31.094Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T11:31:51.103Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-25T12:12:12.734Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T16:18:23.078Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T16:18:23.091Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T16:18:26.821Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T16:18:28.388Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T16:18:28.393Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:07:29.062Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:07:29.071Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:13:09.564Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:13:09.573Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:13:15.940Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:13:15.950Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:13:50.298Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:13:50.316Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:13:55.719Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:13:55.735Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:18:30.504Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:18:30.521Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:25:31.095Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:25:31.100Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T17:32:08.190Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T18:43:30.277Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T18:43:30.294Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T18:43:46.428Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T18:44:21.139Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T18:44:21.156Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-26T18:48:31.073Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T08:03:54.142Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T08:03:54.151Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T08:03:57.061Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T08:19:43.225Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T08:19:43.232Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T09:30:11.103Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T10:39:19.363Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T10:39:34.582Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T10:39:55.728Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T10:40:17.421Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T11:08:32.159Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T11:08:32.174Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T11:08:41.791Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T11:08:53.007Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T11:08:53.020Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T12:54:56.618Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T12:54:56.624Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T14:25:45.029Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T14:25:45.033Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T14:29:09.592Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T14:29:09.597Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T15:35:34.982Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T17:31:13.504Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T17:31:13.512Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T18:52:02.086Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T18:52:33.425Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T18:53:16.724Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T18:53:16.738Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T18:55:09.648Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T19:50:34.111Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T19:50:34.115Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T19:50:36.344Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T20:22:19.409Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T20:22:24.786Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T20:22:24.795Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T20:32:16.118Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T20:35:52.071Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T20:35:52.094Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T20:36:14.645Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T20:36:14.657Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T21:11:56.382Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T21:11:56.388Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-27T21:32:43.267Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-28T15:18:16.044Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-28T15:20:34.959Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-28T15:20:34.966Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-28T20:33:51.426Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-29T16:13:30.200Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-29T16:13:56.828Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-29T16:13:56.841Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-29T21:01:18.159Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-29T21:01:18.167Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T08:28:41.483Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T08:33:46.941Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T08:33:46.955Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T10:38:54.703Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T10:38:54.717Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T10:39:03.932Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T10:59:08.673Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T10:59:08.684Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T11:40:12.428Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T11:40:12.435Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T15:37:07.526Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T15:37:07.531Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T15:37:08.406Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T15:37:10.053Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T15:37:10.838Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T15:38:02.177Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T15:38:02.184Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T17:02:29.098Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T17:02:34.456Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T17:02:34.468Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T17:36:07.593Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T17:36:07.597Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T20:00:36.764Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T20:01:54.640Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T20:01:54.718Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T20:01:55.322Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T20:01:55.378Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T20:08:50.068Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T21:25:57.366Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T21:25:57.381Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T21:26:06.346Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T21:26:06.359Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T21:26:52.669Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-30T21:26:52.683Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-31T08:56:49.150Z",
+        "details": "Governance items viewed"
+      },
+      {
+        "action": "view",
+        "entity": "governanceItems",
+        "entityId": null,
+        "user": "system",
+        "timestamp": "2025-08-31T08:56:49.157Z",
+        "details": "Governance items viewed"
+      }
+    ],
+    "settings": {},
+    "configurations": [
+      {
+        "id": 1,
+        "key": "sessionTimeout",
+        "value": 30,
+        "description": "Session timeout in minutes"
+      },
+      {
+        "id": 2,
+        "key": "maxLoginAttempts",
+        "value": 5,
+        "description": "Maximum allowed failed login attempts"
+      },
+      {
+        "id": 3,
+        "key": "passwordPolicy",
+        "value": "min8chars,1upper,1number",
+        "description": "Password policy requirements"
+      },
+      {
+        "id": 4,
+        "key": "emailNotifications",
+        "value": true,
+        "description": "Enable email notifications"
+      }
+    ]
+  }
