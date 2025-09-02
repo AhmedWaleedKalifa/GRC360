@@ -1,4 +1,4 @@
-const Card = ({ title, value,color="white", model = 1 }) => {
+const Card = ({ title, value, model = 1 }) => {
     return (
         <>
 

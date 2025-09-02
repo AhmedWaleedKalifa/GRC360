@@ -526,3 +526,9 @@ main {
 .addIncidentForm{
   @apply w-[70%]  flex flex-col gap-3 p-4;
 }
+
+/* edit Incidents style */
+
+.select{
+    @apply  w-full h-[48px] px-3 rounded-lg bg-white text-gray-800 text-sm border-4 border-transparent focus:border-4 focus:border-blue-500/40 focus:outline-0 dark:bg-gray-700 dark:text-gray-200;
+}

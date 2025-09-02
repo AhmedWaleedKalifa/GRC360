@@ -14,6 +14,7 @@ import PageTemplate from "./pages/PageTemplate";
 import Login from "./pages/Login";
 import EditConfigurations from "./pages/EditConfigurations";
 import AddIncident from "./pages/AddIncident";
+import EditIncident from "./pages/EditIncident";
 const routes = [
   {
     path: "/",
@@ -34,6 +35,7 @@ const routes = [
       { path: "logs", element: <Logs /> },
       { path: "risks/:id?", element: <Risks  /> },
       { path: "editConfigurations/:id?", element: <EditConfigurations  /> },
+      {path:"editIncident/:id?",element:<EditIncident/>},
       {path:"addIncident",element:<AddIncident/>},
       { path: "threats", element: <Threats /> },
       { path: "*", element: <ErrorPage /> }

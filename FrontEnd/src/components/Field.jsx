@@ -3,7 +3,7 @@ import * as solidIcons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useNavigate } from "react-router-dom";
 
-const Field = forwardRef(({ mode = 1, sizes, id, color, navigation = "", values = [{type:"t",text:"Known",color:"",selfNav:""}] }, ref) => {
+const Field = forwardRef(({ mode = 1, sizes, id, color, navigation = "", values = [{type:"t",text:"Known",color:"",selfNav:"",click:()=>{}}] }, ref) => {
   const nav = useNavigate();
   const navigateRow = () => {
     if (!navigation) return;
@@ -41,14 +41,14 @@ const Field = forwardRef(({ mode = 1, sizes, id, color, navigation = "", values 
               icon={solidIcons[element.text]}
               className="fieldDivIcon"
               style={{ color: element?.color || "inherit" }}
-              onClick={()=>nav(element.selfNav)}
+              onClick={element.selfNav?()=>nav(element.selfNav):element.click}
 
             />
           ) : element.type === "b" ? (
             <button
               className="smallButton fieldDivButton"
               style={{ background: element?.color || "linear-gradient(to right,#155dfc ,#009688 )" }}
-              onClick={()=>nav(element.selfNav)}
+              onClick={element.selfNav?()=>nav(element.selfNav):element.click}
 
            >
               {element.text}
@@ -58,7 +58,7 @@ const Field = forwardRef(({ mode = 1, sizes, id, color, navigation = "", values 
               className="fieldDivText"
               style={{ color: element?.color || "inherit" }}
               title={String(element.text)}
-              onClick={()=>nav(element.selfNav)}
+              onClick={element.selfNav?()=>nav(element.selfNav):element.click}
             >
               {String(element.text)}
             </div>

@@ -30,14 +30,13 @@ function AddIncident() {
                 inputarray={[
                     { id: "title", type: "text", isInput: true, label: "Title:" , Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
                     { id: "description", type: "text", isInput: true, label: "Description:", Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
-                    { id: "category", type: "select", isInput: true, label: "Category:",selectList:category, Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
-                    { id: "owner", type: "select", isInput: true, label: "Owner:",selectList:owners, Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
-                    { id: "status", type: "select", isInput: true, label: "Status:",selectList:status, Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
-                    { id: "severity", type: "select", isInput: true, label: "Severity:",selectList:severity, Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
-
+                    { id: "category", type: "select", isInput: true, label: "Category:",selectList:category, Class: { container: "editInputContainer", label: "label", input: "select" } },
+                    { id: "owner", type: "select", isInput: true, label: "Owner:",selectList:owners, Class: { container: "editInputContainer", label: "label", input: "select" } },
+                    { id: "status", type: "select", isInput: true, label: "Status:",selectList:status, Class: { container: "editInputContainer", label: "label", input: "select" } },
+                    { id: "severity", type: "select", isInput: true, label: "Severity:",selectList:severity, Class: { container: "editInputContainer", label: "label", input: "select" } },
 
                 ]}
-                button={"Edit"}
+                button={"Add"}
             />
         </div>
     </>

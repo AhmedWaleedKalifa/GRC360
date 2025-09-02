@@ -1,6 +1,6 @@
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React from 'react'
+import React, { useState } from 'react'
 import Card from '../components/Card'
 import CardSlider from '../components/CardSlider'
 import Progress from '../components/Progress'
@@ -9,8 +9,12 @@ import json from "../json.json"
 import {  useNavigate } from 'react-router-dom'
 function Incidents() {
   const nav=useNavigate();
-  const data = json.incidents
+  const [data, setData] = useState(json.incidents);
   const complianceData = json.complianceFrameworks;
+
+  const deleteIncident = (id) => {
+    setData(prev => prev.filter(incident => incident.id !== id));
+  };
   let requirementsNumber = 0
   let controlsNumber = 0;
   let all = json.complianceFrameworks.length
@@ -81,12 +85,12 @@ function Incidents() {
       { type: "t", text: e.reportedAt },
       { type: "t", text: e.owner },
       { type: "t", text: e.description },
-      { type: "i", text: "faPen", color: "#26A7F6" },
-      { type: "i", text: "faTrash", color: "#F44336" }
+      { type: "i", text: "faPen", color: "#26A7F6",selfNav:"/dashboard/editIncident/"+e.id},
+      { type: "i", text: "faTrash", color: "#F44336",click:()=>deleteIncident(e.id) }
 
     ]);
     if(e.severity=="High"){
-      colors2.push("#ff000080")
+      colors2.push("#ff000060")
     }else{
       colors2.push("");
     }
