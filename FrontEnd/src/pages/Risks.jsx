@@ -17,7 +17,6 @@ function Risks() {
     const newFields = [];
     const newIds = [];
     const newColors = [];
-
     data.forEach((e) => {
       newFields.push([
         { type: "t", text: e.id },
@@ -34,8 +33,10 @@ function Risks() {
       ]);
       setSelectedId(id);
       if (String(e.id) === id) {
-
+        console.log(id)
         newColors.push("#26A7F680");
+      }else{
+        newColors.push("")
       }
       newIds.push(e.id);
     });
@@ -90,7 +91,6 @@ function Risks() {
         colors={colors}
         selectedId={selectedId}
 
-        navigation={"/dashboard/risks"}
       />
     </>
   );
