@@ -10,11 +10,7 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
     setOpen(!open);
     localStorage.setItem("open",open)
   }
-  function handleActivation(e) {
-    localStorage.setItem("active", e);
-    setActive(e);
 
-  }
   useEffect(() => {
     if (location.pathname.startsWith("/dashboard/risks")) {
       setActive("Risks");

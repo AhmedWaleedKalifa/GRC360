@@ -17,7 +17,7 @@ const EditConfigurations = () => {
 
   return (
     <>
-      {id&&<div className="editConfig">
+      {item&&<div className="editConfig">
         <h1 className="editConfigTitle">Edit Configuration</h1>
         <Form fstyle={{ form: "editConfigForm", button: "button buttonStyle" }}
           inputarray={[

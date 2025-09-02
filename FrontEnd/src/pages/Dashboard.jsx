@@ -13,17 +13,19 @@ export default function Dashboard() {
   });
 
   const [open, setOpen] = useState(() => {
-    const saved = localStorage.getItem("open");
-    return saved === "true"; 
+    const saved = localStorage.getItem("sidebarOpen");
+    return saved ? JSON.parse(saved) : false; // default: closed
   });
+
+  // ✅ update localStorage whenever state changes
+  useEffect(() => {
+    localStorage.setItem("sidebarOpen", JSON.stringify(open));
+  }, [open]);
 
   useEffect(() => {
     localStorage.setItem("active", active);
   }, [active]);
 
-  useEffect(() => {
-    localStorage.setItem("open", open);
-  }, [open]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
