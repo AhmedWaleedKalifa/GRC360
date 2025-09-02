@@ -35,11 +35,8 @@ function Risks() {
       setSelectedId(id);
       if (String(e.id) === id) {
 
-        newColors.push("#ff000080");
-      } else {
-        newColors.push("#ffffff");
+        newColors.push("#26A7F680");
       }
-
       newIds.push(e.id);
     });
 

@@ -10,7 +10,7 @@ function Configurations() {
       fields.push([
         { type: "t", text: e.key },
         { type: "t", text: e.value },
-        { type: "i", text: "faPen",color:"#26A7F6" },
+        { type: "i", text: "faPen",color:"#26A7F6",selfNav:"/dashboard/editConfigurations/"+e.id },
       ]);
       ids.push(e.id);
 
@@ -24,7 +24,6 @@ function Configurations() {
         sizes={[1,1,1]}
         height={"500"}
         ids={ids}
-        navigation={"/dashboard/editConfigurations"}
         fields={fields}
         
       />

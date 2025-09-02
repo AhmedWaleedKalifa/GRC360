@@ -1,31 +1,35 @@
 import { useParams } from "react-router-dom";
 import json from "../json.json";
 import { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Form from "../components/Form";
 
 const EditConfigurations = () => {
-  const [field, setField] = useState(null);
+  const [item, setItem] = useState(null);
   const { id } = useParams();
 
-  const data = json.configurations.map((e) => ({
-    id: e.id,
-    key: e.key,
-    value: e.value,
-  }));
+  const data = json.configurations
 
   useEffect(() => {
-    const item = data.find((e) => String(e.id) === id);
-    setField(item || null);
+    const field = data.find((e) => String(e.id) === id);
+    setItem(field);
   }, [id]);
 
   return (
     <>
-      {field ? (
-        <h1 className="bg-red-500 text-green-500">
-          An image {field.id} - {field.key} : {field.value}
-        </h1>
-      ) : (
-        <p>No item found</p>
-      )}
+      {id&&<div className="editConfig">
+        <h1 className="editConfigTitle">Edit Configuration</h1>
+        <Form fstyle={{ form: "editConfigForm", button: "button buttonStyle" }}
+          inputarray={[
+            { id: "key",type:"text",isInput:true, label: "Key:", initialValue: item?.key, Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
+            { id: "value",type:"text",isInput:true, label: "Value:", initialValue: item?.value, Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
+
+          ]}
+          button={"Edit"}
+        />
+      </div>}
+      
+
     </>
   );
 };

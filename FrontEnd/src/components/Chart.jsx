@@ -45,7 +45,6 @@ function PieChart({ title, array = [{ name: "", value: "", color: "" }] }) {
                 </div>
                 <div className='chartLabelsContainer'>
                     {array.map((e, index) => (
-                        <>
                             <div className='chartLabel' key={index}>
                                 
                                 <div className='chartLabelSquare' style={{ backgroundColor: e.color || "white" }}></div>
@@ -54,7 +53,6 @@ function PieChart({ title, array = [{ name: "", value: "", color: "" }] }) {
                                 </div>
 
                             </div>
-                        </>
                     ))}
                 </div>
             </div>

@@ -1,70 +1,47 @@
 import React from 'react'
-import Input from '../components/Input'
+import  Form  from '../components/Form';
 
 function profile() {
   return (
     <>
-        <div className='profile'>
+
+     
+     <div className='profile'>
           <div className='profileHeader'><span>Welcome User</span></div>
-          <div className='profileBr'></div>
-          <div className='profileInfo'>
-            <img className='profileInfoImage'/>
-            <div className='profileInfoTextContainer'>
-              <span className='profileInfoFirstSpan'>
-                User Name
-              </span>
-              <span className='profileInfoSecondSpan'>
-                User@gmail.com
-              </span>
-            </div>
+        <div className='profileBr'></div>
+        <div className='profileInfo'>
+          <img className='profileInfoImage' />
+          <div className='profileInfoTextContainer'>
+            <span className='profileInfoFirstSpan'>
+              User Name
+            </span>
+            <span className='profileInfoSecondSpan'>
+              User@gmail.com
+            </span>
           </div>
-
-          <div className='profileButtonContainer'>
-              <div className='button buttonStyle'>Edit</div>
-          </div>
-          <div className='profileInputGrid'>
-          <div className="profileInputContainer">
-              <label htmlFor="fullName" className="profileFormLabel">Full Name:</label>
-              <input type="text" name="fullName" className="profileFormInput" placeholder='Your Full Name' value="User" />
-            </div>
-          </div>
-          
-          <div className='profileInputGrid'>
-          <div className="profileInputContainer">
-              <label htmlFor="nickName" className="profileFormLabel">Nick Name:</label>
-              <input type="text" name="nickName" className="profileFormInput" placeholder='Your Nick Name' value="User" />
-            </div>
-          </div>
-          <div className='profileInputGrid'>
-          <div className="profileInputContainer">
-              <label htmlFor="email" className="profileFormLabel">Email:</label>
-              <input type="email" name="email" className="profileFormInput" placeholder='Your Email' value="User@gmail.com" />
-            </div>
-          </div>
-
-          <div className='profileInputGrid'>
-          <div className="profileInputContainer">
-              <label htmlFor="country" className="profileFormLabel">Country:</label>
-              <input type="text" name="country" className="profileFormInput" placeholder='Your Country' value="User Country" />
-            </div>
-          </div>
-          <div className='profileInputGrid'>
-          <div className="profileInputContainer">
-              <label htmlFor="language" className="profileFormLabel">Language:</label>
-              <input type="text" name="language" className="profileFormInput" placeholder='Your language' />
-            </div>
-          </div>
-          <div className='profileInputGrid'>
-          <div className="profileInputContainer">
-              <label htmlFor="password" className="profileFormLabel">Password:</label>
-              <input type="password" name="password" className="profileFormInput" placeholder='Your Password' />
-            </div>
-          </div>
-      
-    
-          
-         
         </div>
+
+        <Form
+       fstyle={{form:"profileForm",title:"profileFormTitle ",button:"profileFormButton"}}
+        button= "Edit"
+        inputarray={[
+          { id: "fullname", label: "Full Name:", type: "text", isInput: true, initialValue: "",placeholder:"Your Full Name",Class:{container:"profileInputContainer",label:"profileFormLabel",input:"profileFormInput"} },
+          { id: "nickname", label: "Nick Name:", type: "text", isInput: true, initialValue: "",placeholder:"Your Nick Name",Class:{container:"profileInputContainer",label:"profileFormLabel",input:"profileFormInput"} },
+          { id: "email", label: "Email:", type: "email", isInput: true, initialValue: "",changeable:false,placeholder:"Your Full Name",Class:{container:"profileInputContainer",label:"profileFormLabel",input:"profileFormInput"} },
+          { id: "password", label: "Password:", type: "password", isInput: true, initialValue: "",placeholder:"Your Full Name",Class:{container:"profileInputContainer",label:"profileFormLabel",input:"profileFormInput"} },
+          { id: "country", label: "Country:", type: "text", isInput: true, initialValue: "",placeholder:"Your Country",Class:{container:"profileInputContainer",label:"profileFormLabel",input:"profileFormInput"} },
+          { id: "language", label: "Language:", type: "text", isInput: true, initialValue: "",placeholder:"Your Language",Class:{container:"profileInputContainer",label:"profileFormLabel",input:"profileFormInput"} },
+
+        ]}
+        onSubmit={(data) => {
+          console.log("Form data:", data);
+          if (data.email && data.password) {
+            window.location.href = '/dashboard';
+          }
+        }}
+      />
+       
+      </div>
     </>
 
   )

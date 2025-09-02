@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-const input = ({ id, label, type = "text", isInput, value="", setValue="", span=false }) => {
+const Input = ({ id = '', label = '', type = "text", selectList = [], isInput, changeable = true, initialValue = "", placeholder, Class = { container: "inputContainer", label: "label", input: "input" } }) => {
+  const [value, setValue] = useState(initialValue);
   function handleChange(e) {
     if (type === "file") {
       const file = e.target.files[0];
@@ -14,36 +15,46 @@ const input = ({ id, label, type = "text", isInput, value="", setValue="", span=
   }
   return (
     <>
-
-      <div className="inputContainer">
-        <label htmlFor={id} className="label">{label}</label>
+      <div className={Class.container}>
+        <label htmlFor={id} className={Class.label}>{label}</label>
         {
           type == "file" ? (
-            <input type={type} id={id} value={value} onChange={handleChange} />
+            <input type={type} id={id} name={id} value={value} placeholder={placeholder} onChange={changeable ? handleChange : () => { }} className={Class.input} />
+          ) : type == "select" ? (
+            <select
+            name={id}
+            id={id}
+            className={Class.input}
+            value={value}
+            onChange={changeable ? handleChange : () => {}}
+          >
+            {selectList.map((e, idx) => (
+              <option key={idx} value={e}>{e}</option>
+            ))}
+          </select>
+          
           ) : isInput ? (
             <input
               type={type}
               id={id}
+              name={id}
               value={value}
-              onChange={handleChange}
+              className={Class.input}
+              onChange={changeable ? handleChange : () => { }}
+              placeholder={placeholder}
             />
           ) : (
             <textarea
               id={id}
               value={value}
-              onChange={handleChange}
+              name={id}
+              onChange={changeable ? handleChange : () => { }}
+              className={Class.input}
+              placeholder={placeholder}
+
             ></textarea>
           )
 
-        }
-        {
-          span[0] == "r" ? (
-            <span className="rightSpan">{span[2]}</span>
-          ) : span[0] == "l" ? (
-            <span className="liftSpan">{span[2]}</span>
-          ) : (
-            <span className="centerSpan">{span[2]}</span>
-          )
         }
       </div>
 
@@ -51,4 +62,4 @@ const input = ({ id, label, type = "text", isInput, value="", setValue="", span=
   )
 }
 
-export default input
+export default Input

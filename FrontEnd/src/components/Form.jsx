@@ -1,35 +1,38 @@
 import React from 'react'
+import Input from './Input';
 
-const Form = ({ title = " ", actionPath, isLogo, method = 'post', inputArray }) => {
-  function handelSubmit(e) {
-    e.preventDefault();
-  }
+const Form = ({ fstyle={form:"form",title:"formTitle",button:"formButton"},title = "", onSubmit,button="", inputarray=[{ id:"", label:"", type:"text", isInput:true, initialValue:"",selectList:[],placeholder:'',changeable:true,Class:{container:"",label:"",field:""}}]}) => {
+  const handleSubmit = (e) => {
+    e.preventDefault(); 
+    const formData = new FormData(e.target);
+    const values = Object.fromEntries(formData.entries());
+    console.log(values); 
+    if (onSubmit) onSubmit(values);
+  };
   return (
     <>
-
-      <div className="flex flex-col items-center">
-        {isLogo && <img src="/logoWhite.png" alt="logo" className="bigLogo" />}
-        <form className="form" method={method} action={actionPath} onSubmit={e => handelSubmit(e)}>
-          <h2 className="formTitle">{title}</h2>
-          {
-            inputArray.map((e) => {
-              <Input id={e.id} label={e.label} type={e.type} isInput={e.isInput} value={e.value} setValue={e.setValue} span={e.span} />
+        <form className={fstyle.form} onSubmit={handleSubmit}>
+          {title!=''&&<h2 className={fstyle.title}>{title}</h2>}
+          {inputarray.map((e) => {
+              return (
+                <Input
+                  key={e.id}
+                  id={e.id}
+                  label={e.label}
+                  type={e.type}
+                  isInput={e.isInput}
+                  Class={e.Class}
+                  initialValue={e.initialValue}
+                  placeholder={e.placeholder}
+                  changeable={e.changeable}
+                  selectList={e.selectList}
+                />
+              )
             })
-          }
-          <div className="flex flex-row justify-end w-full h-3">
-            <span className="rightSpan">Forgot Password?</span>
-          </div>
-
-          <button className="formButton">Login</button>
-          <div className="flex flex-row justify-between items-center w-full">
-            <p className="text-xs text-charcoal">Don't have an account?</p>
-            <span className="text-first text-xs font-light cursor-pointer">Sign up</span>
-          </div>
+            }
+          <button className={fstyle.button} type="submit">{button}</button>
         </form>
-      </div>
-
     </>
   )
 }
-
 export default Form

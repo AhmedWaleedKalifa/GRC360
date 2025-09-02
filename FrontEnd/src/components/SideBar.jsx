@@ -76,7 +76,6 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
           <ul className='sidebarList'>
             <Link
               title='Dashboard'
-              onClick={() => handleActivation("Main")}
               to="/dashboard"
               className={open == true ? "closeLink" : "link"}
               style={
@@ -96,7 +95,6 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
               {!open && <li className="sidebarLi">Dashboard</li>}
             </Link>
             <Link to="/dashboard/governance"
-              onClick={() => handleActivation("Governance")}
               title='Governance'
               className={open == true ? "closeLink" : "link"}
               style={
@@ -117,7 +115,6 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
               {!open && <li className='sidebarLi'>Governance</li>}
             </Link>
             <Link to="/dashboard/risks"
-              onClick={() => handleActivation("Risks")}
               title='Risks'
               className={open == true ? "closeLink" : "link"}
               style={
@@ -140,7 +137,6 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
               {!open && <li className='sidebarLi'>Risks</li>}
             </Link>
             <Link to="/dashboard/compliance"
-              onClick={() => handleActivation("Compliance")}
               title='Compliance'
               className={open == true ? "closeLink" : "link"}
               style={
@@ -164,7 +160,6 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
               {!open && <li className='sidebarLi'>Compliance</li>}
             </Link>
             <Link to="/dashboard/incidents"
-              onClick={() => handleActivation("Incidents")}
               title='Incidents'
               className={open == true ? "closeLink" : "link"}
               style={
@@ -188,7 +183,6 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
               {!open && <li className='sidebarLi'>Incidents</li>}
             </Link>
             <Link to="/dashboard/threats"
-              onClick={() => handleActivation("Threats")}
               title='Threats'
               className={open == true ? "closeLink" : "link"}
               style={
@@ -211,7 +205,6 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
               {!open && <li className='sidebarLi'>Threats</li>}
             </Link>
             <Link to="/dashboard/logs"
-              onClick={() => handleActivation("Logs")}
               title='Logs'
               className={open == true ? "closeLink" : "link"}
               style={
@@ -234,7 +227,6 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
               {!open && <li className='sidebarLi'>Logs</li>}
             </Link>
             <Link to="/dashboard/configurations"
-              onClick={() => handleActivation("Configurations")}
               title="Configurations"
               className={open == true ? "closeLink" : "link"}
               style={
