@@ -11,11 +11,11 @@ function CardSlider({
   fields,
   colors = [],
   ids,
-  navigation,
+  navigation = [{start:0, end: ids.length, path: "" }],
   caption = { text: "", icon: "" }
 }) {
   const containerRef = useRef(null);
-
+  let i = 0;
   let result = 0.0;
   let array = [];
   if (sizes) {
@@ -32,25 +32,24 @@ function CardSlider({
   useEffect(() => {
     const container = containerRef.current;
     if (!container || selectedId === undefined || selectedId === null) return;
-
+  
     const selector = `[data-field-id="${selectedId}"]`;
     const el = container.querySelector(selector);
     if (!el) {
-      // nothing found — debug info in console
-      console.debug('CardSlider: selected element not found for', selectedId);
-      return;
+      console.debug("CardSlider: selected element not found for", selectedId);
+      return; // prevent crashing
     }
-
+  
     // geometry
     const containerRect = container.getBoundingClientRect();
     const elRect = el.getBoundingClientRect();
-
+  
     const offset = elRect.top - containerRect.top;
-
     const scrollDelta = offset - (container.clientHeight / 2) + (el.clientHeight / 2);
-
+  
     container.scrollTop = container.scrollTop + scrollDelta;
   }, [selectedId, fields]);
+  
   return (
     <>
       <div>
@@ -79,19 +78,26 @@ function CardSlider({
         <div
           className="cardSliderBody"
           ref={containerRef}
-          style={{ maxHeight: height }} 
+          style={{ maxHeight: height }}
         >
-          {fields.map((e, index) => (
-            <Field
-              color={colors[index]}
-              sizes={array}
-              key={index}
-              values={e}
-              mode={index % 2 === 0 ? 1 : 2}
-              navigation={navigation}
-              id={ids?.[index]}
-            />
-          ))}
+         {fields.map((e, index) => {
+  const navItem = navigation.find(
+    nav => index >= nav.start && index <= nav.end
+  );
+
+  return (
+    <Field
+      color={colors[index]}
+      sizes={array}
+      key={index}
+      values={e}
+      mode={index % 2 === 0 ? 1 : 2}
+      navigation={navItem?.path}
+      id={ids?.[index]}
+    />
+  );
+})}
+
         </div>
       </div>
     </>

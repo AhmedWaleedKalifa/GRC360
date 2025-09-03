@@ -24,7 +24,7 @@ const Input = ({ id = '', label = '', type = "text", selectList = [], isInput, c
             <select
             name={id}
             id={id}
-            className={Class.input}
+            className={changeable?Class.input:(Class.input+" opacity-60")}
             value={value}
             onChange={changeable ? handleChange : () => {}}
           >
@@ -39,7 +39,7 @@ const Input = ({ id = '', label = '', type = "text", selectList = [], isInput, c
               id={id}
               name={id}
               value={value}
-              className={Class.input}
+              className={changeable?Class.input:(Class.input+" opacity-60")}
               onChange={changeable ? handleChange : () => { }}
               placeholder={placeholder}
             />
@@ -49,7 +49,7 @@ const Input = ({ id = '', label = '', type = "text", selectList = [], isInput, c
               value={value}
               name={id}
               onChange={changeable ? handleChange : () => { }}
-              className={Class.input}
+              className={changeable?Class.input:(Class.input+" opacity-60")}
               placeholder={placeholder}
 
             ></textarea>

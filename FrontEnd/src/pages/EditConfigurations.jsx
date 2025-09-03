@@ -1,13 +1,14 @@
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import json from "../json.json";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Form from "../components/Form";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const EditConfigurations = () => {
   const [item, setItem] = useState(null);
   const { id } = useParams();
-
+  const navigate = useNavigate()
   const data = json.configurations
 
   useEffect(() => {
@@ -17,18 +18,26 @@ const EditConfigurations = () => {
 
   return (
     <>
-      {item&&<div className="editConfig">
-        <h1 className="editConfigTitle">Edit Configuration</h1>
-        <Form fstyle={{ form: "editConfigForm", button: "button buttonStyle" }}
-          inputarray={[
-            { id: "key",type:"text",isInput:true, label: "Key:", initialValue: item?.key, Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
-            { id: "value",type:"text",isInput:true, label: "Value:", initialValue: item?.value, Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
+      {item &&
+        <div className='smallContainer'>
 
-          ]}
-          button={"Edit"}
-        />
-      </div>}
-      
+          <div className="editConfig">
+            <h1 className="editConfigTitle">Edit Configuration</h1>
+            <Link className='templateBackLink ' onClick={() => { navigate(-1) }}>
+              <FontAwesomeIcon icon={faArrowLeft} className='text-2xl' />
+            </Link>
+            <Form fstyle={{ form: "editConfigForm", button: "button buttonStyle" }}
+              inputarray={[
+                { id: "key", type: "text", isInput: true, label: "Key:", initialValue: item?.key, Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
+                { id: "value", type: "text", isInput: true, label: "Value:", initialValue: item?.value, Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
+
+              ]}
+              button={"Save"}
+            />
+          </div>
+        </div>
+      }
+
 
     </>
   );

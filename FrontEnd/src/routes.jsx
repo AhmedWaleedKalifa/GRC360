@@ -15,6 +15,14 @@ import Login from "./pages/Login";
 import EditConfigurations from "./pages/EditConfigurations";
 import AddIncident from "./pages/AddIncident";
 import EditIncident from "./pages/EditIncident";
+import ViewFrameworks from "./pages/ViewFrameworks";
+import EditRisk from "./pages/EditRisk";
+import AddRisk from "./pages/AddRisk";
+import AddGovernance from "./pages/AddGovernance";
+import EditGovernance from "./pages/EditGovernance";
+import Requirements from "./pages/Requirements";
+import Controls from "./pages/Controls";
+import EditControl from "./pages/EditControl";
 const routes = [
   {
     path: "/",
@@ -28,14 +36,25 @@ const routes = [
     element: <Dashboard />,
     children: [
       { index: true, element: <Main /> },
-      { path: "compliance", element: <Compliance /> },
+      { path: "compliance/:id?", element: <Compliance /> },
+      { path: "requirements/:id?", element: <Requirements /> },
+      { path: "controls/:id?", element: <Controls /> },
+      { path: "editControl/:id?", element: <EditControl /> },
+
+      
       { path: "configurations", element: <Configurations /> },
-      { path: "governance", element: <Governance /> },
-      { path: "incidents", element: <Incidents /> },
+      { path: "governance/:id?", element: <Governance /> },
+      { path: "incidents/:id?", element: <Incidents /> },
       { path: "logs", element: <Logs /> },
       { path: "risks/:id?", element: <Risks  /> },
       { path: "editConfigurations/:id?", element: <EditConfigurations  /> },
+      {path:"viewFrameWorks/:id?",element:<ViewFrameworks/>},
       {path:"editIncident/:id?",element:<EditIncident/>},
+      {path:"editRisk/:id?",element:<EditRisk/>},
+      {path:"addRisk",element:<AddRisk/>},
+      {path:"addGovernance",element:<AddGovernance/>},
+      {path:"editGovernance/:id?",element:<EditGovernance/>},
+
       {path:"addIncident",element:<AddIncident/>},
       { path: "threats", element: <Threats /> },
       { path: "*", element: <ErrorPage /> }

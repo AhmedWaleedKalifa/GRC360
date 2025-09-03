@@ -28,7 +28,6 @@
 div {
   @apply text-gray-800 dark:text-gray-200;
 }
-
 ::selection {
   @apply bg-gray-200 dark:bg-gray-800;
 }
@@ -54,7 +53,7 @@ h1 {
 }
 
 h2 {
-  @apply text-base text-gray-800 dark:text-gray-200;
+  @apply text-base text-gray-800 dark:text-gray-200 ml-2;
 }
 
 .h1Icon {
@@ -65,7 +64,7 @@ h2 {
 
 /* card style */
 .card {
-  @apply inline-block min-w-44 max-w-74 w-full h-32 p-5;
+  @apply inline-block min-w-40  w-full min-h-32 p-5;
 }
 
 .cardSpan1 {
@@ -115,7 +114,7 @@ h2 {
 
 /* chart style  */
 .chartContainer {
-  @apply flex flex-col gap-4 py-6 px-3 min-w-44 max-w-76 w-full min-h-88 justify-center z-10 items-center;
+  @apply flex flex-col gap-4 py-6 px-3 min-w-44 max-w-73 w-full min-h-88 justify-center z-10 items-center;
 }
 
 .chartTitle {
@@ -227,7 +226,7 @@ nav {
 
 /* progress style */
 .progress {
-  @apply flex flex-col gap-4 p-6 min-w-44 max-w-76 w-full min-h-88 z-10 justify-center;
+  @apply flex flex-col gap-4 p-6 min-w-44 max-w-74 w-full min-h-88 z-10 justify-center;
 }
 
 .progressTitle {
@@ -235,13 +234,15 @@ nav {
 }
 
 .progressContainer {
-  @apply w-full bg-white rounded-full flex items-center justify-start dark:bg-black;
+  @apply min-w-44 max-w-74 w-full bg-white rounded-full flex items-center justify-start dark:bg-black;
 }
 
 .progressProgress {
   @apply bg-blue-500 h-3 rounded-full;
 }
-
+.progressProgressEmpty{
+  @apply h-3 rounded-full
+}
 .progressFooter {
   @apply text-sm text-gray-800 dark:text-gray-200;
 }
@@ -384,12 +385,12 @@ aside .sidebarClosedFooter {
 
 /* main style */
 main {
-  @apply w-full pr-8 lg:pr-8 md:pr-4 min-h-[calc(100vh-60px)] flex flex-row bg-white bg-gradient-to-br from-black/20 via-black/30 to-white/20 dark:bg-black dark:from-black/60 dark:via-black/30 dark:to-black/20;
+  @apply w-full pr-8 lg:pr-8 md:pr-4 min-h-[calc(100vh-60px)] flex flex-row bg-white bg-gradient-to-br from-gray-600/30 via-gray-600/20 to-gray-600/10 dark:bg-black dark:from-black/60 dark:via-black/30 dark:to-black/20;
 }
 
 /* control style */
 .control {
-  @apply fixed bottom-8 right-1.5 flex flex-col gap-2 z-80 items-center px-1 py-1.5 border dark:bg-gray-200/70 bg-gradient-to-r dark:from-gray-100/60 dark:to-gray-100/40 dark:border-gray-800/20 rounded-2xl backdrop-blur-lg bg-gray-800/70 from-gray-900/60 to-gray-900/40 border-gray-200/20;
+  @apply fixed bottom-8 right-1.5 flex flex-col gap-2 z-80 items-center px-1 py-1.5 border  rounded-2xl backdrop-blur-lg bg-gray-400 border-gray-600/20;
 }
 
 .refreshLabel {
@@ -506,26 +507,25 @@ main {
 
 
 /* edit config*/
-
+.smallContainer{
+  @apply w-full h-full flex flex-row items-center content-center
+}
 .editConfig{
-  @apply w-[80%] flex flex-col items-center justify-center h-full bg-gray-400 dark:bg-gray-600 mx-auto rounded-2xl;
+  @apply p-10 flex flex-col items-center justify-center bg-gray-300 dark:bg-gray-600 mx-auto rounded-2xl;
 }
 .editConfigTitle{
-  @apply text-center p-8;
+  @apply text-center mb-2;
 }
 
 .editConfigForm{
-  @apply w-[70%] h-96 flex flex-col gap-8 p-4;
+  @apply w-[538px] flex flex-col gap-4 py-2;
 }
 .editInputContainer{
-  @apply flex flex-col
+  @apply flex flex-col 
 }
 
 /* addIncidents */
 
-.addIncidentForm{
-  @apply w-[70%]  flex flex-col gap-3 p-4;
-}
 
 /* edit Incidents style */
 

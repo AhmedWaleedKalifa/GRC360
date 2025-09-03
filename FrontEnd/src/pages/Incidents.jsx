@@ -1,117 +1,133 @@
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Card from '../components/Card'
 import CardSlider from '../components/CardSlider'
 import Progress from '../components/Progress'
 import Chart from "../components/Chart"
 import json from "../json.json"
-import {  useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 function Incidents() {
-  const nav=useNavigate();
+  const nav = useNavigate();
   const [data, setData] = useState(json.incidents);
-  const complianceData = json.complianceFrameworks;
+
+  const { id } = useParams();
+  const [fields, setFields] = useState([]);
+  const [fields2, setFields2] = useState([]);
+
+  const [ids, setIds] = useState([]);
+  const [colors, setColors] = useState([]);
+
+  const [closed, setClosed] = useState();
+  const [open, setOpen] = useState();
+  const [investigating, setInvestigating] = useState();
+  const [highSeverity, setHighSeverity] = useState();
 
   const deleteIncident = (id) => {
     setData(prev => prev.filter(incident => incident.id !== id));
   };
-  let requirementsNumber = 0
-  let controlsNumber = 0;
-  let all = json.complianceFrameworks.length
-  complianceData.forEach((e) => {
-    if (e.requirements) {
-      requirementsNumber += e.requirements.length;
-      e.requirements.forEach((b) => {
-        if (b.controls) {
-          controlsNumber += b.controls.length
-        }
-      })
-    }
-  })
-  let frameWorksNumber = json.complianceFrameworks.length
-  let fields = [];
-  let ids = []
-  data.forEach((e) => {
-    fields.push([
-      { type: "t", text: e.title },
-      { type: "t", text: e.reportedAt },
-      {
-        type: "b",
-        text: e.status,
-        color: e.status === "Open"
-          ? "#ffff0080"
-          : e.status === "Closed"
-            ? "#00ff0080"
-            : "#3b82f680"
-      },]);
-    ids.push(e.id);
-  });
 
-  let fields2 = [];
-  let ids2 = []
-  let colors2=[]
-  let open = 0;
-  let closed = 0;
-  let investigating = 0;
-  data.forEach((e) => {
-    if (e.status == "Open") {
-      open += 1
-    } else if (e.status == "Closed") {
-      closed += 1
-    } else if (e.status == "Investigating") {
-      investigating += 1
-    }
-    fields2.push([
-      { type: "t", text: e.title },
-      { type: "t", text: e.category },
-      {
-        type: "b",
-        text: e.status,
-        color: e.status === "Open"
-          ? "#ffff0080"
-          : e.status === "Closed"
-            ? "#00ff0080"
-            : "#3b82f680"
-      },
-      {
-        type: "b",
-        text: e.severity,
-        color: e.severity === "High"
-          ? "#ff000080"
-          : e.status === "Medium"
-            ? "#ffff0080"
-            : "#00ff0080"
-      },
-      { type: "t", text: e.reportedAt },
-      { type: "t", text: e.owner },
-      { type: "t", text: e.description },
-      { type: "i", text: "faPen", color: "#26A7F6",selfNav:"/dashboard/editIncident/"+e.id},
-      { type: "i", text: "faTrash", color: "#F44336",click:()=>deleteIncident(e.id) }
+  let all = data.length
 
-    ]);
-    if(e.severity=="High"){
-      colors2.push("#ff000060")
-    }else{
-      colors2.push("");
-    }
-    ids2.push(e.id);
-  });
+  useEffect(() => {
+    let newFields = [];
+    let newIds = []
+    data.forEach((e) => {
+      newFields.push([
+        { type: "t", text: e.title },
+        { type: "t", text: e.reportedAt },
+        {
+          type: "b",
+          text: e.status,
+          color: e.status === "Open"
+            ? "#FFA72699"
+            : e.status === "Closed"
+              ? "#00ff0099"
+              : "#3b82f699"
+        },]);
+      newIds.push(e.id);
+    });
+
+    let newFields2 = [];
+    let newColors = []
+    let newOpen = 0;
+    let newClosed = 0;
+    let newInvestigating = 0;
+    let newHighSeverity = 0;
+    data.forEach((e) => {
+      if (String(e.id) === id) {
+        newColors.push("#26A7F680");
+      } else {
+        newColors.push("")
+      }
+      if (e.status == "Open") {
+        newOpen += 1
+      } else if (e.status == "Closed") {
+        newClosed += 1
+      } else if (e.status == "Investigating") {
+        newInvestigating += 1
+      }
+      if (e.severity == "High") {
+        newHighSeverity += 1;
+      }
+      newFields2.push([
+        { type: "t", text: e.title },
+        { type: "t", text: e.category },
+        {
+          type: "b",
+          text: e.status,
+          color: e.status === "Open"
+            ? "#FFA72699"
+            : e.status === "Closed"
+              ? "#00ff0099"
+              : "#3b82f699"
+        },
+        {
+          type: "b",
+          text: e.severity,
+          color: e.severity === "High"
+            ? "#ff000099"
+            : e.status === "Medium"
+              ? "#ffff0099"
+              : "#00ff0099"
+        },
+        { type: "t", text: e.reportedAt },
+        { type: "t", text: e.owner },
+        { type: "t", text: e.description },
+        { type: "i", text: "faPen", color: "#26A7F6", selfNav: "/dashboard/editIncident/" + e.id },
+        { type: "i", text: "faTrash", color: "#F44336", click: () => deleteIncident(e.id) }
+
+      ]);
+
+      newIds.push(e.id);
+    });
+    setOpen(newOpen)
+    setClosed(newClosed)
+    setInvestigating(newInvestigating)
+    setFields(newFields)
+    setFields2(newFields2)
+    setIds(newIds)
+    setColors(newColors)
+    setHighSeverity(newHighSeverity)
+  }, [id, data])
   return (
     <>
       <div className='w-full h-[fit-content] flex flex-row justify-between items-center'>
         <h1 ><FontAwesomeIcon icon={faTriangleExclamation} className='h1Icon' /> Incidents</h1>
-        <div className='button buttonStyle' onClick={()=>{nav('/dashboard/addIncident')}}>Add Incident</div>
+        <div className='button buttonStyle' onClick={() => { nav('/dashboard/addIncident') }}>Add Incident</div>
       </div>
+
       <div className='cardsContainer'>
-        <Card title="Frameworks" value={frameWorksNumber} model={1} color={"#ffbb28"} />
-        <Card title="Requirements" value={requirementsNumber} model={2} color={"#00C49F"} />
-        <Card title="Controls" value={controlsNumber} model={1} color={"#F44336"} />
+        <Card title="Total Incidents" value={data.length} model={1} />
+        <Card title="Open" value={open} model={2} />
+        <Card title="Closed" value={closed} model={1} />
+        <Card title="High Severity" value={highSeverity} model={2} />
       </div>
 
       <div className='flex flex-row items-center gap-5 w-full flex-nowrap xl:flex-nowrap sm:flex-wrap'>
-        <Chart title={"Incidents by Status"} array={[{ name: "closed", value: closed, color: "#00ff0080" }, { name: "Investigating", value: investigating, color: "#3b82f680" }, { name: "open", value: open, color: "#ffff00" }]} />
+        <Chart title={"Incidents by Status"} array={[{ name: "closed", value: closed, color: "#00ff0080" }, { name: "Investigating", value: investigating, color: "#3b82f680" }, { name: "open", value: open, color: "#FFA72680" }]} />
         <Progress title={" Resolution Progress"} footer={"incidents closed"} num={closed} all={all} />
-        <div className='w-full'>
+        <div className='w-full h-full'>
           <CardSlider
             caption={{ text: "Recent Incidents", icon: "faClock" }}
             titles={["title", "time", "status"]}
@@ -128,9 +144,9 @@ function Incidents() {
       <CardSlider
         caption={{ text: "All Incidents", icon: "faFolder" }}
         sizes={[6, 2, 4, 3, 5, 3, 7, 2, .8]}
-        colors={colors2}
+        colors={colors}
         titles={["Title", "Category", "Status", "Severity", "Reported At	", "Owner", "Description", "Actions", ""]}
-        ids={ids2}
+        ids={ids}
         fields={fields2}
       />
     </>

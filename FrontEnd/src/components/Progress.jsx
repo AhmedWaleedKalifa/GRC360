@@ -6,10 +6,18 @@ function Progress({ title, footer, num, all }) {
         <div className='progress cardStyle1 '>
             <div className='progressTitle'>{title}</div>
             <div className='progressContainer'>
-                <div 
+                {percentage?<>
+                  <div 
                   className='progressProgress' 
                   style={{ width: `${percentage}%` }}>
                 </div>
+                </>:<>
+                <div 
+                  className='progressProgressEmpty' 
+                  style={{ width: `${percentage}%` }}>
+                </div>
+                </>
+                }
             </div>
             <div className='progressFooter'>
               {num} of {all} {footer}

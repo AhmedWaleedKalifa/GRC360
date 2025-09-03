@@ -1,13 +1,18 @@
 import React from 'react'
 import Input from './Input';
 
-const Form = ({ fstyle={form:"form",title:"formTitle",button:"formButton"},title = "", onSubmit,button="", inputarray=[{ id:"", label:"", type:"text", isInput:true, initialValue:"",selectList:[],placeholder:'',changeable:true,Class:{container:"",label:"",field:""}}]}) => {
-  const handleSubmit = (e) => {
+const Form = ({ fstyle={form:"form",title:"formTitle",button:"formButton"},submitPath='',title = "",button="", inputarray=[{ id:"", label:"", type:"text", isInput:true, initialValue:"",selectList:[],placeholder:'',changeable:true,Class:{container:"",label:"",field:""}}]}) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(); 
     const formData = new FormData(e.target);
     const values = Object.fromEntries(formData.entries());
-    console.log(values); 
-    if (onSubmit) onSubmit(values);
+    const response = await fetch(submitPath, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+    console.log( response);
+
   };
   return (
     <>

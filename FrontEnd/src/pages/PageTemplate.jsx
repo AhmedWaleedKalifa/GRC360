@@ -1,12 +1,12 @@
 import { faArrowLeft, faArrowRotateRight, faArrowUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useEffect, useState } from 'react'
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 
 function PageTemplate() {
     const [lastRefreshed, setLastRefreshed] = useState(null);
     const [showRefreshNotification, setShowRefreshNotification] = useState(false);
-
+    const navigate = useNavigate();
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
@@ -41,7 +41,7 @@ function PageTemplate() {
     }, []);
     return (
         <>
-            <Link to="/dashboard" className='templateBackLink '>
+            <Link className='templateBackLink ' onClick={() => { navigate(-1) }}>
                 <FontAwesomeIcon icon={faArrowLeft} className='text-2xl' />
             </Link>
             <main className="template">

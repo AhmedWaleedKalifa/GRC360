@@ -16,14 +16,16 @@ const Field = forwardRef(({ mode = 1, sizes, id, color, navigation = "", values 
   return (
     <div
     ref={ref}
-      data-field-id={id}                // <- ADD THIS
+      data-field-id={id}                
       className={
+
         mode === 1 ? "fieldColor1 field px-3"
           : mode === 2 ? "fieldColor2 field px-3"
             : mode === 3 ? "fieldColor3 field px-3"
               : "fieldColor4 field px-3"
+        
       }
-      style={{ background: color }}
+      style={navigation?{ background: color,cursor:"pointer" }:{background:color}}
       onClick={navigateRow}
     >
       {values.map((element, index) => (
@@ -40,7 +42,7 @@ const Field = forwardRef(({ mode = 1, sizes, id, color, navigation = "", values 
               title={element.text}
               icon={solidIcons[element.text]}
               className="fieldDivIcon"
-              style={{ color: element?.color || "inherit" }}
+              style={element.selfNav||element.click?{color:element?.color,cursor:"pointer"}:{ color: element?.color || "inherit" }}
               onClick={element.selfNav?()=>nav(element.selfNav):element.click}
 
             />

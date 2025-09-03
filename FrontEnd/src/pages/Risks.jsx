@@ -2,17 +2,23 @@ import { faChartSimple, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Card from '../components/Card'
 import CardSlider from "../components/CardSlider"
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import json from "../json.json"
 import { useEffect, useState } from 'react'
 function Risks() {
+  const [data, setData] = useState(json.risks);
+  const navigate = useNavigate();
+  const deleteRisk = (id) => {
+    setData(prev => prev.filter(risk => risk.id !== id));
+  };
+
   const { id } = useParams();
+
   const [fields, setFields] = useState([]);
-  const [ids, setIds] = useState([]);
   const [colors, setColors] = useState([]);
-  const [selectedId,setSelectedId]=useState();
-  const data = json.risks;
-  const date=new Date()
+  const [ids, setIds] = useState([]);
+
+  const date = new Date()
   useEffect(() => {
     const newFields = [];
     const newIds = [];
@@ -28,14 +34,13 @@ function Risks() {
         { type: "t", text: e.impact },
         { type: "t", text: e.severity },
         { type: "t", text: e.lastReviewed },
-        { type: "i", text: "faPen", color: "#26A7F6" },
-        { type: "i", text: "faTrash", color: "#F44336" },
+        { type: "i", text: "faPen", color: "#26A7F6", selfNav: "/dashboard/editRisk/" + e.id },
+        { type: "i", text: "faTrash", color: "#F44336", click: () => { deleteRisk(e.id) } },
       ]);
-      setSelectedId(id);
       if (String(e.id) === id) {
         console.log(id)
         newColors.push("#26A7F680");
-      }else{
+      } else {
         newColors.push("")
       }
       newIds.push(e.id);
@@ -55,17 +60,17 @@ function Risks() {
 
       <div className="cardsContainer">
         <Card title="Total Risks" value={data.length} model={1} />
-        <Card title="Open Risks" value={data.filter((e)=>{return e.status=="Open"}).length} model={2} />
-        <Card title="High Severity" value={data.filter((e)=>{return e.severity=="High"}).length} model={1} />
-        <Card title="Reviewed This Month" value={data.filter((e)=>{
-          return e.lastReviewed.at(5)+e.lastReviewed.at(6)== ((String(date.getMonth()).length)=="1"?"0"+String(date.getMonth()):String(date.getMonth()))
-          }).length}
-           model={2} />
+        <Card title="Open Risks" value={data.filter((e) => { return e.status == "Open" }).length} model={2} />
+        <Card title="High Severity" value={data.filter((e) => { return e.severity == "High" }).length} model={1} />
+        <Card title="Reviewed This Month" value={data.filter((e) => {
+          return e.lastReviewed.at(5) + e.lastReviewed.at(6) == ((String(date.getMonth()).length) == "1" ? "0" + String(date.getMonth()) : String(date.getMonth()))
+        }).length}
+          model={2} />
       </div>
 
       <div className="h2AndButtonContainer">
         <h2>Risks</h2>
-        <div className="button buttonStyle">
+        <div className="button buttonStyle" onClick={() => { navigate("/dashboard/addRisk") }}>
           <FontAwesomeIcon icon={faPlus} className="mr-1" />
           Add Risks
         </div>
@@ -85,11 +90,11 @@ function Risks() {
           "Actions ",
           " ",
         ]}
-        sizes={[1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 2, 2]}
+        sizes={[2, 8, 8, 8, 8, 8, 8, 8, 8, 8, 2, 2]}
         ids={ids}
         fields={fields}
         colors={colors}
-        selectedId={selectedId}
+        selectedId={id}
 
       />
     </>

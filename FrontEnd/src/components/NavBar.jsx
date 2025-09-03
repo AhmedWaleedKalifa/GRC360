@@ -9,6 +9,7 @@ function NavBar({ active, open }) {
 
       <nav style={{paddingLeft:`${open ? "272" : "96"}px`}}>
         <SearchBar active={active} />
+        <h2>Hello User!</h2>
         <div className='navContainer'>
           <Link to="/pages/notifications" title="Notifications">
             <FontAwesomeIcon icon={faBell} className='iconCircle' />
