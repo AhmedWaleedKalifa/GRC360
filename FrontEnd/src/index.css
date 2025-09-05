@@ -365,7 +365,7 @@ aside .sidebarClosedFooter {
 }
 
 .iconCircle {
-  @apply text-2xl p-3  rounded-full border  dark:bg-black dark:border-gray-200/20 bg-transparent border-transparent;
+  @apply text-2xl p-3  rounded-full border   bg-transparent border-transparent;
 }
 
 @media (max-height: 650px) {
