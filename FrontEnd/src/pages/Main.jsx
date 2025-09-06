@@ -93,12 +93,12 @@ function Main() {
           <FontAwesomeIcon icon={faTriangleExclamation} className='h1Icon' />
           <span >Risks Overview </span>
         </div>
-        <div className='cardsContainer flex-wrap'>
-          <Card title="Total Risks" value="6" model={1} maxSize="300px"/>
-          <Card title="Mitigated" value="2" model={2} maxSize="300px"/>
-        <Card title="Open" value={risks.filter((e) => { return e.status == "Open" }).length} model={2} maxSize="300px"/>
-          <Card title="Closed" value="1" model={2} maxSize="300px"/>
-        <Card title="High Severity" value={risks.filter((e) => { return e.severity == "High" }).length} model={1} maxSize="300px"/>
+        <div className='cardsContainer '>
+          <Card title="Total Risks" value="6" model={1} />
+          <Card title="Mitigated" value="2" model={2} />
+        <Card title="Open" value={risks.filter((e) => { return e.status == "Open" }).length} model={2} />
+          <Card title="Closed" value="1" model={2}/>
+        <Card title="High Severity" value={risks.filter((e) => { return e.severity == "High" }).length} model={1} />
         
         </div>
         <div className='flex'>
