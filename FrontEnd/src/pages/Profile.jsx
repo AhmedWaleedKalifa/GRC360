@@ -2,13 +2,13 @@ import React from 'react'
 import Form from '../components/Form';
 
 function profile() {
-  const user = { name: "user", email: "user@gmail.com", password: "user123" };
+  const user = { username: "user",nickname:"userA", email: "user@gmail.com", password: "user123",phone:"01000000000",job_title:"Eng" };
   return (
     <>
 
 
       <div className='profile'>
-        <div className='profileHeader'><span>Welcome User</span></div>
+        <div className='profileHeader'><span>Welcome {user.job_title}. {user.username}</span></div>
         <div className='profileBr'></div>
         <div className='profileInfo'>
           <img className='profileInfoImage' />
@@ -23,16 +23,14 @@ function profile() {
         </div>
 
         <Form
-          fstyle={{ form: "profileForm", title: "profileFormTitle ", button: "profileFormButton" }}
+          fstyle={{ form: "profileForm", title: "profileFormTitle ", button: "profileFormButton col-span-2" }}
           button="Edit"
           inputarray={[
-            { id: "fullname", label: "Full Name:", type: "text", isInput: true, initialValue: user.name, placeholder: "Your Full Name", Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } },
-            { id: "nickname", label: "Nick Name:", type: "text", isInput: true, initialValue: "", placeholder: "Your Nick Name", Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } },
+            { id: "username", label: "User Name:", type: "text", isInput: true, initialValue: user.username, placeholder: "Your Name", Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } },
+            { id: "nickname", label: "Nick Name:", type: "text", isInput: true, initialValue: user.nickname, placeholder: "Your Nick Name", Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } },
             { id: "email", label: "Email:", type: "email", isInput: true, initialValue: user.email, changeable: false, placeholder: "Your Full Name", Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } },
             { id: "password", label: "Password:", type: "password", isInput: true, initialValue: user.password, placeholder: "Your Full Name", Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } },
-            { id: "country", label: "Country:", type: "text", isInput: true, initialValue: "", placeholder: "Your Country", Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } },
-            { id: "language", label: "Language:", type: "text", isInput: true, initialValue: "", placeholder: "Your Language", Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } },
-
+            { id: "phone", label: "Phone Number:", type: "text", isInput: true, initialValue: user.phone, placeholder: "Your Phone Number", Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } },
           ]}
           onSubmit={(data) => {
             console.log("Form data:", data);

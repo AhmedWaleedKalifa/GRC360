@@ -85,11 +85,11 @@ h2 {
 
 /* cardSlider style*/
 .cardSliderHeader {
-  @apply w-[99%] flex flex-col justify-center rounded-2xl rounded-b-none bg-gray-200 mx-auto dark:bg-gray-800;
+  @apply w-[99%] flex flex-col justify-center rounded-2xl rounded-b-none bg-gray-300/80 mx-auto dark:bg-gray-700/80;
 }
 
 .cardSliderTitles {
-  @apply w-full min-h-10 py-1 flex flex-row items-center gap-2 overflow-x-hidden border-2 font-semibold tracking-wider capitalize px-3 pr-5 text-gray-800 dark:text-gray-200;
+  @apply w-full min-h-10 py-1 flex flex-row items-center gap-2 overflow-x-hidden border-2 font-semibold tracking-wider capitalize px-3 pr-5 text-gray-800 dark:text-gray-200 ;
 }
 
 .cardSliderCaption {
@@ -97,11 +97,11 @@ h2 {
 }
 
 .cardSliderTitlesNoCaptions {
-  @apply rounded-none border-none bg-gray-300/90 dark:bg-gray-700/90;
+  @apply rounded-none border-none bg-gray-300/90 dark:bg-gray-700/90 ;
 }
 
 .cardSliderTitlesCaptions {
-  @apply rounded-2xl rounded-b-none border-gray-300 bg-gray-200 dark:border-gray-700 dark:bg-gray-800;
+  @apply rounded-2xl rounded-b-none border-none bg-gray-300/90 dark:bg-gray-700/90;
 }
 
 .cardSliderTitleDiv {
@@ -122,19 +122,19 @@ h2 {
 }
 
 .chartGraphContainer {
-  @apply flex h-35 flex-row w-full;
+  @apply flex h-35 flex-row w-full justify-baseline;
 }
 
 .chartGraphNumberMarksContainer {
-  @apply flex h-full w-4 text-xs flex-col-reverse;
+  @apply flex h-full w-4 text-xs flex-col-reverse font-thin relative right-1  ;
 }
 
 .chartMark {
-  @apply relative left-2 w-4 border-b-2 border-gray-800 box-border dark:border-gray-200;
+  @apply relative left-3 w-4 border-b-2 border-gray-400 box-border dark:border-gray-200;
 }
 
 .chartMarkText {
-  @apply relative right-2 bottom-0 text-gray-800 dark:text-gray-200;
+  @apply relative right-3 bottom-0 text-gray-600 dark:text-gray-400 text-right;
 }
 
 .chartGraph {
@@ -159,20 +159,13 @@ h2 {
 }
 
 .fieldColor1 {
-  @apply bg-gray-200 bg-gradient-to-r from-white/40 via-transparent to-white/20 backdrop-blur-lg border-y border-white/50 shadow-xl transition-colors duration-500 ease-in-out dark:bg-gray-700 dark:from-black/20 dark:via-black/40 dark:to-black/20 dark:border-black/40;
+  @apply bg-gray-200 bg-gradient-to-r from-white/40 via-transparent to-white/20 backdrop-blur-lg border-y border-white/50 shadow-xl transition-colors duration-500 ease-in-out dark:bg-gray-700 dark:from-black/20 dark:via-black/40 dark:to-black/20 dark:border-black/40 hover:bg-gray-300/80 hover:from-gray-300/80 hover:to-gray-300/80 hover:via-gray-300/80 dark:hover:bg-gray-700/80 dark:hover:from-gray-700/80 dark:hover:to-gray-700/80 dark:hover:via-gray-700/80;
 }
 
 .fieldColor2 {
-  @apply bg-gray-200 bg-gradient-to-r from-transparent via-white/20 to-transparent backdrop-blur-lg border-y border-white/50 shadow-xl transition-colors duration-500 ease-in-out dark:bg-gray-700 dark:from-black/40 dark:via-black/20 dark:to-black/40 dark:border-black/50;
+  @apply bg-gray-200 bg-gradient-to-r from-transparent via-white/20 to-transparent backdrop-blur-lg border-y border-white/50 shadow-xl transition-colors duration-500 ease-in-out dark:bg-gray-700 dark:from-black/40 dark:via-black/20 dark:to-black/40 dark:border-black/50 hover:bg-gray-300/80 hover:from-gray-300/80 hover:to-gray-300/80 hover:via-gray-300/80 dark:hover:bg-gray-700/80 dark:hover:from-gray-700/80 dark:hover:to-gray-700/80 dark:hover:via-gray-700/80;
 }
 
-.fieldColor3 {
-  @apply bg-red-950/40 bg-gradient-to-r from-red-900/50 via-transparent to-red-900/50 backdrop-blur-lg border border-red-900/50 shadow-xl transition-colors duration-500 ease-in-out;
-}
-
-.fieldColor4 {
-  @apply bg-yellow-700/40 bg-gradient-to-r from-yellow-700/50 via-transparent to-yellow-700/50 backdrop-blur-lg border border-yellow-700/50 shadow-xl transition-colors duration-500 ease-in-out;
-}
 
 .fieldDiv {
   @apply flex items-center gap-2 truncate overflow-hidden whitespace-nowrap h-full;
@@ -496,7 +489,7 @@ main {
 }
 .profileFormButton{
   
-  @apply col-span-1 row-span-1  w-[fit-content] h-[fit-content] px-4 py-2 tracking-wide capitalize rounded-lg text-lg font-semibold cursor-pointer bg-blue-500 text-white dark:bg-blue-700;
+  @apply  row-span-1  w-[fit-content] h-[fit-content] px-4 py-2 tracking-wide capitalize rounded-lg text-lg font-semibold cursor-pointer bg-blue-500 text-white dark:bg-blue-700;
   
 }
 

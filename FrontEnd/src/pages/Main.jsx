@@ -32,7 +32,7 @@ function Main() {
 
     })
     incidents.forEach((e) => {
-      incidentsArray.push([{ type: "i", text: "faTriangleExclamation", color: "#3b82f699" }, { type: "b", text: "Incident Review", color: "#3b82f699" }, { type: "t", text: e.title }, { type: "t", text: e.owner }, { type: "t", text: e.lastReviewed }, { type: "t", text: e.status }]);
+      incidentsArray.push([{ type: "i", text: "faTriangleExclamation", color: "#3b82f699" }, { type: "b", text: "Incident Review", color: "#3b82f699" }, { type: "t", text: e.title }, { type: "t", text: e.owner }, { type: "t", text: e.reportedAt.slice(0,10) }, { type: "t", text: e.status }]);
       idsArray.push(Number(e.id))
     })
     complianceFrameworks.forEach((f)=>{
@@ -85,8 +85,9 @@ function Main() {
           }
         ]}
         ids={ids}
-        fields={[].concat(risksFields, governanceFields, incidentsFields,controlsFields)}
-
+        fields={[].concat(risksFields, governanceFields, incidentsFields, controlsFields)
+          .sort((a, b) => new Date(a[4].text).getTime() - new Date(b[4].text).getTime())}
+        
       />
       <div className='p-3.5 flex flex-col bg-teal/90 rounded-2xl w-full h-full capitalize font-bold text-3xl gap-4'>
         <div>

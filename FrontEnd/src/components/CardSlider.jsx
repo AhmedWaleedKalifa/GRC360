@@ -4,7 +4,7 @@ import * as solidIcons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 function CardSlider({
-  height = 323,
+  height = 320,
   titles,
   sizes,
   selectedId,
@@ -15,7 +15,6 @@ function CardSlider({
   caption = { text: "", icon: "" }
 }) {
   const containerRef = useRef(null);
-  let i = 0;
   let result = 0.0;
   let array = [];
   if (sizes) {

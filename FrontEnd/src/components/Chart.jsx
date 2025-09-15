@@ -16,7 +16,7 @@ function Chart({ title, array = [{ name: "", value: 0, color: "" }] }) {
     let sum = 0;
     let temp = 100 / 8;
     for (let i = 0; i < 9; i++) {
-        numbers.push(sum.toFixed(1));
+        numbers.push(sum.toFixed(0));
         sum += temp;
     }
 
@@ -27,7 +27,7 @@ function Chart({ title, array = [{ name: "", value: 0, color: "" }] }) {
                 <div className='chartGraphNumberMarksContainer'>
                     {numbers.map((e, index) => (
                         <div key={index} className='chartMark' style={{ height: `${100 / 8}%` }}>
-                            <span className='chartMarkText'>{e}</span>
+                            <span className='chartMarkText'>{e}%</span>
                         </div>
                     ))}
                 </div>
