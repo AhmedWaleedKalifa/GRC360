@@ -48,7 +48,7 @@ function AddRisk() {
             setCategories(categoriesArray)
             setSeverity(severityArray)
         })
-    })
+    },[])
     return (
         <>
             <div className='smallContainer'>

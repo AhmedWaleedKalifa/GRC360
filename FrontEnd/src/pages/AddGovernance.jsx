@@ -76,7 +76,7 @@ function AddGovernance() {
                             { id: "approverState", type: "select", isInput: true, label: "Approver State:", selectList: approverStates, Class: { container: "editInputContainer", label: "label", input: "select" } },
                             { id: "confidentiality", type: "select", isInput: true, label: "Confidentiality:", selectList: confidentiality, Class: { container: "editInputContainer ", label: "label", input: "select" } },
                         ]}
-                        button={"Save"}
+                        button={"Add"}
                     />
                 </div>
             </div>
