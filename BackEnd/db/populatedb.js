@@ -8,6 +8,7 @@ const SQL = `
         role VARCHAR(20) DEFAULT 'user' NOT NULL CHECK (role IN ('admin', 'moderator', 'user', 'guest')),
         user_name     VARCHAR(100) NOT NULL,
         email         VARCHAR(100) UNIQUE NOT NULL,
+        password      VARCHAR(100) NOT NULL,
         job_title     VARCHAR(100),
         phone         VARCHAR(20),
         last_login    TIMESTAMP,
@@ -162,14 +163,34 @@ const SQL = `
     CREATE INDEX idx_threats_detected_at ON threats(detected_at);
 `;
 
+
+//drop
+// const SQL=`
+// DROP TABLE IF EXISTS audit_logs CASCADE;
+// DROP TABLE IF EXISTS threats CASCADE;
+// DROP TABLE IF EXISTS incidents CASCADE;
+// DROP TABLE IF EXISTS governance_frameworks CASCADE;
+// DROP TABLE IF EXISTS governance_risks CASCADE;
+// DROP TABLE IF EXISTS governance_items CASCADE;
+// DROP TABLE IF EXISTS configurations CASCADE;
+// DROP TABLE IF EXISTS compliance_controls CASCADE;
+// DROP TABLE IF EXISTS compliance_requirements CASCADE;
+// DROP TABLE IF EXISTS compliance_frameworks CASCADE;
+// DROP TABLE IF EXISTS risks CASCADE;
+// DROP TABLE IF EXISTS users CASCADE;
+
+// `
+
 async function main() {
   console.log("seeding...");
   const client = new Client({
-    connectionString: process.env.CONNECTION_STRING,
-    ssl: {
-      ca: fs.readFileSync(path.resolve(process.env.DB_SSL_CERT)).toString(),
-      rejectUnauthorized: true,
-    },
+    connectionString:process.env.CONNECTION_STRING,
+
+    // connectionString: process.env.DEPLOYED_CONNECTION_STRING,
+    // ssl: {
+    //   ca: fs.readFileSync(path.resolve(process.env.DB_SSL_CERT)).toString(),
+    //   rejectUnauthorized: true,
+    // },
   });
 
   await client.connect();

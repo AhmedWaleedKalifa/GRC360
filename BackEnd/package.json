@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"node --watch app.js",
-    "db:seed":"node db/populatedb.js"
+    "start": "node --watch app.js",
+    "db": "node db/populatedb.js"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +15,10 @@
   "dependencies": {
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
+    "express-session": "^1.18.2",
     "express-validator": "^7.2.1",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
     "pg": "^8.16.3"
   }
 }

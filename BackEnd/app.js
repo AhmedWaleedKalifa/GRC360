@@ -1,20 +1,40 @@
-const express=require("express");
+const express=require("express");const session = require("express-session");
+const passport = require("passport");
+const LocalStrategy = require('passport-local').Strategy;
+const path = require("node:path");
+
 const app=express();
 require('dotenv').config();
-const userRouter=require("./routes/userRouter")
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
+const auditLogsRouter=require("./routes/auditLogsRouter")
+const complianceItemsRouter=require("./routes/complianceItemsRouter")
+const configurationsRouter=require("./routes/configurationsRouter")
+const governanceItemsRouter=require("./routes/governanceItemsRouter")
+const incidentsRouter=require("./routes/incidentsRouter")
+const risksRouter=require("./routes/risksRouter")
+const threatsRouter=require("./routes/threatsRouter")
+const usersRouter=require("./routes/usersRouter")
+const errorHandler = require("./middleware/errorHandler");
+
+
 app.get("/",(req,res)=>res.send("Hello, world!!!"))
-app.use("/users",userRouter)
+app.use("/logs",auditLogsRouter)
+app.use("/complianceItems",complianceItemsRouter)
+app.use("/configurations",configurationsRouter)
+app.use("/governanceItems",governanceItemsRouter)
+app.use("/incidents",incidentsRouter)
+app.use("/risks",risksRouter)
+app.use("/threats",threatsRouter)
+app.use("/users",usersRouter)
 
 
-app.use((err, req, res, next) => {
-    console.error(err);
-    // We can now specify the `err.statusCode` that exists in our custom error class and if it does not exist it's probably an internal server error
-    res.status(err.statusCode || 500).send(err.message);
-});
 
+
+app.use(errorHandler);
 
 const PORT=process.env.PORT||3003;
 app.listen(PORT,(error)=>{
