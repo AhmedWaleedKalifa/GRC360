@@ -1,87 +1,141 @@
-import { faShield, } from '@fortawesome/free-solid-svg-icons'
+import { faShield } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useEffect, useState } from 'react'
 import Card from '../components/Card'
 import CardSlider from "../components/CardSlider"
-import json from "../json.json"
 import { useParams } from 'react-router-dom'
+import { complianceAPI } from "../services/api"
+
 const Compliance = () => {
   const { id } = useParams();
-  const [data] = useState(json.complianceFrameworks);
-  const [frameWorks, setFrameWorks] = useState([]);
+  const [frameworks, setFrameworks] = useState([]);
   const [requirements, setRequirements] = useState([]);
   const [controls, setControls] = useState([]);
-  const [fields, setFields] = useState([]);
-  const [colors, setColors] = useState([]);
-  const [ids, setIds] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch frameworks from API
   useEffect(() => {
-    let frameWorksArray = [];
-    let requirementsArray = [];
-    let controlsArray = [];
-    const newFields = [];
-    const newIds = [];
-    const newColors = [];
-
-    data.forEach((f) => {
-     
-      let controlsNumber = 0;
-
-      if (f.requirements) {
-        f.requirements.forEach((r) => {
-          if (r.controls) {
-            controlsNumber += r.controls.length;
+    const fetchComplianceData = async () => {
+      try {
+        setLoading(true);
+        const frameworksData = await complianceAPI.getFrameworks();
+        setFrameworks(frameworksData);
+        
+        // Fetch requirements and controls for each framework
+        let allRequirements = [];
+        let allControls = [];
+        
+        for (const framework of frameworksData) {
+          try {
+            const requirementsData = await complianceAPI.getRequirementsByFramework(framework.framework_id);
+            
+            // Add framework_id to each requirement for counting
+            const requirementsWithFramework = requirementsData.map(req => ({
+              ...req,
+              framework_id: framework.framework_id
+            }));
+            
+            allRequirements = [...allRequirements, ...requirementsWithFramework];
+            
+            for (const requirement of requirementsData) {
+              try {
+                const controlsData = await complianceAPI.getControlsByRequirement(requirement.requirement_id);
+                
+                // Add requirement_id to each control for counting
+                const controlsWithRequirement = controlsData.map(ctrl => ({
+                  ...ctrl,
+                  requirement_id: requirement.requirement_id
+                }));
+                
+                allControls = [...allControls, ...controlsWithRequirement];
+              } catch (err) {
+                console.error(`Error fetching controls for requirement ${requirement.requirement_id}:`, err);
+              }
+            }
+          } catch (err) {
+            console.error(`Error fetching requirements for framework ${framework.framework_id}:`, err);
           }
-        });
+        }
+        
+        setRequirements(allRequirements);
+        setControls(allControls);
+        setError(null);
+      } catch (err) {
+        setError('Failed to fetch compliance data');
+        console.error('Error fetching compliance data:', err);
+      } finally {
+        setLoading(false);
       }
-      newFields.push([
-        { type: "t", text: f.framework },
-        { type: "t", text: f.requirements.length },
-        { type: "t", text: controlsNumber },
-      ]);
-      frameWorksArray.push(f);
-      if (f.requirements) {
-        f.requirements.forEach((r) => {
-          requirementsArray.push(r);
-          if (r.controls) {
-            controlsArray.push(...r.controls);
-          }
-        });
-      }
+    };
 
-      newColors.push(String(f.id) === id ? "#26A7F680" : "");
-      newIds.push(f.id);
-    });
+    fetchComplianceData();
+  }, []);
 
-    setFrameWorks(frameWorksArray);
-    setRequirements(requirementsArray);
-    setControls(controlsArray);
-    setFields(newFields);
-    setIds(newIds);
-    setColors(newColors);
-  }, [id, data]);
+  // Calculate counts for each framework
+  const getFrameworkCounts = (frameworkId) => {
+    const reqCount = requirements.filter(req => req.framework_id === frameworkId).length;
+    const ctrlCount = controls.filter(ctrl => {
+      const requirement = requirements.find(req => req.requirement_id === ctrl.requirement_id);
+      return requirement && requirement.framework_id === frameworkId;
+    }).length;
+    
+    return { reqCount, ctrlCount };
+  };
+
+  // Prepare data for CardSlider
+  const fields = frameworks.map(framework => {
+    const { reqCount, ctrlCount } = getFrameworkCounts(framework.framework_id);
+    return [
+      { type: "t", text: framework.framework_name },
+      { type: "t", text: reqCount },
+      { type: "t", text: ctrlCount },
+    ];
+  });
+
+  const ids = frameworks.map(framework => framework.framework_id);
+  const colors = frameworks.map(framework => 
+    framework.framework_id === id ? "#26A7F680" : ""
+  );
+
+  if (loading) {
+    return (
+      <>
+        <h1><FontAwesomeIcon icon={faShield} className='h1Icon' />Compliance</h1>
+        <div className="p-4">Loading compliance data...</div>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <h1><FontAwesomeIcon icon={faShield} className='h1Icon' />Compliance</h1>
+        <div className="p-4 text-red-500">Error: {error}</div>
+      </>
+    );
+  }
 
   return (
     <>
-      <h1 ><FontAwesomeIcon icon={faShield} className='h1Icon' />Compliance</h1>
+      <h1><FontAwesomeIcon icon={faShield} className='h1Icon' />Compliance</h1>
       <div className='cardsContainer'>
-        <Card title="Frameworks" value={frameWorks.length} model={1} color={"#ffbb28"} />
+        <Card title="Frameworks" value={frameworks.length} model={1} color={"#ffbb28"} />
         <Card title="Requirements" value={requirements.length} model={2} color={"#00C49F"} />
         <Card title="Controls" value={controls.length} model={1} color={"#F44336"} />
       </div>
 
-      <div >
-
+      <div>
         <CardSlider
+          caption={{ text: "Compliance Frameworks", icon: "faShield" }}
           titles={["Framework", "# Requirements", "# Controls"]}
-          navigation={[{start:0,path:"/dashboard/requirements",end:frameWorks.length-1}]}
+          navigation={[{start: 0, path: "/dashboard/requirements", end: frameworks.length - 1}]}
           sizes={[1, 1, 1]}
           colors={colors}
           ids={ids}
           fields={fields}
-
         />
       </div>
-
     </>
   )
 }

@@ -2,13 +2,17 @@ const express=require("express");const session = require("express-session");
 const passport = require("passport");
 const LocalStrategy = require('passport-local').Strategy;
 const path = require("node:path");
+const cors = require('cors');
 
 const app=express();
 require('dotenv').config();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true
+}));
 
 const auditLogsRouter=require("./routes/auditLogsRouter")
 const complianceItemsRouter=require("./routes/complianceItemsRouter")

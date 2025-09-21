@@ -1,56 +1,95 @@
-import React, {  useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CardSlider from "../components/CardSlider"
-import json from "../json.json"
-import {  useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { complianceAPI } from "../services/api"
+
 function Requirements() {
-    const navigate=useNavigate()
+    const navigate = useNavigate()
     const { id } = useParams();
-    const [data] = useState(json.complianceFrameworks);
-    const [fields, setFields] = useState([]);
-    const [colors, setColors] = useState([]);
-    const [ids, setIds] = useState([]);
+    const [requirements, setRequirements] = useState([]);
+    const [framework, setFramework] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     useEffect(() => {
-        const newFields = [];
-        const newIds = [];
-        const newColors = [];
+        const fetchRequirements = async () => {
+            try {
+                setLoading(true);
+                
+                // Fetch framework details
+                const frameworkData = await complianceAPI.getFrameworkById(id);
+                setFramework(frameworkData);
+                
+                // Fetch requirements for this framework
+                const requirementsData = await complianceAPI.getRequirementsByFramework(id);
+                setRequirements(requirementsData);
+                setError(null);
+            } catch (err) {
+                setError('Failed to fetch requirements');
+                console.error('Error fetching requirements:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        data.forEach((f) => {
+        if (id) {
+            fetchRequirements();
+        }
+    }, [id]);
 
-            f.requirements.forEach((r, index) => {
-                if (f.id == id) {
-                    newFields.push([
-                        { type: "t", text: index + 1 },
-                        { type: "t", text: r.name },
-                        { type: "t", text: r.reference },
-                    ]);
-                    newIds.push(r.id);
-                }
+    // Prepare data for CardSlider
+    const fields = requirements.map((requirement, index) => [
+        { type: "t", text: index + 1 },
+        { type: "t", text: requirement.requirement_name },
+        { type: "t", text: requirement.reference || "N/A" },
+    ]);
 
-            })
-        });
-        setFields(newFields);
-        setIds(newIds);
-        setColors(newColors);
-    }, [id, data]);
+    const ids = requirements.map(requirement => requirement.requirement_id);
+
+    if (loading) {
+        return (
+            <>
+                <h2>FrameWorks / {id}</h2>
+                <div className="p-4">Loading requirements...</div>
+            </>
+        );
+    }
+
+    if (error) {
+        return (
+            <>
+                <h2>FrameWorks / {id}</h2>
+                <div className="p-4 text-red-500">Error: {error}</div>
+            </>
+        );
+    }
+
+    if (!framework) {
+        return (
+            <>
+                <h2>FrameWorks / {id}</h2>
+                <div className="p-4">Framework not found</div>
+            </>
+        );
+    }
 
     return (
         <>
-            <h2 >FrameWorks / {id}</h2>
-                <CardSlider
-                    caption={{text:id+"Requirements/Domains"}}
-                    titles={["#", "Requirement", "Reference"]}
-                    navigation={[{ start: 0, path: "/dashboard/controls", end: fields.length - 1 }]}
-                    sizes={[1, 10, 6]}
-                    colors={colors}
-                    ids={ids}
-                    fields={fields}
-
-                />
-            <div onClick={() => { navigate(-1) }} className='button buttonStyle w-[fit-content] ml-2' >Back to Overview</div>
+            <h2>FrameWorks / {framework.framework_name}</h2>
+            <CardSlider
+                caption={{ text: `${framework.framework_name} Requirements/Domains` }}
+                titles={["#", "Requirement", "Reference"]}
+                navigation={[{ start: 0, path: "/dashboard/controls", end: requirements.length - 1 }]}
+                sizes={[1, 10, 6]}
+                colors={[]}
+                ids={ids}
+                fields={fields}
+            />
+            <div onClick={() => { navigate(-1) }} className='button buttonStyle w-[fit-content] ml-2' >
+                Back to Overview
+            </div>
         </>
     )
-
-
 }
 
 export default Requirements

@@ -9,14 +9,19 @@ async function createThreat(req, res, next) {
       throw new BadRequestError("Name, category, and severity are required");
     }
 
-    const newThreat = await db.addThreat({
+    const threatData = {
       name,
       message,
       description,
       category,
-      severity,
-      detected_at,
-    });
+      severity
+    };
+    
+    if (detected_at) {
+      threatData.detected_at = detected_at;
+    }
+
+    const newThreat = await db.addThreat(threatData);
 
     res.status(201).json(newThreat);
   } catch (err) {

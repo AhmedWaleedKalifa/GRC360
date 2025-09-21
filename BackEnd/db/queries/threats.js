@@ -24,13 +24,23 @@ async function searchThreatsByName(substring) {
 }
 
 async function addThreat({ name, message, description, category, severity, detected_at }) {
-  const { rows } = await pool.query(
-    `INSERT INTO threats (name, message, description, category, severity, detected_at)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING *;`,
-    [name, message, description, category, severity, detected_at]
-  );
-  return rows[0];
+  if (detected_at === undefined || detected_at === null) {
+    const { rows } = await pool.query(
+      `INSERT INTO threats (name, message, description, category, severity)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *;`,
+      [name, message, description, category, severity]
+    );
+    return rows[0];
+  } else {
+    const { rows } = await pool.query(
+      `INSERT INTO threats (name, message, description, category, severity, detected_at)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING *;`,
+      [name, message, description, category, severity, detected_at]
+    );
+    return rows[0];
+  }
 }
 
 async function updateThreat(threat_id, fields) {
