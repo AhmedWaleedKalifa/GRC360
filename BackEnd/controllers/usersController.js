@@ -14,14 +14,7 @@ async function createUser(req, res, next) {
       throw new ConflictError("Email already exists");
     }
 
-    const newUser = await db.addUser({
-      role,
-      user_name,
-      email,
-      password,
-      job_title,
-      phone,
-    });
+    const newUser = await db.addUser({role,user_name,email,password,job_title,phone,});
 
     res.status(201).json(newUser);
   } catch (err) {

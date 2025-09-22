@@ -1,24 +1,24 @@
 const db = require("../db/queries/incidents");
 const { BadRequestError, NotFoundError } = require("../errors/errors");
+const { logAction } = require("./auditHelper");
 
 async function createIncident(req, res, next) {
   try {
     const { title, category, status, severity, priority, reported_at, detected_at, owner, description } = req.body;
+    const user_id = req.user?.user_id;
 
     if (!title || !category || !severity) {
       throw new BadRequestError("Title, category, and severity are required");
     }
 
-    const newIncident = await db.addIncident({
+    const newIncident = await db.addIncident({title,category,status,severity,priority,reported_at,detected_at,owner,description,});
+
+    // Log the action
+    await logAction(user_id, "CREATE", "incident", newIncident.incident_id, {
       title,
       category,
-      status,
       severity,
-      priority,
-      reported_at,
-      detected_at,
-      owner,
-      description,
+      status: status || 'reported'
     });
 
     res.status(201).json(newIncident);
@@ -75,16 +75,25 @@ async function updateIncident(req, res, next) {
   try {
     const { id } = req.params;
     const fields = req.body;
+    const user_id = req.user?.user_id;
 
     if (Object.keys(fields).length === 0) {
       throw new BadRequestError("No fields to update");
     }
 
+    const oldIncident = await db.getIncidentById(parseInt(id));
     const updatedIncident = await db.updateIncident(parseInt(id), fields);
 
     if (!updatedIncident) {
       throw new NotFoundError("Incident not found");
     }
+
+    // Log the action
+    await logAction(user_id, "UPDATE", "incident", parseInt(id), {
+      changed_fields: Object.keys(fields),
+      old_status: oldIncident.status,
+      new_status: updatedIncident.status
+    });
 
     res.status(200).json(updatedIncident);
   } catch (err) {
@@ -95,11 +104,19 @@ async function updateIncident(req, res, next) {
 async function deleteIncident(req, res, next) {
   try {
     const { id } = req.params;
+    const user_id = req.user?.user_id;
+
     const deletedIncident = await db.removeIncident(parseInt(id));
 
     if (!deletedIncident) {
       throw new NotFoundError("Incident not found");
     }
+
+    // Log the action
+    await logAction(user_id, "DELETE", "incident", parseInt(id), {
+      title: deletedIncident.title,
+      category: deletedIncident.category
+    });
 
     res.status(200).json({ message: "Incident deleted successfully", incident: deletedIncident });
   } catch (err) {

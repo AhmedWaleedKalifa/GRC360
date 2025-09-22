@@ -24,15 +24,15 @@ async function searchIncidentsByTitle(substring) {
 }
 
 async function addIncident({ title, category, status, severity, priority, reported_at, detected_at, owner, description }) {
+  // Use COALESCE to handle null values and fall back to NOW() for reported_at
   const { rows } = await pool.query(
     `INSERT INTO incidents (title, category, status, severity, priority, reported_at, detected_at, owner, description)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+     VALUES ($1, $2, $3, $4, $5, COALESCE($6, NOW()), $7, $8, $9)
      RETURNING *;`,
     [title, category, status, severity, priority, reported_at, detected_at, owner, description]
   );
   return rows[0];
 }
-
 async function updateIncident(incident_id, fields) {
   const set = Object.keys(fields)
     .map((key, idx) => `${key} = $${idx + 2}`)

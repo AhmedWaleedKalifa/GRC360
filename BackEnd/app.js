@@ -26,7 +26,7 @@ const errorHandler = require("./middleware/errorHandler");
 
 
 app.get("/",(req,res)=>res.send("Hello, world!!!"))
-app.use("/logs",auditLogsRouter)
+app.use("/auditLogs",auditLogsRouter)
 app.use("/complianceItems",complianceItemsRouter)
 app.use("/configurations",configurationsRouter)
 app.use("/governanceItems",governanceItemsRouter)

@@ -1,89 +1,241 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import json from "../json.json"
+import { useNavigate, useParams } from 'react-router-dom'
 import Form from '../components/Form';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { risksAPI, usersAPI } from "../services/api";
+
 function EditRisk() {
     const { id } = useParams();
-    const [item, setItem] = useState(0);
-
-    const [categories, setCategories] = useState([]);
-    const [status, setStatus] = useState([]);
-    const [impact, setImpact] = useState([]);
-    const [likeliHood, setLikeliHood] = useState([]);
+    const [item, setItem] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [owners, setOwners] = useState([]);
-    const [severity, setSeverity] = useState([]);
-
+    const [ownerName, setOwnerName] = useState("Loading...");
     const navigate = useNavigate();
 
-    let categoriesArray = [];
-    let ownersArray = [];
-    let severityArray = []
-    let statusArray = [];
-    let impactArray = [];
-    let likeliHoodArray = [];
+    // Allowed values from your database schema
+    const allowedStatuses = ['open', 'in_progress', 'closed', 'mitigated'];
+    const allowedSeverities = ['low', 'medium', 'high', 'critical'];
+    const allowedImpacts = ['low', 'medium', 'high', 'critical'];
+    const allowedLikelihoods = ['low', 'medium', 'high', 'certain'];
+    const allowedCategories = ['Financial', 'Operational', 'Strategic', 'Compliance', 'Reputational', 'Technical', 'Other'];
+
+    // Get owner name from user ID
+    const getOwnerName = async (ownerId) => {
+        if (!ownerId) return "Unassigned";
+        
+        try {
+            const users = await usersAPI.getAll();
+            const user = users.find(u => u.user_id === ownerId);
+            return user ? user.user_name : "Unknown";
+        } catch (err) {
+            console.error('Error fetching user:', err);
+            return "Unknown";
+        }
+    };
+
+    // Fetch risk data and users
     useEffect(() => {
-        const data = json.risks
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                
+                // Fetch risk data
+                const riskData = await risksAPI.getById(id);
+                setItem(riskData);
+                
+                // Fetch users for owner dropdown
+                const usersData = await usersAPI.getAll();
+                const userNames = usersData.map(user => user.user_name);
+                setOwners(userNames);
+                
+                // Get owner name for display
+                const name = await getOwnerName(riskData.owner);
+                setOwnerName(name);
+                
+                setError(null);
+            } catch (err) {
+                setError('Failed to fetch data');
+                console.error('Error fetching data:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        data.map((e) => {
-            if (!impactArray.includes(e.impact)) {
-                impactArray.push(e.impact)
-            }
-            if (!likeliHoodArray.includes(e.likelihood)) {
-                likeliHoodArray.push(e.likelihood)
-            }
-            if (!categoriesArray.includes(e.category)) {
-                categoriesArray.push(e.category)
-            }
-            if (!ownersArray.includes(e.owner)) {
-                ownersArray.push(e.owner)
-            }
-            if (!severityArray.includes(e.severity)) {
-                severityArray.push(e.severity)
-            }
-            if (!statusArray.includes(e.status)) {
-                statusArray.push(e.status)
-            }
-            setOwners(ownersArray)
-            setLikeliHood(likeliHoodArray)
-            setImpact(impactArray)
-            setStatus(statusArray)
-            setCategories(categoriesArray)
-            setSeverity(severityArray)
-        })
-        const field = json.risks.find((e) => e.id == id);
-        setItem(field)
+        if (id) {
+            fetchData();
+        }
+    }, [id]);
 
-    }, [id])
+    // Handle form submission
+    const handleSubmit = async (formData) => {
+        try {
+            setLoading(true);
+            
+            // Convert owner name to user ID if needed
+            if (formData.owner && formData.owner !== "Unassigned") {
+                const users = await usersAPI.getAll();
+                const user = users.find(u => u.user_name === formData.owner);
+                if (user) {
+                    formData.owner = user.user_id;
+                }
+            } else {
+                formData.owner = null;
+            }
+            
+            // Prepare risk data for update
+            const riskData = {
+                title: formData.title,
+                description: formData.description || '',
+                category: formData.category,
+                status: formData.status,
+                severity: formData.severity,
+                impact: formData.impact,
+                likelihood: formData.likelihood,
+                owner: formData.owner,
+                last_reviewed: formData.lastReviewed || null,
+                notes: formData.notes || ''
+            };
+            
+            await risksAPI.update(id, riskData);
+            navigate(-1); // Go back to previous page after successful update
+        } catch (err) {
+            console.error('Error updating risk:', err);
+            alert('Failed to update risk');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className='smallContainer'>
+                <div className="editConfig">
+                    <h1 className="editConfigTitle">Edit Risk</h1>
+                    <div>Loading risk data...</div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className='smallContainer'>
+                <div className="editConfig">
+                    <h1 className="editConfigTitle">Edit Risk</h1>
+                    <div className="text-red-500">Error: {error}</div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!item) {
+        return (
+            <div className='smallContainer'>
+                <div className="editConfig">
+                    <h1 className="editConfigTitle">Edit Risk</h1>
+                    <div>Risk not found</div>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <>
-            {item &&
-                <div className='smallContainer'>
-                    <div className="editConfig">
-                        <h1 className="editConfigTitle">Edit Risk</h1>
-                        <Link className='templateBackLink ' onClick={() => { navigate(-1) }}>
-                            <FontAwesomeIcon icon={faArrowLeft} className='text-2xl' />
-                        </Link>
-                        <Form fstyle={{ form: "profileForm", button: "button buttonStyle col-span-2 mt-4" }}
-                            inputarray={[
-                                { id: "title", type: "text", isInput: true, label: "Title:", initialValue: item.title, Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
-                                { id: "description", type: "text", isInput: true, label: "Description:", initialValue: item?.description, Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
-                                { id: "category", type: "select", isInput: true, label: "Category:", selectList: categories, initialValue: item.category, Class: { container: "editInputContainer", label: "label", input: "select" } },
-                                { id: "owner", type: "select", isInput: true, label: "Owner:", selectList: owners, initialValue: item.owner, Class: { container: "editInputContainer", label: "label", input: "select" } },
-                                { id: "status", type: "select", isInput: true, label: "Status:", selectList: status, initialValue: item.status, Class: { container: "editInputContainer", label: "label", input: "select" } },
-                                { id: "likelihood", type: "select", isInput: true, label: "Likelihood:", selectList: likeliHood, initialValue: item.likelihood, Class: { container: "editInputContainer", label: "label", input: "select" } },
-                                { id: "impact", type: "select", isInput: true, label: "Impact:", selectList: impact, initialValue: item.impact, Class: { container: "editInputContainer", label: "label", input: "select" } },
-                                { id: "severity", type: "select", isInput: true, label: "Severity:", changeable: false, initialValue: item.severity, selectList: severity, Class: { container: "editInputContainer", label: "label", input: "select" } },
-                                { id: "lastReviewed", type: "date", isInput: true, label: "Last Reviewed :", initialValue: item.lastReviewed, Class: { container: "editInputContainer col-span-2", label: "label", input: "select" } },
-
-                            ]}
-                            button={"Save"}
-                        />
-                    </div>
-                </div >
-            }
-        </>
+        <div className='smallContainer'>
+            <div className="editConfig">
+                <h1 className="editConfigTitle">Edit Risk</h1>
+                <button className='templateBackLink' onClick={() => navigate(-1)}>
+                    <FontAwesomeIcon icon={faArrowLeft} className='text-2xl' />
+                </button>
+                <Form 
+                    fstyle={{ form: "profileForm", button: "button buttonStyle col-span-2 mt-4" }}
+                    onSubmit={handleSubmit}
+                    inputarray={[
+                        { 
+                            id: "title", 
+                            type: "text", 
+                            isInput: true, 
+                            label: "Title:", 
+                            initialValue: item.title, 
+                            required: true,
+                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
+                        },
+                        { 
+                            id: "description", 
+                            type: "text", 
+                            isInput: false, 
+                            label: "Description:", 
+                            initialValue: item.description || "", 
+                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
+                        },
+                        { 
+                            id: "category", 
+                            type: "select", 
+                            isInput: true, 
+                            label: "Category:", 
+                            selectList: allowedCategories, 
+                            initialValue: item.category || "Other", 
+                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        },
+                        { 
+                            id: "owner", 
+                            type: "select", 
+                            isInput: true, 
+                            label: "Owner:", 
+                            selectList: ["Unassigned", ...owners], 
+                            initialValue: ownerName, 
+                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        },
+                        { 
+                            id: "status", 
+                            type: "select", 
+                            isInput: true, 
+                            label: "Status:", 
+                            selectList: allowedStatuses, 
+                            initialValue: item.status, 
+                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        },
+                        { 
+                            id: "likelihood", 
+                            type: "select", 
+                            isInput: true, 
+                            label: "Likelihood:", 
+                            selectList: allowedLikelihoods, 
+                            initialValue: item.likelihood || "medium", 
+                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        },
+                        { 
+                            id: "impact", 
+                            type: "select", 
+                            isInput: true, 
+                            label: "Impact:", 
+                            selectList: allowedImpacts, 
+                            initialValue: item.impact || "medium", 
+                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        },
+                        { 
+                            id: "severity", 
+                            type: "select", 
+                            isInput: true, 
+                            label: "Severity:", 
+                            selectList: allowedSeverities, 
+                            initialValue: item.severity, 
+                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        },
+                        { 
+                            id: "lastReviewed", 
+                            type: "date", 
+                            isInput: true, 
+                            label: "Last Reviewed:", 
+                            initialValue: item.last_reviewed ? item.last_reviewed.split('T')[0] : "", 
+                            Class: { container: "editInputContainer col-span-2", label: "label", input: "select" } 
+                        },
+                    ]}
+                    button={loading ? "Saving..." : "Save"}
+                />
+            </div>
+        </div>
     )
 }
 

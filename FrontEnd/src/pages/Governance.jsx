@@ -169,7 +169,7 @@ function Governance() {
       </div>
       <CardSlider
         titles={["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Approver", "Confidentiality", "Attachment", "Actions", ""]}
-        sizes={[1, 4, 3, 4, 3, 4, 4, 4, 4, 3, 7, 4, 4, 4, 4, 2, 2]}
+        sizes={[1, 4, 3, 3, 4, 4, 4, 4, 4, 3, 7, 4, 4, 4, 4, 2, 2]}
         colors={colors}
         fields={fields}
         ids={ids}

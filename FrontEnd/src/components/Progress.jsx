@@ -3,7 +3,7 @@ import React from 'react'
 function Progress({ title, footer, num, all }) {
     const percentage = (num / all) * 100
     return (
-        <div className='progress cardStyle1 '>
+        <div className='progress cardStyle1 w-[25%] '>
             <div className='progressTitle'>{title}</div>
             <div className='progressContainer'>
                 {percentage?<>

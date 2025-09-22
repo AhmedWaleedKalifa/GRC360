@@ -1,18 +1,22 @@
 const db = require("../db/queries/configurations");
 const { BadRequestError, NotFoundError } = require("../errors/errors");
+const { logAction } = require("./auditHelper");
 
 async function createConfiguration(req, res, next) {
   try {
     const { key, value, description } = req.body;
+    const user_id = req.user?.user_id;
 
     if (!key || !value) {
       throw new BadRequestError("Key and value are required");
     }
 
-    const newConfiguration = await db.addConfiguration({
+    const newConfiguration = await db.addConfiguration({key,value,description,});
+
+    // Log the action
+    await logAction(user_id, "CREATE", "configuration", newConfiguration.config_id, {
       key,
-      value,
-      description,
+      value
     });
 
     res.status(201).json(newConfiguration);
@@ -20,6 +24,56 @@ async function createConfiguration(req, res, next) {
     if (err.code === "23505") {
       return next(new ConflictError("Configuration key already exists"));
     }
+    next(err);
+  }
+}
+
+async function updateConfiguration(req, res, next) {
+  try {
+    const { id } = req.params;
+    const fields = req.body;
+    const user_id = req.user?.user_id;
+
+    if (Object.keys(fields).length === 0) {
+      throw new BadRequestError("No fields to update");
+    }
+
+    const oldConfiguration = await db.getConfigurationById(parseInt(id));
+    const updatedConfiguration = await db.updateConfiguration(parseInt(id), fields);
+
+    if (!updatedConfiguration) {
+      throw new NotFoundError("Configuration not found");
+    }
+
+    // Log the action
+    await logAction(user_id, "UPDATE", "configuration", parseInt(id), {
+      changed_fields: Object.keys(fields)
+    });
+
+    res.status(200).json(updatedConfiguration);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteConfiguration(req, res, next) {
+  try {
+    const { id } = req.params;
+    const user_id = req.user?.user_id;
+
+    const deletedConfiguration = await db.removeConfiguration(parseInt(id));
+
+    if (!deletedConfiguration) {
+      throw new NotFoundError("Configuration not found");
+    }
+
+    // Log the action
+    await logAction(user_id, "DELETE", "configuration", parseInt(id), {
+      key: deletedConfiguration.key
+    });
+
+    res.status(200).json({ message: "Configuration deleted successfully", configuration: deletedConfiguration });
+  } catch (err) {
     next(err);
   }
 }
@@ -68,41 +122,7 @@ async function getConfigurationByKey(req, res, next) {
   }
 }
 
-async function updateConfiguration(req, res, next) {
-  try {
-    const { id } = req.params;
-    const fields = req.body;
 
-    if (Object.keys(fields).length === 0) {
-      throw new BadRequestError("No fields to update");
-    }
-
-    const updatedConfiguration = await db.updateConfiguration(parseInt(id), fields);
-
-    if (!updatedConfiguration) {
-      throw new NotFoundError("Configuration not found");
-    }
-
-    res.status(200).json(updatedConfiguration);
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function deleteConfiguration(req, res, next) {
-  try {
-    const { id } = req.params;
-    const deletedConfiguration = await db.removeConfiguration(parseInt(id));
-
-    if (!deletedConfiguration) {
-      throw new NotFoundError("Configuration not found");
-    }
-
-    res.status(200).json({ message: "Configuration deleted successfully", configuration: deletedConfiguration });
-  } catch (err) {
-    next(err);
-  }
-}
 
 module.exports = {
   createConfiguration,

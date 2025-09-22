@@ -1,45 +1,108 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
-import json from "../json.json";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Form from "../components/Form";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { configurationsAPI } from "../services/api";
 
 const EditConfigurations = () => {
   const [item, setItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { id } = useParams();
-  const navigate = useNavigate()
-  const data = json.configurations
+  const navigate = useNavigate();
 
+  // Fetch configuration by ID
   useEffect(() => {
-    const field = data.find((e) => String(e.id) === id);
-    setItem(field);
+    const fetchConfiguration = async () => {
+      try {
+        setLoading(true);
+        const configuration = await configurationsAPI.getById(id);
+        setItem(configuration);
+        setError(null);
+      } catch (err) {
+        setError('Failed to fetch configuration');
+        console.error('Error fetching configuration:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchConfiguration();
+    }
   }, [id]);
 
-  return (
-    <>
-      {item &&
-        <div className='smallContainer'>
+  // Handle form submission
+  const handleSubmit = async (formData) => {
+    try {
+      await configurationsAPI.update(id, {
+        value: formData.value, // only update the value
+      });
+      navigate(-1); // Go back to previous page after successful update
+    } catch (err) {
+      console.error('Error updating configuration:', err);
+      alert('Failed to update configuration');
+    }
+  };
 
-          <div className="editConfig">
-            <h1 className="editConfigTitle">Edit Configuration</h1>
-            <Link className='templateBackLink ' onClick={() => { navigate(-1) }}>
-              <FontAwesomeIcon icon={faArrowLeft} className='text-2xl' />
-            </Link>
-            <Form fstyle={{ form: "editConfigForm", button: "button buttonStyle" }}
-              inputarray={[
-                { id: "key", type: "text", isInput: true, label: "Key:", initialValue: item?.key, Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
-                { id: "value", type: "text", isInput: true, label: "Value:", initialValue: item?.value, Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } },
-
-              ]}
-              button={"Save"}
-            />
-          </div>
+  if (loading) {
+    return (
+      <div className='smallContainer'>
+        <div className="editConfig">
+          <h1 className="editConfigTitle">Edit Configuration</h1>
+          <div>Loading configuration...</div>
         </div>
-      }
+      </div>
+    );
+  }
 
+  if (error) {
+    return (
+      <div className='smallContainer'>
+        <div className="editConfig">
+          <h1 className="editConfigTitle">Edit Configuration</h1>
+          <div className="text-red-500">Error: {error}</div>
+        </div>
+      </div>
+    );
+  }
 
-    </>
+  if (!item) {
+    return (
+      <div className='smallContainer'>
+        <div className="editConfig">
+          <h1 className="editConfigTitle">Edit Configuration</h1>
+          <div>Configuration not found</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className='smallContainer'>
+      <div className="editConfig">
+        <h1 className="editConfigTitle">Edit Configuration</h1>
+        <button className='templateBackLink' onClick={() => navigate(-1)}>
+          <FontAwesomeIcon icon={faArrowLeft} className='text-2xl' />
+        </button>
+        <Form 
+          fstyle={{ form: "editConfigForm", button: "button buttonStyle" }}
+          onSubmit={handleSubmit}
+          inputarray={[
+            { 
+              id: "value", 
+              type: "text", 
+              isInput: true, 
+              label: "Value:", 
+              initialValue: item?.value, 
+              Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
+            },
+          ]}
+          button={"Save"}
+        />
+      </div>
+    </div>
   );
 };
 

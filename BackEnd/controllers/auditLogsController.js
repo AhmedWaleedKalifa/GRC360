@@ -9,13 +9,7 @@ async function createAuditLog(req, res, next) {
       throw new BadRequestError("Action and entity are required");
     }
 
-    const newAuditLog = await db.addAuditLog({
-      user_id,
-      action,
-      entity,
-      entity_id,
-      details,
-    });
+    const newAuditLog = await db.addAuditLog({  user_id,  action,  entity,  entity_id,  details,});
 
     res.status(201).json(newAuditLog);
   } catch (err) {

@@ -7,5 +7,4 @@ module.exports = {
   risks:require("./risks"),
   threats:require("./threats"),
   users: require("./users"),
-
   };

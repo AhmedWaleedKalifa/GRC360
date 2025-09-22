@@ -14,7 +14,6 @@ function Incidents() {
   const [incidents, setIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [colors, setColors] = useState([]);
 
   // Stats for cards
   const [closed, setClosed] = useState(0);
@@ -63,7 +62,6 @@ function Incidents() {
     let newClosed = 0;
     let newInvestigating = 0;
     let newHighSeverity = 0;
-    let newColors=[];
     incidents.forEach(incident => {
       if (incident.status === 'open') {
         newOpen += 1;
@@ -72,11 +70,7 @@ function Incidents() {
       } else if (incident.status === 'investigating') {
         newInvestigating += 1;
       }
-      if (String(incident.id) === id) {
-        newColors.push("#26A7F680");
-      } else {
-        newColors.push("")
-      }
+      
       if (incident.severity === 'high' || incident.severity === 'critical') {
         newHighSeverity += 1;
       }
@@ -86,7 +80,6 @@ function Incidents() {
     setClosed(newClosed);
     setInvestigating(newInvestigating);
     setHighSeverity(newHighSeverity);
-    setColors(newColors)
   }, [incidents]);
 
   // Prepare data for CardSlider components
@@ -105,6 +98,7 @@ function Incidents() {
   ]);
 
   const allIncidentsFields = incidents.map(incident => [
+    
     { type: "t", text: incident.title },
     { type: "t", text: incident.category },
     {
@@ -131,7 +125,9 @@ function Incidents() {
     { type: "i", text: "faPen", color: "#26A7F6", selfNav: `/dashboard/editIncident/${incident.incident_id}` },
     { type: "i", text: "faTrash", color: "#F44336", click: () => deleteIncident(incident.incident_id) }
   ]);
-
+  const colors = incidents.map(item => 
+    String(item.incident_id) === id ? "#26A7F680" : ""
+  );
   const recentIncidentsIds = incidents.slice(0, 5).map(incident => incident.incident_id);
   const allIncidentsIds = incidents.map(incident => incident.incident_id);
 
@@ -157,8 +153,9 @@ function Incidents() {
         <Card title="High Severity" value={highSeverity} model={2} />
       </div>
 
-      <div className='flex flex-row items-center gap-5 w-full flex-nowrap xl:flex-nowrap sm:flex-wrap'>
-        <Chart 
+      <div className='flex flex-row items-center x w-full  flex-nowrap xl:flex-nowrap sm:flex-wrap'>
+      <div className='w-[50%] h-full flex flex-row items-center gap-4'>
+      <Chart 
           title={"Incidents by Status"} 
           array={[
             { name: "Closed", value: closed, color: "#00ff0080" }, 
@@ -172,7 +169,8 @@ function Incidents() {
           num={closed} 
           all={incidents.length} 
         />
-        <div className='w-full h-full'>
+      </div>
+        <div className='w-[50%] h-full '>
           <CardSlider
             caption={{ text: "Recent Incidents", icon: "faClock" }}
             titles={["Title", "Date", "Status"]}
@@ -187,7 +185,7 @@ function Incidents() {
 
       <CardSlider
         caption={{ text: "All Incidents", icon: "faFolder" }}
-        sizes={[6, 2, 4, 3, 5, 3, 7, 2, 0.8]}
+        sizes={[6, 2, 4, 3, 3, 3, 7, 1.6, .8]}
         titles={["Title", "Category", "Status", "Severity", "Reported At", "Owner", "Description", "Actions", ""]}
         ids={allIncidentsIds}
         fields={allIncidentsFields}

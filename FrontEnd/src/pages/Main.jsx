@@ -13,6 +13,7 @@ function Main() {
   const [frameworks, setFrameworks] = useState([]);
   const [requirements, setRequirements] = useState([]);
   const [controls, setControls] = useState([]);
+  const [controlFrameworkMap, setControlFrameworkMap] = useState({}); // Map control_id to framework_id
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -39,15 +40,28 @@ function Main() {
         // Fetch requirements and controls for each framework
         let allRequirements = [];
         let allControls = [];
+        let frameworkMap = {}; // Map requirement_id to framework_id
         
         for (const framework of frameworksData) {
           try {
             const requirementsData = await complianceAPI.getRequirementsByFramework(framework.framework_id);
+            
+            // Store framework_id for each requirement
+            requirementsData.forEach(req => {
+              frameworkMap[req.requirement_id] = framework.framework_id;
+            });
+            
             allRequirements = [...allRequirements, ...requirementsData];
             
             for (const requirement of requirementsData) {
               try {
                 const controlsData = await complianceAPI.getControlsByRequirement(requirement.requirement_id);
+                
+                // Store framework_id for each control
+                controlsData.forEach(control => {
+                  frameworkMap[control.control_id] = frameworkMap[requirement.requirement_id];
+                });
+                
                 allControls = [...allControls, ...controlsData];
               } catch (err) {
                 console.error(`Error fetching controls for requirement ${requirement.requirement_id}:`, err);
@@ -60,6 +74,7 @@ function Main() {
         
         setRequirements(allRequirements);
         setControls(allControls);
+        setControlFrameworkMap(frameworkMap);
         setError(null);
 
       } catch (err) {
@@ -73,80 +88,115 @@ function Main() {
     fetchAllData();
   }, []);
 
-  // Prepare data for CardSlider
-  const [risksFields, setRisksFields] = useState([]);
-  const [governanceFields, setGovernanceFields] = useState([]);
-  const [incidentsFields, setIncidentsFields] = useState([]);
-  const [controlsFields, setControlsFields] = useState([]);
-  const [ids, setIds] = useState([]);
+  // Prepare combined data for CardSlider
+  const [sortedData, setSortedData] = useState({
+    fields: [],
+    ids: [],
+    navigation: []
+  });
 
   useEffect(() => {
     if (risks.length === 0 && governanceItems.length === 0 && incidents.length === 0 && controls.length === 0) return;
 
-    let risksArray = [];
-    let governanceArray = [];
-    let incidentsArray = [];
-    let controlsArray = [];
-    let idsArray = [];
+    // Create combined array with all items and their metadata
+    const allItems = [];
 
-    // Risks
+    // Add risks with their metadata
     risks.forEach((risk) => {
-      risksArray.push([
-        { type: "i", text: "faChartSimple", color: "#FFA72699" },
-        { type: "b", text: "Risk Review", color: "#FFA72699" },
-        { type: "t", text: risk.title },
-        { type: "t", text: risk.owner || "Unassigned" },
-        { type: "t", text: risk.last_reviewed ? new Date(risk.last_reviewed).toLocaleDateString() : "No date" },
-        { type: "t", text: risk.status }
-      ]);
-      idsArray.push(risk.risk_id); // Only the ID, no prefix
+      const date = risk.last_reviewed ? new Date(risk.last_reviewed) : new Date(0);
+      allItems.push({
+        type: "risk",
+        field: [
+          { type: "i", text: "faChartSimple", color: "#FFA72699" },
+          { type: "b", text: "Risk Review", color: "#FFA72699" },
+          { type: "t", text: risk.title },
+          { type: "t", text: risk.owner || "Unassigned" },
+          { type: "t", text: risk.last_reviewed ? new Date(risk.last_reviewed).toLocaleDateString() : "No date" },
+          { type: "t", text: risk.status }
+        ],
+        id: risk.risk_id,
+        path: "/dashboard/risks",
+        date: date
+      });
     });
 
-    // Governance Items
+    // Add governance items with their metadata
     governanceItems.forEach((item) => {
-      governanceArray.push([
-        { type: "i", text: "faGavel", color: "#00ff0099" },
-        { type: "b", text: "Governance Review", color: "#00ff0099" },
-        { type: "t", text: item.governance_name },
-        { type: "t", text: item.owner || "Unassigned" },
-        { type: "t", text: item.next_review ? new Date(item.next_review).toLocaleDateString() : "No date" },
-        { type: "t", text: item.status }
-      ]);
-      idsArray.push(item.governance_id); // Only the ID, no prefix
+      const date = item.next_review ? new Date(item.next_review) : new Date(0);
+      allItems.push({
+        type: "governance",
+        field: [
+          { type: "i", text: "faGavel", color: "#00ff0099" },
+          { type: "b", text: "Governance Review", color: "#00ff0099" },
+          { type: "t", text: item.governance_name },
+          { type: "t", text: item.owner || "Unassigned" },
+          { type: "t", text: item.next_review ? new Date(item.next_review).toLocaleDateString() : "No date" },
+          { type: "t", text: item.status }
+        ],
+        id: item.governance_id,
+        path: "/dashboard/governance",
+        date: date
+      });
     });
 
-    // Incidents
+    // Add incidents with their metadata
     incidents.forEach((incident) => {
-      incidentsArray.push([
-        { type: "i", text: "faTriangleExclamation", color: "#3b82f699" },
-        { type: "b", text: "Incident Review", color: "#3b82f699" },
-        { type: "t", text: incident.title },
-        { type: "t", text: incident.owner || "Unassigned" },
-        { type: "t", text: incident.reported_at ? new Date(incident.reported_at).toLocaleDateString() : "No date" },
-        { type: "t", text: incident.status }
-      ]);
-      idsArray.push(incident.incident_id); // Only the ID, no prefix
+      const date = incident.reported_at ? new Date(incident.reported_at) : new Date(0);
+      allItems.push({
+        type: "incident",
+        field: [
+          { type: "i", text: "faTriangleExclamation", color: "#3b82f699" },
+          { type: "b", text: "Incident Review", color: "#3b82f699" },
+          { type: "t", text: incident.title },
+          { type: "t", text: incident.owner || "Unassigned" },
+          { type: "t", text: incident.reported_at ? new Date(incident.reported_at).toLocaleDateString() : "No date" },
+          { type: "t", text: incident.status }
+        ],
+        id: incident.incident_id,
+        path: "/dashboard/incidents",
+        date: date
+      });
     });
 
-    // Controls
+    // Add controls with their metadata - using framework_id instead of control_id
     controls.forEach((control) => {
-      controlsArray.push([
-        { type: "i", text: "faShield", color: "#ff00ff99" },
-        { type: "b", text: "Control Review", color: "#ff00ff99" },
-        { type: "t", text: control.control_name },
-        { type: "t", text: control.owner || "Unassigned" },
-        { type: "t", text: control.last_reviewed ? new Date(control.last_reviewed).toLocaleDateString() : "No date" },
-        { type: "t", text: control.status }
-      ]);
-      idsArray.push(control.control_id); 
+      const date = control.last_reviewed ? new Date(control.last_reviewed) : new Date(0);
+      const frameworkId = controlFrameworkMap[control.control_id] || control.control_id; // Fallback to control_id if framework not found
+      
+      allItems.push({
+        type: "control",
+        field: [
+          { type: "i", text: "faShield", color: "#ff00ff99" },
+          { type: "b", text: "Control Review", color: "#ff00ff99" },
+          { type: "t", text: control.control_name },
+          { type: "t", text: control.owner || "Unassigned" },
+          { type: "t", text: control.last_reviewed ? new Date(control.last_reviewed).toLocaleDateString() : "No date" },
+          { type: "t", text: control.status }
+        ],
+        id: frameworkId, // Use framework_id instead of control_id
+        path: "/dashboard/compliance",
+        date: date
+      });
     });
 
-    setIds(idsArray);
-    setRisksFields(risksArray);
-    setGovernanceFields(governanceArray);
-    setControlsFields(controlsArray);
-    setIncidentsFields(incidentsArray);
-  }, [risks, governanceItems, incidents, controls]);
+    // Sort all items by date
+    const sortedItems = allItems.sort((a, b) => a.date - b.date);
+
+    // Extract sorted arrays
+    const sortedFields = sortedItems.map(item => item.field);
+    const sortedIds = sortedItems.map(item => item.id);
+    const sortedNavigation = sortedItems.map((item, index) => ({
+      path: item.path,
+      start: index,
+      end: index
+    }));
+
+    setSortedData({
+      fields: sortedFields,
+      ids: sortedIds,
+      navigation: sortedNavigation
+    });
+  }, [risks, governanceItems, incidents, controls, controlFrameworkMap]);
 
   // Calculate risk statistics
   const totalRisks = risks.length;
@@ -171,32 +221,6 @@ function Main() {
     );
   }
 
-  const allFields = [...risksFields, ...governanceFields, ...incidentsFields, ...controlsFields];
-
-  // Sort by date (assuming the date is in the 4th position of each field array)
-  const sortedFields = allFields.sort((a, b) => {
-    const dateA = new Date(a[4].text);
-    const dateB = new Date(b[4].text);
-    return dateA - dateB;
-  });
-  const sortedNavigation = sortedFields.map((field, index) => {
-    let path = "";
-
-    const label = field[1].text; // "Risk Review", "Governance Review", etc.
-
-    if (label === "Risk Review") path = "/dashboard/risks";
-    else if (label === "Governance Review") path = "/dashboard/governance";
-    else if (label === "Incident Review") path = "/dashboard/incidents";
-    else if (label === "Control Review") path = "/dashboard/compliance";
-
-    return {
-      path,
-      start: index,
-      end: index + 1, // one element range
-    };
-  });
-  console.log(sortedNavigation)
-
   return (
     <>
       <CardSlider
@@ -204,9 +228,9 @@ function Main() {
         titles={["Type", " ", "Title", "owner", "Due Date", "status"]}
         colors={[""]}
         sizes={[2, 8, 20, 6, 6, 6]}
-        navigation={sortedNavigation}
-        ids={ids}
-        fields={sortedFields}
+        navigation={sortedData.navigation}
+        ids={sortedData.ids}
+        fields={sortedData.fields}
       />
       
       <div className='p-3.5 flex flex-col bg-teal/90 rounded-2xl w-full h-full capitalize font-bold text-3xl gap-4'>

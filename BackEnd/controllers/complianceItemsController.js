@@ -1,10 +1,12 @@
 const db = require("../db/queries/complianceItems");
 const { BadRequestError, NotFoundError, ConflictError } = require("../errors/errors");
+const { logAction } = require("./auditHelper");
 
 // Frameworks
 async function createFramework(req, res, next) {
   try {
     const { framework_id, framework_name, description } = req.body;
+    const user_id = req.user?.user_id; // Assuming user info is in req.user
 
     if (!framework_id || !framework_name) {
       throw new BadRequestError("Framework ID and name are required");
@@ -15,10 +17,12 @@ async function createFramework(req, res, next) {
       throw new ConflictError("Framework ID already exists");
     }
 
-    const newFramework = await db.addFramework({
-      framework_id,
+    const newFramework = await db.addFramework({framework_id,framework_name,description,});
+
+    // Log the action
+    await logAction(user_id, "CREATE", "compliance_framework", framework_id, {
       framework_name,
-      description,
+      description
     });
 
     res.status(201).json(newFramework);
@@ -29,6 +33,59 @@ async function createFramework(req, res, next) {
     next(err);
   }
 }
+
+async function updateFramework(req, res, next) {
+  try {
+    const { id } = req.params;
+    const fields = req.body;
+    const user_id = req.user?.user_id;
+
+    if (Object.keys(fields).length === 0) {
+      throw new BadRequestError("No fields to update");
+    }
+
+    const oldFramework = await db.getFrameworkById(id);
+    const updatedFramework = await db.updateFramework(id, fields);
+
+    if (!updatedFramework) {
+      throw new NotFoundError("Framework not found");
+    }
+
+    // Log the action
+    await logAction(user_id, "UPDATE", "compliance_framework", id, {
+      old_data: oldFramework,
+      new_data: updatedFramework,
+      changed_fields: Object.keys(fields)
+    });
+
+    res.status(200).json(updatedFramework);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteFramework(req, res, next) {
+  try {
+    const { id } = req.params;
+    const user_id = req.user?.user_id;
+
+    const deletedFramework = await db.removeFramework(id);
+
+    if (!deletedFramework) {
+      throw new NotFoundError("Framework not found");
+    }
+
+    // Log the action
+    await logAction(user_id, "DELETE", "compliance_framework", id, {
+      framework_name: deletedFramework.framework_name
+    });
+
+    res.status(200).json({ message: "Framework deleted successfully", framework: deletedFramework });
+  } catch (err) {
+    next(err);
+  }
+}
+
 
 async function getFrameworks(req, res, next) {
   try {
@@ -59,46 +116,11 @@ async function getFrameworkById(req, res, next) {
   }
 }
 
-async function updateFramework(req, res, next) {
-  try {
-    const { id } = req.params;
-    const fields = req.body;
-
-    if (Object.keys(fields).length === 0) {
-      throw new BadRequestError("No fields to update");
-    }
-
-    const updatedFramework = await db.updateFramework(id, fields);
-
-    if (!updatedFramework) {
-      throw new NotFoundError("Framework not found");
-    }
-
-    res.status(200).json(updatedFramework);
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function deleteFramework(req, res, next) {
-  try {
-    const { id } = req.params;
-    const deletedFramework = await db.removeFramework(id);
-
-    if (!deletedFramework) {
-      throw new NotFoundError("Framework not found");
-    }
-
-    res.status(200).json({ message: "Framework deleted successfully", framework: deletedFramework });
-  } catch (err) {
-    next(err);
-  }
-}
-
 // Requirements
 async function createRequirement(req, res, next) {
   try {
     const { requirement_id, framework_id, requirement_name, reference } = req.body;
+    const user_id = req.user?.user_id;
 
     if (!requirement_id || !framework_id || !requirement_name) {
       throw new BadRequestError("Requirement ID, framework ID, and name are required");
@@ -109,11 +131,13 @@ async function createRequirement(req, res, next) {
       throw new ConflictError("Requirement ID already exists");
     }
 
-    const newRequirement = await db.addRequirement({
-      requirement_id,
-      framework_id,
+    const newRequirement = await db.addRequirement({requirement_id,framework_id,requirement_name,reference,});
+
+    // Log the action
+    await logAction(user_id, "CREATE", "compliance_requirement", requirement_id, {
       requirement_name,
-      reference,
+      framework_id,
+      reference
     });
 
     res.status(201).json(newRequirement);
@@ -124,6 +148,7 @@ async function createRequirement(req, res, next) {
     next(err);
   }
 }
+
 
 async function getRequirementsByFramework(req, res, next) {
   try {
@@ -154,21 +179,27 @@ async function getRequirementById(req, res, next) {
     next(err);
   }
 }
-
 async function updateRequirement(req, res, next) {
   try {
     const { id } = req.params;
     const fields = req.body;
+    const user_id = req.user?.user_id;
 
     if (Object.keys(fields).length === 0) {
       throw new BadRequestError("No fields to update");
     }
 
+    const oldRequirement = await db.getRequirementById(id);
     const updatedRequirement = await db.updateRequirement(id, fields);
 
     if (!updatedRequirement) {
       throw new NotFoundError("Requirement not found");
     }
+
+    // Log the action
+    await logAction(user_id, "UPDATE", "compliance_requirement", id, {
+      changed_fields: Object.keys(fields)
+    });
 
     res.status(200).json(updatedRequirement);
   } catch (err) {
@@ -179,11 +210,18 @@ async function updateRequirement(req, res, next) {
 async function deleteRequirement(req, res, next) {
   try {
     const { id } = req.params;
+    const user_id = req.user?.user_id;
+
     const deletedRequirement = await db.removeRequirement(id);
 
     if (!deletedRequirement) {
       throw new NotFoundError("Requirement not found");
     }
+
+    // Log the action
+    await logAction(user_id, "DELETE", "compliance_requirement", id, {
+      requirement_name: deletedRequirement.requirement_name
+    });
 
     res.status(200).json({ message: "Requirement deleted successfully", requirement: deletedRequirement });
   } catch (err) {
@@ -195,6 +233,7 @@ async function deleteRequirement(req, res, next) {
 async function createControl(req, res, next) {
   try {
     const { control_id, requirement_id, control_name, status, owner, last_reviewed, reference, notes, description, attachment } = req.body;
+    const user_id = req.user?.user_id;
 
     if (!control_id || !requirement_id || !control_name) {
       throw new BadRequestError("Control ID, requirement ID, and name are required");
@@ -205,17 +244,13 @@ async function createControl(req, res, next) {
       throw new ConflictError("Control ID already exists");
     }
 
-    const newControl = await db.addControl({
-      control_id,
-      requirement_id,
+    const newControl = await db.addControl({control_id,requirement_id,control_name,status,owner,last_reviewed,reference,notes,description,attachment,});
+
+    // Log the action
+    await logAction(user_id, "CREATE", "compliance_control", control_id, {
       control_name,
-      status,
-      owner,
-      last_reviewed,
-      reference,
-      notes,
-      description,
-      attachment,
+      requirement_id,
+      status
     });
 
     res.status(201).json(newControl);
@@ -271,21 +306,27 @@ async function getControlById(req, res, next) {
     next(err);
   }
 }
-
 async function updateControl(req, res, next) {
   try {
     const { id } = req.params;
     const fields = req.body;
+    const user_id = req.user?.user_id;
 
     if (Object.keys(fields).length === 0) {
       throw new BadRequestError("No fields to update");
     }
 
+    const oldControl = await db.getControlById(id);
     const updatedControl = await db.updateControl(id, fields);
 
     if (!updatedControl) {
       throw new NotFoundError("Control not found");
     }
+
+    // Log the action
+    await logAction(user_id, "UPDATE", "compliance_control", id, {
+      changed_fields: Object.keys(fields)
+    });
 
     res.status(200).json(updatedControl);
   } catch (err) {
@@ -296,17 +337,25 @@ async function updateControl(req, res, next) {
 async function deleteControl(req, res, next) {
   try {
     const { id } = req.params;
+    const user_id = req.user?.user_id;
+
     const deletedControl = await db.removeControl(id);
 
     if (!deletedControl) {
       throw new NotFoundError("Control not found");
     }
 
+    // Log the action
+    await logAction(user_id, "DELETE", "compliance_control", id, {
+      control_name: deletedControl.control_name
+    });
+
     res.status(200).json({ message: "Control deleted successfully", control: deletedControl });
   } catch (err) {
     next(err);
   }
 }
+
 
 module.exports = {
   // Frameworks

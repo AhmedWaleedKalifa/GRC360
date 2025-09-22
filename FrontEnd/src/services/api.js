@@ -1,6 +1,6 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-// Helper function to handle API requests
+// handle API requests
 async function apiRequest(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
   
@@ -151,15 +151,15 @@ export const threatsAPI = {
 
 // Audit Logs API calls
 export const auditLogsAPI = {
-  getAll: () => apiRequest('/audit-logs'),
-  getById: (id) => apiRequest(`/audit-logs/${id}`),
-  getByUser: (userId) => apiRequest(`/audit-logs/user/${userId}`),
-  getByEntity: (entity, entityId) => apiRequest(`/audit-logs/entity/${entity}/${entityId}`),
-  create: (data) => apiRequest('/audit-logs', {
+  getAll: () => apiRequest('/auditLogs'),
+  getById: (id) => apiRequest(`/auditLogs/${id}`),
+  getByUser: (userId) => apiRequest(`/auditLogs/user/${userId}`),
+  getByEntity: (entity, entityId) => apiRequest(`/auditLogs/entity/${entity}/${entityId}`),
+  create: (data) => apiRequest('/auditLogs', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  delete: (id) => apiRequest(`/audit-logs/${id}`, {
+  delete: (id) => apiRequest(`/auditLogs/${id}`, {
     method: 'DELETE',
   }),
 };
