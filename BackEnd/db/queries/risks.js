@@ -15,13 +15,7 @@ async function getRisksByOwner(owner_id) {
   return rows;
 }
 
-async function searchRisksByTitle(substring) {
-  const { rows } = await pool.query(
-    "SELECT * FROM risks WHERE title ILIKE $1 ORDER BY created_at DESC",
-    [`%${substring}%`]
-  );
-  return rows;
-}
+
 
 async function addRisk({ title, description, category, type, status, severity, impact, likelihood, owner, last_reviewed, due_date, notes }) {
   const { rows } = await pool.query(
@@ -52,6 +46,18 @@ async function removeRisk(risk_id) {
     [risk_id]
   );
   return rows[0];
+}
+async function searchRisksByTitle(substring) {
+  // Validate input
+  if (!substring || typeof substring !== 'string') {
+    throw new Error('Invalid search parameter');
+  }
+  
+  const { rows } = await pool.query(
+    "SELECT * FROM risks WHERE title ILIKE $1 ORDER BY created_at DESC",
+    [`%${substring}%`]
+  );
+  return rows;
 }
 
 module.exports = {

@@ -9,5 +9,6 @@ configurationRouter.get("/key/:key", configurationController.getConfigurationByK
 configurationRouter.post("/", configurationController.createConfiguration);
 configurationRouter.put("/:id", configurationController.updateConfiguration);
 configurationRouter.delete("/:id", configurationController.deleteConfiguration);
+configurationRouter.get("/search", configurationController.searchConfigurations);
 
 module.exports = configurationRouter;

@@ -124,6 +124,33 @@ async function deleteIncident(req, res, next) {
   }
 }
 
+async function searchIncidents(req, res, next) {
+  try {
+    const { q } = req.query;
+
+    if (!q) {
+      throw new BadRequestError("Search query is required");
+    }
+    
+    const searchQuery = q.trim();
+    if (searchQuery.length === 0) {
+      throw new BadRequestError("Search query cannot be empty");
+    }
+
+    console.log('Search query:', searchQuery);
+    const incidents = await db.searchIncidentsByTitle(searchQuery);
+
+    if (!incidents || incidents.length === 0) {
+      return res.status(404).json({ message: "No incidents found matching your search" });
+    }
+
+    res.status(200).json(incidents);
+  } catch (err) {
+    console.error('Error in searchIncidents:', err);
+    next(err);
+  }
+}
+
 module.exports = {
   createIncident,
   getIncidents,
@@ -131,4 +158,5 @@ module.exports = {
   getIncidentsByOwner,
   updateIncident,
   deleteIncident,
+  searchIncidents, // Add this
 };

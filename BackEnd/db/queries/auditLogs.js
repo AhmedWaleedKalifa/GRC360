@@ -23,6 +23,23 @@ async function getAuditLogsByEntity(entity, entity_id) {
   return rows;
 }
 
+// ADD SEARCH FUNCTIONALITY
+async function searchAuditLogs(searchQuery) {
+  const searchTerm = `%${searchQuery}%`;
+  const { rows } = await pool.query(
+    `SELECT * FROM audit_logs 
+     WHERE 
+       user_id::TEXT ILIKE $1 OR
+       action ILIKE $1 OR
+       entity ILIKE $1 OR
+       entity_id::TEXT ILIKE $1 OR
+       details ILIKE $1
+     ORDER BY timestamp DESC`,
+    [searchTerm]
+  );
+  return rows;
+}
+
 async function addAuditLog({ user_id, action, entity, entity_id, details }) {
   const { rows } = await pool.query(
     `INSERT INTO audit_logs (user_id, action, entity, entity_id, details)
@@ -48,4 +65,5 @@ module.exports = {
   getAuditLogsByEntity,
   addAuditLog,
   removeAuditLog,
+  searchAuditLogs, // Export the search function
 };

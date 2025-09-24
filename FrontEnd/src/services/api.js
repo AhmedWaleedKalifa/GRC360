@@ -38,12 +38,37 @@ async function apiRequest(endpoint, options = {}) {
     throw error;
   }
 }
+export const globalSearchAPI = {
+  searchAll: async (query) => {
+    try {
+      // Search across multiple modules simultaneously
+      const searches = await Promise.allSettled([
+        risksAPI.search(query),
+        governanceItemsAPI.search(query),
+        complianceAPI.searchFrameworks(query), // This should now work
+        incidentsAPI.search(query),
+      ]);
 
+      const results = {
+        risks: searches[0].status === 'fulfilled' ? searches[0].value : [],
+        governanceItems: searches[1].status === 'fulfilled' ? searches[1].value : [],
+        frameworks: searches[2].status === 'fulfilled' ? searches[2].value : [],
+        incidents: searches[3].status === 'fulfilled' ? searches[3].value : [],
+      };
+
+      return results;
+    } catch (error) {
+      console.error('Global search failed:', error);
+      throw error;
+    }
+  }
+};
 // Configurations API calls
 export const configurationsAPI = {
   getAll: () => apiRequest('/configurations'),
   getById: (id) => apiRequest(`/configurations/${id}`),
   getByKey: (key) => apiRequest(`/configurations/key/${key}`),
+  search: (query) => apiRequest(`/configurations/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiRequest('/configurations', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -62,6 +87,7 @@ export const usersAPI = {
   getAll: () => apiRequest('/users'),
   getById: (id) => apiRequest(`/users/${id}`),
   getByEmail: (email) => apiRequest(`/users/email/${email}`),
+  search: (query) => apiRequest(`/users/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiRequest('/users', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -80,6 +106,7 @@ export const risksAPI = {
   getAll: () => apiRequest('/risks'),
   getById: (id) => apiRequest(`/risks/${id}`),
   getByOwner: (ownerId) => apiRequest(`/risks/owner/${ownerId}`),
+  search: (query) => apiRequest(`/risks/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiRequest('/risks', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -100,6 +127,7 @@ export const governanceItemsAPI = {
   getByOwner: (ownerId) => apiRequest(`/governanceItems/owner/${ownerId}`),
   getRisks: (id) => apiRequest(`/governanceItems/${id}/risks`),
   getFrameworks: (id) => apiRequest(`/governanceItems/${id}/frameworks`),
+  search: (query) => apiRequest(`/governanceItems/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiRequest('/governanceItems', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -118,6 +146,7 @@ export const incidentsAPI = {
   getAll: () => apiRequest('/incidents'),
   getById: (id) => apiRequest(`/incidents/${id}`),
   getByOwner: (ownerId) => apiRequest(`/incidents/owner/${ownerId}`),
+  search: (query) => apiRequest(`/incidents/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiRequest('/incidents', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -136,6 +165,7 @@ export const threatsAPI = {
   getAll: () => apiRequest('/threats'),
   getById: (id) => apiRequest(`/threats/${id}`),
   getByCategory: (category) => apiRequest(`/threats/category/${category}`),
+  search: (query) => apiRequest(`/threats/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiRequest('/threats', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -155,6 +185,7 @@ export const auditLogsAPI = {
   getById: (id) => apiRequest(`/auditLogs/${id}`),
   getByUser: (userId) => apiRequest(`/auditLogs/user/${userId}`),
   getByEntity: (entity, entityId) => apiRequest(`/auditLogs/entity/${entity}/${entityId}`),
+  search: (query) => apiRequest(`/auditLogs/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiRequest('/auditLogs', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -169,6 +200,7 @@ export const complianceAPI = {
   // Frameworks
   getFrameworks: () => apiRequest('/complianceItems/frameworks'),
   getFrameworkById: (id) => apiRequest(`/complianceItems/frameworks/${id}`),
+  searchFrameworks: (query) => apiRequest(`/complianceItems/frameworks/search?q=${encodeURIComponent(query)}`),
   createFramework: (data) => apiRequest('/complianceItems/frameworks', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -184,6 +216,7 @@ export const complianceAPI = {
   // Requirements
   getRequirementsByFramework: (frameworkId) => apiRequest(`/complianceItems/frameworks/${frameworkId}/requirements`),
   getRequirementById: (id) => apiRequest(`/complianceItems/requirements/${id}`),
+  searchRequirements: (query) => apiRequest(`/complianceItems/requirements/search?q=${encodeURIComponent(query)}`),
   createRequirement: (data) => apiRequest('/complianceItems/requirements', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -200,6 +233,7 @@ export const complianceAPI = {
   getControlsByRequirement: (requirementId) => apiRequest(`/complianceItems/requirements/${requirementId}/controls`),
   getControlsByOwner: (ownerId) => apiRequest(`/complianceItems/controls/owner/${ownerId}`),
   getControlById: (id) => apiRequest(`/complianceItems/controls/${id}`),
+  searchControls: (query) => apiRequest(`/complianceItems/controls/search?q=${encodeURIComponent(query)}`),
   createControl: (data) => apiRequest('/complianceItems/controls', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -211,4 +245,40 @@ export const complianceAPI = {
   deleteControl: (id) => apiRequest(`/complianceItems/controls/${id}`, {
     method: 'DELETE',
   }),
+};
+
+// Unified search function that searches across all modules
+
+// Helper function to get the appropriate API based on active module
+export const getModuleAPI = (activeModule) => {
+  const apiMap = {
+    'Users': usersAPI,
+    'Risks': risksAPI,
+    'Governance Items': governanceItemsAPI,
+    'Configurations': configurationsAPI,
+    'Incidents': incidentsAPI,
+    'Threats': threatsAPI,
+    'Audit Logs': auditLogsAPI,
+    'Compliance Frameworks': complianceAPI,
+    'Compliance Controls': complianceAPI
+  };
+
+  return apiMap[activeModule] || risksAPI; // default to risksAPI
+};
+
+// Helper function to get search function based on active module
+export const getSearchFunction = (activeModule) => {
+  const searchMap = {
+    'Users': usersAPI.search,
+    'Risks': risksAPI.search,
+    'Governance Items': governanceItemsAPI.search,
+    'Configurations': configurationsAPI.search,
+    'Incidents': incidentsAPI.search,
+    'Threats': threatsAPI.search,
+    'Audit Logs': auditLogsAPI.search,
+    'Compliance Frameworks': complianceAPI.searchFrameworks,
+    'Compliance Controls': complianceAPI.searchControls
+  };
+
+  return searchMap[activeModule] || risksAPI.search; // default to risks search
 };

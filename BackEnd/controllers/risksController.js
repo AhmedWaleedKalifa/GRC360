@@ -44,7 +44,14 @@ async function getRisks(req, res, next) {
 async function getRiskById(req, res, next) {
   try {
     const { id } = req.params;
-    const risk = await db.getRiskById(parseInt(id));
+    
+    // Validate that id is a number
+    const riskId = parseInt(id);
+    if (isNaN(riskId)) {
+      throw new BadRequestError("Invalid risk ID");
+    }
+
+    const risk = await db.getRiskById(riskId);
 
     if (!risk) {
       throw new NotFoundError("Risk not found");
@@ -55,6 +62,7 @@ async function getRiskById(req, res, next) {
     next(err);
   }
 }
+
 
 async function getRisksByOwner(req, res, next) {
   try {
@@ -126,10 +134,40 @@ async function deleteRisk(req, res, next) {
   }
 }
 
+
+
+async function searchRisks(req, res, next) {
+  try {
+    const { q } = req.query;
+
+    if (!q) {
+      throw new BadRequestError("Search query is required");
+    }
+    
+    // Trim and validate the search query
+    const searchQuery = q.trim();
+    if (searchQuery.length === 0) {
+      throw new BadRequestError("Search query cannot be empty");
+    }
+
+    console.log('Search query:', searchQuery);
+    const risks = await db.searchRisksByTitle(searchQuery);
+
+    if (!risks || risks.length === 0) {
+      return res.status(404).json({ message: "No risks found matching your search" });
+    }
+
+    res.status(200).json(risks);
+  } catch (err) {
+    console.error('Error in searchRisks:', err);
+    next(err);
+  }
+}
 module.exports = {
   createRisk,
   getRisks,
   getRiskById,
+  searchRisks, // Add this
   getRisksByOwner,
   updateRisk,
   deleteRisk,

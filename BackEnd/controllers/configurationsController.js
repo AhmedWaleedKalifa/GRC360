@@ -121,6 +121,31 @@ async function getConfigurationByKey(req, res, next) {
     next(err);
   }
 }
+async function searchConfigurations(req, res, next) {
+  try {
+    const { q } = req.query;
+
+    if (!q) {
+      throw new BadRequestError("Search query is required");
+    }
+
+    const searchQuery = `%${q}%`; // pattern match
+    const configurations = await db.query(
+      `SELECT * FROM configurations 
+       WHERE key ILIKE $1 OR value ILIKE $1 OR description ILIKE $1`,
+      [searchQuery]
+    );
+
+    if (configurations.rows.length === 0) {
+      return res.status(404).json({ message: "No configurations found matching your search" });
+    }
+
+    res.status(200).json(configurations.rows);
+  } catch (err) {
+    console.error("Error in searchConfigurations:", err);
+    next(err);
+  }
+}
 
 
 
@@ -131,4 +156,5 @@ module.exports = {
   getConfigurationByKey,
   updateConfiguration,
   deleteConfiguration,
+  searchConfigurations
 };

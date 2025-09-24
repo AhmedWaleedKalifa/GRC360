@@ -31,6 +31,27 @@ async function getAuditLogs(req, res, next) {
   }
 }
 
+// ADD SEARCH CONTROLLER
+async function searchAuditLogs(req, res, next) {
+  try {
+    const { q } = req.query; // Get search query from URL parameters
+    
+    if (!q || q.trim() === '') {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    const auditLogs = await db.searchAuditLogs(q.trim());
+
+    if (!auditLogs || auditLogs.length === 0) {
+      return res.status(404).json({ message: "No audit logs found matching your search" });
+    }
+
+    res.status(200).json(auditLogs);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function getAuditLogById(req, res, next) {
   try {
     const { id } = req.params;
@@ -98,4 +119,5 @@ module.exports = {
   getAuditLogsByUser,
   getAuditLogsByEntity,
   deleteAuditLog,
+  searchAuditLogs, // Export the search controller
 };

@@ -50,7 +50,7 @@ function Configurations() {
       <CardSlider
         caption={{ text: "Configurations", icon: "faGear" }}
         titles={["key", "value", "action"]}
-        sizes={[1, 1, 1]}
+        sizes={[4, 4, 1]}
         height={"500"}
         ids={ids}
         fields={fields}

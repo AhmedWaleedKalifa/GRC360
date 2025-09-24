@@ -525,3 +525,72 @@ main {
 .select{
     @apply  w-full h-[48px] px-3 rounded-lg bg-white text-gray-800 text-sm border-4 border-transparent focus:border-4 focus:border-blue-500/40 focus:outline-0 dark:bg-gray-700 dark:text-gray-200;
 }
+
+/* Additional Search Styles */
+.search-results-backdrop {
+  backdrop-filter: blur(8px);
+}
+
+/* Smooth transitions for search overlay */
+.search-overlay-enter {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.search-overlay-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 200ms ease-in-out, transform 200ms ease-in-out;
+}
+
+.search-overlay-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.search-overlay-exit-active {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 200ms ease-in-out, transform 200ms ease-in-out;
+}
+
+/* Loading animation */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Scrollbar styling for search results */
+.search-results-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.search-results-scrollbar::-webkit-scrollbar-track {
+  background: rgba(243, 244, 246, 0.5);
+}
+
+.search-results-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+}
+
+.search-results-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.7);
+}
+
+/* Dark mode scrollbar */
+.dark .search-results-scrollbar::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5);
+}
+
+.dark .search-results-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+}
+
+.dark .search-results-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.7);
+}

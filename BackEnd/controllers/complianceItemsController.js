@@ -357,6 +357,60 @@ async function deleteControl(req, res, next) {
 }
 
 
+async function searchControls(req, res, next) {
+  try {
+    const { q } = req.query;
+
+    if (!q) {
+      throw new BadRequestError("Search query is required");
+    }
+    
+    const searchQuery = q.trim();
+    if (searchQuery.length === 0) {
+      throw new BadRequestError("Search query cannot be empty");
+    }
+
+    console.log('Search query:', searchQuery);
+    const controls = await db.searchControlsByName(searchQuery);
+
+    if (!controls || controls.length === 0) {
+      return res.status(404).json({ message: "No controls found matching your search" });
+    }
+
+    res.status(200).json(controls);
+  } catch (err) {
+    console.error('Error in searchControls:', err);
+    next(err);
+  }
+}
+async function searchFrameworks(req, res, next) {
+  try {
+    const { q } = req.query;
+
+    if (!q) {
+      throw new BadRequestError("Search query is required");
+    }
+    
+    const searchQuery = q.trim();
+    if (searchQuery.length === 0) {
+      throw new BadRequestError("Search query cannot be empty");
+    }
+
+    console.log('Search query for frameworks:', searchQuery);
+    const frameworks = await db.searchFrameworksByName(searchQuery);
+
+    if (!frameworks || frameworks.length === 0) {
+      return res.status(404).json({ message: "No frameworks found matching your search" });
+    }
+
+    res.status(200).json(frameworks);
+  } catch (err) {
+    console.error('Error in searchFrameworks:', err);
+    next(err);
+  }
+}
+
+// Add to module.exports
 module.exports = {
   // Frameworks
   createFramework,
@@ -364,6 +418,7 @@ module.exports = {
   getFrameworkById,
   updateFramework,
   deleteFramework,
+  searchFrameworks, // Add this
   
   // Requirements
   createRequirement,
@@ -379,4 +434,5 @@ module.exports = {
   getControlById,
   updateControl,
   deleteControl,
+  searchControls,
 };

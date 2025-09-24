@@ -45,7 +45,7 @@ const routes = [
       { path: "configurations", element: <Configurations /> },
       { path: "governance/:id?", element: <Governance /> },
       { path: "incidents/:id?", element: <Incidents /> },
-      { path: "logs", element: <Logs /> },
+      { path: "logs/:id?", element: <Logs /> },
       { path: "risks/:id?", element: <Risks  /> },
       { path: "editConfigurations/:id?", element: <EditConfigurations  /> },
       {path:"viewFrameWorks/:id?",element:<ViewFrameworks/>},
@@ -56,7 +56,7 @@ const routes = [
       {path:"editGovernance/:id?",element:<EditGovernance/>},
 
       {path:"addIncident",element:<AddIncident/>},
-      { path: "threats", element: <Threats /> },
+      { path: "threats/:id?", element: <Threats /> },
       { path: "*", element: <ErrorPage /> }
     ],
   },

@@ -145,6 +145,32 @@ async function getFrameworksForGovernanceItem(req, res, next) {
     next(err);
   }
 }
+async function searchGovernanceItems(req, res, next) {
+  try {
+    const { q } = req.query;
+
+    if (!q) {
+      throw new BadRequestError("Search query is required");
+    }
+    
+    const searchQuery = q.trim();
+    if (searchQuery.length === 0) {
+      throw new BadRequestError("Search query cannot be empty");
+    }
+
+    console.log('Search query:', searchQuery);
+    const governanceItems = await db.searchGovernanceItemsByName(searchQuery);
+
+    if (!governanceItems || governanceItems.length === 0) {
+      return res.status(404).json({ message: "No governance items found matching your search" });
+    }
+
+    res.status(200).json(governanceItems);
+  } catch (err) {
+    console.error('Error in searchGovernanceItems:', err);
+    next(err);
+  }
+}
 
 module.exports = {
   createGovernanceItem,
@@ -155,4 +181,5 @@ module.exports = {
   deleteGovernanceItem,
   getRisksForGovernanceItem,
   getFrameworksForGovernanceItem,
+  searchGovernanceItems, // Add this
 };

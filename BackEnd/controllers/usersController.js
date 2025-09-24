@@ -89,11 +89,38 @@ async function deleteUser(req, res, next) {
     next(err);
   }
 }
+async function searchUsers(req, res, next) {
+  try {
+    const { q } = req.query;
 
+    if (!q) {
+      throw new BadRequestError("Search query is required");
+    }
+    
+    const searchQuery = q.trim();
+    if (searchQuery.length === 0) {
+      throw new BadRequestError("Search query cannot be empty");
+    }
+
+    console.log('Search query:', searchQuery);
+    const users = await db.searchUsersByName(searchQuery);
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: "No users found matching your search" });
+    }
+
+    res.status(200).json(users);
+  } catch (err) {
+    console.error('Error in searchUsers:', err);
+    next(err);
+  }
+}
 module.exports = {
   createUser,
   getUsers,
   getUserById,
   updateUser,
   deleteUser,
+  searchUsers, // Add this
+
 };

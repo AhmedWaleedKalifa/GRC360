@@ -1,25 +1,49 @@
 import React, { useEffect, useState } from 'react'
 import CardSlider from '../components/CardSlider'
-import {threatsAPI} from "../services/api"
+import { threatsAPI } from "../services/api"
+import { useParams } from 'react-router-dom'
+
 function Threats() {
   const [threats, setThreats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  let fields = [];
-  let ids = []
-  threats.forEach((e) => {
-    fields.push([
-      { type: "t", text: e.message },
-      { type: "t", text: e.severity },
-      { type: "t", text: e.created_at},
-    ]);
-    ids.push(e.id);
+  const { id } = useParams(); // Get the ID from URL params
+  
+  const [fields, setFields] = useState([]);
+  const [colors, setColors] = useState([]);
+  const [ids, setIds] = useState([]);
 
-
-  });
   useEffect(() => {
     fetchThreats();
   }, []);
+
+  // Update fields and colors when threats or id changes
+  useEffect(() => {
+    const newFields = [];
+    const newIds = [];
+    const newColors = [];
+    
+    threats.forEach((threat) => {
+      newFields.push([
+        { type: "t", text: threat.message },
+        { type: "t", text: threat.severity },
+        { type: "t", text: threat.created_at },
+      ]);
+      
+      // Highlight the row if it matches the ID from params
+      if (String(threat.threat_id) === id) {
+        newColors.push("#26A7F680"); // Highlight color
+      } else {
+        newColors.push(""); // Default color
+      }
+      
+      newIds.push(threat.id);
+    });
+
+    setFields(newFields);
+    setIds(newIds);
+    setColors(newColors);
+  }, [threats, id]); // Re-run when threats or id changes
 
   const fetchThreats = async () => {
     try {
@@ -34,8 +58,9 @@ function Threats() {
       setLoading(false);
     }
   };
+
   if (loading) {
-    return <div>Loading configurations...</div>;
+    return <div>Loading threats...</div>;
   }
 
   if (error) {
@@ -47,12 +72,13 @@ function Threats() {
       caption={{ text: "Live Threat Feed", icon: "faCircleExclamation" }}
       titles={["description", "severity", "time"]}
       sizes={[4, 1, 2]}
-      colors={[""]}
+      colors={colors} // Use the colors array for highlighting
       height={"500"}
       fields={fields}
       ids={ids}
-
-    />)
+      selectedId={id} // Pass the selected ID to CardSlider if it supports it
+    />
+  );
 }
 
 export default Threats
