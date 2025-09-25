@@ -149,7 +149,7 @@ async function removeControl(control_id) {
 }
 async function searchFrameworksByName(substring) {
   const { rows } = await pool.query(
-    "SELECT * FROM compliance_frameworks WHERE framework_name ILIKE $1 OR description ILIKE $2 ORDER BY created_at DESC",
+    "SELECT * FROM compliance_frameworks WHERE framework_name ILIKE $1 OR description  ILIKE $2 ORDER BY created_at DESC",
     [`%${substring}%`, `%${substring}%`]
   );
   return rows;

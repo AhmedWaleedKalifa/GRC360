@@ -55,10 +55,8 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
         searchResults = [
           ...globalResults.risks.map(item => ({ ...item, _type: 'risk', _module: 'Risks' })),
           ...globalResults.governanceItems.map(item => ({ ...item, _type: 'governance', _module: 'Governance' })),
-          ...globalResults.frameworks.map(item => ({ ...item, _type: 'framework', _module: 'Compliance' })),
+          ...globalResults.controls.map(item => ({ ...item, _type: 'control', _module: 'Compliance' })),
           ...globalResults.incidents.map(item => ({ ...item, _type: 'incident', _module: 'Incidents' })),
-          ...globalResults.threats.map(item => ({ ...item, _type: 'threat', _module: 'Threats' })),
-          ...globalResults.logs.map(item => ({ ...item, _type: 'logs', _module: 'Logs' })) // Add logs to global search
         ];
       } else {
         // Single module search
@@ -107,7 +105,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
           return '/dashboard/risks';
         case 'governance':
           return '/dashboard/governance';
-        case 'framework':
+        case 'control':
           return '/dashboard/compliance';
         case 'incident':
           return '/dashboard/incidents';
@@ -446,6 +444,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
     
     if (itemId && basePath) {
       const fullPath = `${basePath}`;
+      console.log(fullPath)
       onClose(); // Close search results first
       navigate(fullPath); // Then navigate to correct path
     }
@@ -489,7 +488,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
         navigation={results.map((item, index) => ({
           start: index,
           end: index,
-          path: `${getBaseNavigationPath(item)}/${getItemId(item)}`
+          path: `${getBaseNavigationPath(item)}`
         }))}
         height={400}
       />

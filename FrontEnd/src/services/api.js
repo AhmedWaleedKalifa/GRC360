@@ -45,14 +45,14 @@ export const globalSearchAPI = {
       const searches = await Promise.allSettled([
         risksAPI.search(query),
         governanceItemsAPI.search(query),
-        complianceAPI.searchFrameworks(query), // This should now work
+        complianceAPI.searchControls(query), // Add controls search
         incidentsAPI.search(query),
       ]);
 
       const results = {
         risks: searches[0].status === 'fulfilled' ? searches[0].value : [],
         governanceItems: searches[1].status === 'fulfilled' ? searches[1].value : [],
-        frameworks: searches[2].status === 'fulfilled' ? searches[2].value : [],
+        controls: searches[2].status === 'fulfilled' ? searches[2].value : [],
         incidents: searches[3].status === 'fulfilled' ? searches[3].value : [],
       };
 

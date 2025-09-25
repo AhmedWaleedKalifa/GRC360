@@ -128,19 +128,19 @@ async function searchConfigurations(req, res, next) {
     if (!q) {
       throw new BadRequestError("Search query is required");
     }
+    
+    const searchQuery = q.trim();
+    if (searchQuery.length === 0) {
+      throw new BadRequestError("Search query cannot be empty");
+    }
 
-    const searchQuery = `%${q}%`; // pattern match
-    const configurations = await db.query(
-      `SELECT * FROM configurations 
-       WHERE key ILIKE $1 OR value ILIKE $1 OR description ILIKE $1`,
-      [searchQuery]
-    );
+    const configurations = await db.searchConfigurationsByKey(searchQuery)
 
-    if (configurations.rows.length === 0) {
+    if (configurations.length === 0) {
       return res.status(404).json({ message: "No configurations found matching your search" });
     }
 
-    res.status(200).json(configurations.rows);
+    res.status(200).json(configurations);
   } catch (err) {
     console.error("Error in searchConfigurations:", err);
     next(err);

@@ -45,14 +45,12 @@ async function removeConfiguration(config_id) {
   );
   return rows[0];
 }
-async function searchConfigurationsByKeyOrValue(searchQuery) {
+async function searchConfigurationsByKey(searchQuery) {
   const { rows } = await pool.query(
     `
     SELECT * 
     FROM configurations 
     WHERE key ILIKE $1 
-       OR value ILIKE $1
-       OR description ILIKE $1
     ORDER BY config_id DESC
     `,
     [`%${searchQuery}%`]
@@ -66,5 +64,5 @@ module.exports = {
   addConfiguration,
   updateConfiguration,
   removeConfiguration,
-  searchConfigurationsByKeyOrValue
+  searchConfigurationsByKey
 };

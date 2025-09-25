@@ -29,10 +29,7 @@ async function searchAuditLogs(searchQuery) {
   const { rows } = await pool.query(
     `SELECT * FROM audit_logs 
      WHERE 
-       user_id::TEXT ILIKE $1 OR
        action ILIKE $1 OR
-       entity ILIKE $1 OR
-       entity_id::TEXT ILIKE $1 OR
        details ILIKE $1
      ORDER BY timestamp DESC`,
     [searchTerm]

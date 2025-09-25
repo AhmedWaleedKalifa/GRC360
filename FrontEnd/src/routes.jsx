@@ -42,7 +42,7 @@ const routes = [
       { path: "editControl/:id?", element: <EditControl /> },
 
       
-      { path: "configurations", element: <Configurations /> },
+      { path: "configurations/:id?", element: <Configurations /> },
       { path: "governance/:id?", element: <Governance /> },
       { path: "incidents/:id?", element: <Incidents /> },
       { path: "logs/:id?", element: <Logs /> },
