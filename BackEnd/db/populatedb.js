@@ -1,9 +1,11 @@
 const { Client } = require("pg");
-const path = require("node:path");
-const fs = require("fs");
 require("dotenv").config();
+
+// =======================
+// Database Schema (SQL)
+// =======================
 const SQL = `
-    CREATE TABLE users (
+    CREATE TABLE IF NOT EXISTS users (
         user_id  SERIAL PRIMARY KEY,
         role VARCHAR(20) DEFAULT 'user' NOT NULL CHECK (role IN ('admin', 'moderator', 'user', 'guest')),
         user_name     VARCHAR(100) NOT NULL,
@@ -17,8 +19,7 @@ const SQL = `
         updated_at    TIMESTAMP DEFAULT NOW()
     );
 
-
-    CREATE TABLE compliance_frameworks (
+    CREATE TABLE IF NOT EXISTS compliance_frameworks (
         framework_id   VARCHAR(50) PRIMARY KEY,
         framework_name VARCHAR(100) NOT NULL,
         description    TEXT,
@@ -26,7 +27,7 @@ const SQL = `
         updated_at     TIMESTAMP DEFAULT NOW()
     );
 
-    CREATE TABLE compliance_requirements (
+    CREATE TABLE IF NOT EXISTS compliance_requirements (
         requirement_id VARCHAR(50) PRIMARY KEY,
         framework_id   VARCHAR(50) NOT NULL REFERENCES compliance_frameworks(framework_id) ON DELETE CASCADE,
         requirement_name VARCHAR(255) NOT NULL,
@@ -35,7 +36,7 @@ const SQL = `
         updated_at     TIMESTAMP DEFAULT NOW()
     );
 
-    CREATE TABLE compliance_controls (
+    CREATE TABLE IF NOT EXISTS compliance_controls (
         control_id    VARCHAR(50) PRIMARY KEY,
         requirement_id VARCHAR(50) NOT NULL REFERENCES compliance_requirements(requirement_id) ON DELETE CASCADE,
         control_name  VARCHAR(255) NOT NULL,
@@ -51,14 +52,14 @@ const SQL = `
         updated_at    TIMESTAMP DEFAULT NOW()
     );
 
-    CREATE TABLE configurations (
+    CREATE TABLE IF NOT EXISTS configurations (
         config_id SERIAL PRIMARY KEY,
         key       VARCHAR(100) UNIQUE NOT NULL,
         value     VARCHAR(255),
         description TEXT
     );
 
-    CREATE TABLE governance_items (
+    CREATE TABLE IF NOT EXISTS governance_items (
         governance_id SERIAL PRIMARY KEY,
         governance_name VARCHAR(255) NOT NULL,
         type VARCHAR(50) NOT NULL
@@ -79,19 +80,19 @@ const SQL = `
         updated_at TIMESTAMP DEFAULT NOW()
     );
 
-    CREATE TABLE governance_risks (
+    CREATE TABLE IF NOT EXISTS governance_risks (
         governance_id INT NOT NULL REFERENCES governance_items(governance_id) ON DELETE CASCADE,
         risk_id       INT NOT NULL, 
         PRIMARY KEY (governance_id, risk_id)
     );
 
-    CREATE TABLE governance_frameworks (
+    CREATE TABLE IF NOT EXISTS governance_frameworks (
         governance_id INT NOT NULL REFERENCES governance_items(governance_id) ON DELETE CASCADE,
         framework_id  VARCHAR(50) NOT NULL REFERENCES compliance_frameworks(framework_id) ON DELETE CASCADE,
         PRIMARY KEY (governance_id, framework_id)
     );
 
-    CREATE TABLE risks (
+    CREATE TABLE IF NOT EXISTS risks (
         risk_id      SERIAL PRIMARY KEY,
         title        VARCHAR(255) NOT NULL,
         description  TEXT,
@@ -112,10 +113,10 @@ const SQL = `
     );
 
     ALTER TABLE governance_risks
-    ADD CONSTRAINT fk_gr_risk
+    ADD CONSTRAINT IF NOT EXISTS fk_gr_risk
     FOREIGN KEY (risk_id) REFERENCES risks(risk_id) ON DELETE CASCADE;
 
-    CREATE TABLE incidents (
+    CREATE TABLE IF NOT EXISTS incidents (
         incident_id SERIAL PRIMARY KEY,
         title       VARCHAR(255),
         category    VARCHAR(100) NOT NULL
@@ -134,10 +135,10 @@ const SQL = `
         updated_at  TIMESTAMP DEFAULT NOW()
     );
 
-    CREATE TABLE threats (
+    CREATE TABLE IF NOT EXISTS threats (
         threat_id   SERIAL PRIMARY KEY,
-        name        VARCHAR(255),          -- short name/title of threat
-        message     TEXT,                  -- primary message or alert
+        name        VARCHAR(255),
+        message     TEXT,
         description TEXT,
         category    VARCHAR(100) NOT NULL
             CHECK (category IN ('malware', 'phishing', 'insider_threat', 'ddos', 'data_breach', 'physical_breach', 'social_engineering', 'zero_day', 'ransomware', 'supply_chain', 'other')),
@@ -147,7 +148,7 @@ const SQL = `
         created_at  TIMESTAMP DEFAULT NOW()
     );
 
-    CREATE TABLE audit_logs (
+    CREATE TABLE IF NOT EXISTS audit_logs (
         audit_id SERIAL PRIMARY KEY,
         user_id  INT REFERENCES users(user_id) ON DELETE SET NULL,
         action   VARCHAR(50) NOT NULL,
@@ -157,45 +158,42 @@ const SQL = `
         details  TEXT
     );
 
-    CREATE INDEX idx_users_email ON users(email);
-    CREATE INDEX idx_risks_owner ON risks(owner);
-    CREATE INDEX idx_incidents_owner ON incidents(owner);
-    CREATE INDEX idx_threats_detected_at ON threats(detected_at);
+    CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+    CREATE INDEX IF NOT EXISTS idx_risks_owner ON risks(owner);
+    CREATE INDEX IF NOT EXISTS idx_incidents_owner ON incidents(owner);
+    CREATE INDEX IF NOT EXISTS idx_threats_detected_at ON threats(detected_at);
 `;
 
+// =======================
+// SSL Setup
+// =======================
+let ssl = false;
+if (process.env.DB_SSL_CERT_B64) {
+  const sslCert = Buffer.from(process.env.DB_SSL_CERT_B64, "base64").toString("utf-8");
+  ssl = { ca: sslCert, rejectUnauthorized: true };
+}
 
-//drop
-// const SQL=`
-// DROP TABLE IF EXISTS audit_logs CASCADE;
-// DROP TABLE IF EXISTS threats CASCADE;
-// DROP TABLE IF EXISTS incidents CASCADE;
-// DROP TABLE IF EXISTS governance_frameworks CASCADE;
-// DROP TABLE IF EXISTS governance_risks CASCADE;
-// DROP TABLE IF EXISTS governance_items CASCADE;
-// DROP TABLE IF EXISTS configurations CASCADE;
-// DROP TABLE IF EXISTS compliance_controls CASCADE;
-// DROP TABLE IF EXISTS compliance_requirements CASCADE;
-// DROP TABLE IF EXISTS compliance_frameworks CASCADE;
-// DROP TABLE IF EXISTS risks CASCADE;
-// DROP TABLE IF EXISTS users CASCADE;
-
-// `
-
+// =======================
+// Main Seeder
+// =======================
 async function main() {
-  console.log("seeding...");
-  const client = new Client({
-    // connectionString:process.env.CONNECTION_STRING,
+  console.log("🚀 Starting database seed...");
 
-    connectionString: process.env.DEPLOYED_CONNECTION_STRING,
-    ssl: {
-      ca: fs.readFileSync(path.resolve(process.env.DB_SSL_CERT)).toString(),
-      rejectUnauthorized: true,
-    },
+  const client = new Client({
+    connectionString: process.env.DEPLOYED_CONNECTION_STRING || process.env.CONNECTION_STRING,
+    ssl,
   });
 
-  await client.connect();
-  await client.query(SQL);
-  await client.end();
-  console.log("Done");
+  try {
+    await client.connect();
+    await client.query(SQL);
+    console.log("✅ Database schema created/updated successfully");
+  } catch (err) {
+    console.error("❌ Error running seed:", err.message);
+    process.exit(1);
+  } finally {
+    await client.end();
+  }
 }
+
 main();
