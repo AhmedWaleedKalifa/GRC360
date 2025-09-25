@@ -184,13 +184,13 @@ const SQL = `
 async function main() {
   console.log("seeding...");
   const client = new Client({
-    connectionString:process.env.CONNECTION_STRING,
+    // connectionString:process.env.CONNECTION_STRING,
 
-    // connectionString: process.env.DEPLOYED_CONNECTION_STRING,
-    // ssl: {
-    //   ca: fs.readFileSync(path.resolve(process.env.DB_SSL_CERT)).toString(),
-    //   rejectUnauthorized: true,
-    // },
+    connectionString: process.env.DEPLOYED_CONNECTION_STRING,
+    ssl: {
+      ca: fs.readFileSync(path.resolve(process.env.DB_SSL_CERT)).toString(),
+      rejectUnauthorized: true,
+    },
   });
 
   await client.connect();
