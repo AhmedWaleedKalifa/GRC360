@@ -73,7 +73,7 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
             <Link
               title='Dashboard'
               to="/dashboard"
-              className={open == true ? "closeLink" : "link"}
+              className="link"
               style={
                 active == "Main"
                   ? {
@@ -85,14 +85,15 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                     }
                   : {}
               }            >
-              {!open == true ? (<FontAwesomeIcon icon={faHouse} className="sidebarClosedListItem" />)
-                : (<FontAwesomeIcon icon={faHouse} className="iconCircle" />)
-              }
-              {!open && <li className="sidebarLi">Dashboard</li>}
+              
+              <li className="sidebarLi">
+                <FontAwesomeIcon icon={faHouse} className="sidebarClosedListItem sidebarLi" />
+                {!open==true? <span>Dashboard</span>:<span></span>}
+              </li>
             </Link>
             <Link to="/dashboard/governance"
               title='Governance'
-              className={open == true ? "closeLink" : "link"}
+              className="link"
               style={
                 active == "Governance"
                   ? {
@@ -105,14 +106,15 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                   : {}
               }       
             >
-              {!open == true ? (<FontAwesomeIcon icon={faGavel} className='sidebarClosedListItem' />)
-                : (<FontAwesomeIcon icon={faGavel} className="iconCircle" />)
-              }
-              {!open && <li className='sidebarLi'>Governance</li>}
+               <li className="sidebarLi">
+                <FontAwesomeIcon icon={faGavel} className="sidebarClosedListItem sidebarLi" />
+                {!open==true? <span>Governance</span>:<span></span>}
+              </li>
+            
             </Link>
             <Link to="/dashboard/risks"
               title='Risks'
-              className={open == true ? "closeLink" : "link"}
+              className="link"
               style={
                 active == "Risks"
                   ? {
@@ -125,16 +127,15 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                   : {}
               }       
             >
-              {!open == true ? (<FontAwesomeIcon icon={faChartSimple} className='sidebarClosedListItem' />
-              )
-                : (<FontAwesomeIcon icon={faChartSimple}
-                  className="iconCircle" />)
-              }
-              {!open && <li className='sidebarLi'>Risks</li>}
+                 <li className="sidebarLi">
+                <FontAwesomeIcon icon={faChartSimple} className="sidebarClosedListItem sidebarLi" />
+                {!open==true? <span>Risks</span>:<span></span>}
+              </li>
+             
             </Link>
             <Link to="/dashboard/compliance"
               title='Compliance'
-              className={open == true ? "closeLink" : "link"}
+              className="link"
               style={
                 active == "Compliance"
                   ? {
@@ -147,17 +148,15 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                   : {}
               }       
             >
-              {!open == true ? (<FontAwesomeIcon icon={faShield} className='sidebarClosedListItem' />
-
-              )
-                : (<FontAwesomeIcon icon={faShield}
-                  className="iconCircle" />)
-              }
-              {!open && <li className='sidebarLi'>Compliance</li>}
+                 <li className="sidebarLi">
+                <FontAwesomeIcon icon={faShield} className="sidebarClosedListItem sidebarLi" />
+                {!open==true? <span>Compliance</span>:<span></span>}
+              </li>
+            
             </Link>
             <Link to="/dashboard/incidents"
               title='Incidents'
-              className={open == true ? "closeLink" : "link"}
+              className="link"
               style={
                 active == "Incidents"
                   ? {
@@ -170,17 +169,15 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                   : {}
               }       
             >
-              {!open == true ? (<FontAwesomeIcon icon={faTriangleExclamation} className='sidebarClosedListItem' />
-
-              )
-                : (<FontAwesomeIcon icon={faTriangleExclamation}
-                  className="iconCircle" />)
-              }
-              {!open && <li className='sidebarLi'>Incidents</li>}
+                   <li className="sidebarLi">
+                <FontAwesomeIcon icon={faTriangleExclamation} className="sidebarClosedListItem sidebarLi" />
+                {!open==true? <span>Incidents</span>:<span></span>}
+              </li>
+          
             </Link>
             <Link to="/dashboard/threats"
               title='Threats'
-              className={open == true ? "closeLink" : "link"}
+              className="link"
               style={
                 active == "Threats"
                   ? {
@@ -193,16 +190,16 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                   : {}
               }       
             >
-              {!open == true ? (<FontAwesomeIcon icon={faCircleExclamation} className='sidebarClosedListItem' />
-              )
-                : (<FontAwesomeIcon icon={faCircleExclamation}
-                  className="iconCircle" />)
-              }
-              {!open && <li className='sidebarLi'>Threats</li>}
+
+<li className="sidebarLi">
+                <FontAwesomeIcon icon={faCircleExclamation} className="sidebarClosedListItem sidebarLi" />
+                {!open==true? <span>Threats</span>:<span></span>}
+              </li>
+           
             </Link>
             <Link to="/dashboard/logs"
               title='Logs'
-              className={open == true ? "closeLink" : "link"}
+              className="link"
               style={
                 active == "Logs"
                   ? {
@@ -215,16 +212,16 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                   : {}
               }       
             >
-              {!open == true ? (<FontAwesomeIcon icon={faFileLines} className='sidebarClosedListItem' />
-              )
-                : (<FontAwesomeIcon icon={faFileLines}
-                  className="iconCircle" />)
-              }
-              {!open && <li className='sidebarLi'>Logs</li>}
+              <li className="sidebarLi">
+                <FontAwesomeIcon icon={faFileLines} className="sidebarClosedListItem sidebarLi" />
+                {!open==true? <span>Logs</span>:<span></span>}
+              </li>
+           
+         
             </Link>
             <Link to="/dashboard/configurations"
               title="Configurations"
-              className={open == true ? "closeLink" : "link"}
+              className="link"
               style={
                 active == "Configurations"
                   ? {
@@ -237,25 +234,26 @@ const SideBar = ({ open, setOpen, setActive,active}) => {
                   : {}
               }       
             >
-              {!open == true ? (<FontAwesomeIcon icon={faGear} className='sidebarClosedListItem' />
-              )
-                : (<FontAwesomeIcon icon={faGear}
-                  className="iconCircle" />)
-              }
-              {!open && <li className='sidebarLi'>Configurations</li>}
+                   <li className="sidebarLi">
+                <FontAwesomeIcon icon={faGear} className="sidebarClosedListItem sidebarLi" />
+                {!open==true? <span>Configurations</span>:<span></span>}
+              </li>
+           
+       
             </Link>
           </ul>
 
           <footer className={!open == true ? 'sidebarClosedFooter' : "sidebarOpenedFooter"}>
             <Link to="/"
-              className={open == true ? "closeLink" : "link"}
+              className="link logout"
               title='Logout'
             >
-              {!open == true ? (<FontAwesomeIcon icon={faRightFromBracket} className=' sidebarClosedListItem' />)
-                : (<FontAwesomeIcon icon={faRightFromBracket}
-                  className="iconCircle" />)
-              }
-              {!open && <li className='sidebarLi'>Logout</li>}
+                   <li className="sidebarLi">
+                <FontAwesomeIcon icon={faRightFromBracket} className="sidebarClosedListItem sidebarLi" />
+                {!open==true? <span>Logout</span>:<span></span>}
+              </li>
+           
+             
             </Link>
           </footer>
         </div>

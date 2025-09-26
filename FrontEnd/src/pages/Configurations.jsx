@@ -87,7 +87,22 @@ function Configurations() {
   }, [id, filteredConfigurations]);
 
   if (loading) {
-    return <div>Loading configurations...</div>;
+    return <>
+      <div className='flex flex-col justify-center'>
+      <CardSlider
+        caption={{ text: "Configurations", icon: "faGear" }}
+        titles={["Name", "Value", "Edit"]}
+        sizes={[8, 8, 1]}
+        height={"500"}
+        ids={ids}
+        fields={[]}
+        colors={colors}
+        selectedId={id}
+      />
+      <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600 self-center"></div>
+      </div>
+
+    </>
   }
 
   if (error) {
@@ -98,8 +113,8 @@ function Configurations() {
     <>
       <CardSlider
         caption={{ text: "Configurations", icon: "faGear" }}
-        titles={["Key", "Value", "Action"]}
-        sizes={[4, 4, 1]}
+        titles={["Name", "Value", "Edit"]}
+        sizes={[8, 8, 1]}
         height={"500"}
         ids={ids}
         fields={fields}

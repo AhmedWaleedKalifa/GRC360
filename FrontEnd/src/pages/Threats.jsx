@@ -12,11 +12,9 @@ function Threats() {
   const [fields, setFields] = useState([]);
   const [colors, setColors] = useState([]);
   const [ids, setIds] = useState([]);
-
   useEffect(() => {
     fetchThreats();
   }, []);
-
   // Update fields and colors when threats or id changes
   useEffect(() => {
     const newFields = [];
@@ -60,7 +58,18 @@ function Threats() {
   };
 
   if (loading) {
-    return <div>Loading threats...</div>;
+    <>
+     {/* <div className='flex flex-col justify-center'>
+       <CardSlider
+      caption={{ text: "Live Threat Feed", icon: "faCircleExclamation" }}
+      titles={["description", "severity", "time"]}
+      sizes={[4, 1, 2]}
+      fields={[]}
+    />
+
+      </div> */}
+      <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600 self-center"></div>
+    </>
   }
 
   if (error) {

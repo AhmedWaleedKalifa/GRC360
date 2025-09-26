@@ -47,12 +47,22 @@ function Requirements() {
     const ids = requirements.map(requirement => requirement.requirement_id);
 
     if (loading) {
-        return (
-            <>
-                <h2>FrameWorks / {id}</h2>
-                <div className="p-4">Loading requirements...</div>
-            </>
-        );
+        <>
+            <h2>FrameWorks / framework name</h2>
+            <div className='flex flex-col justify-center '>
+            <CardSlider
+                caption={{ text: ` framework name Requirements/Domains` }}
+                titles={["#", "Requirement", "Reference"]}
+                sizes={[1, 10, 6]}
+                ids={[]}
+                fields={[]}
+            />
+            <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600 self-center"></div>
+           </div>
+            <div onClick={() => { navigate(-1) }} className='button buttonStyle w-[fit-content] ml-2' >
+                Back to Overview
+            </div>
+        </>
     }
 
     if (error) {
@@ -67,7 +77,7 @@ function Requirements() {
     if (!framework) {
         return (
             <>
-                <h2>FrameWorks / {id}</h2>
+                <h2>FrameWorks / </h2>
                 <div className="p-4">Framework not found</div>
             </>
         );

@@ -40,7 +40,7 @@ function Logs() {
       if (typeof parsedDetails === 'object') {
         // Show only the first few key details to avoid overcrowding
         const entries = Object.entries(parsedDetails);
-          return entries.map(([key, value]) => `${key}: ${value}`).join(', ');
+        return entries.map(([key, value]) => `${key}: ${value}`).join(', ');
       }
       return String(parsedDetails).substring(0, 50) + (String(parsedDetails).length > 50 ? '...' : '');
     } catch {
@@ -57,51 +57,51 @@ function Logs() {
     const newFields = [];
     const newIds = [];
     const newColors = [];
-    
+
     logs.forEach((log) => {
       newFields.push([
-        { 
-          type: "t", 
+        {
+          type: "t",
           text: formatTimestamp(log.timestamp),
           title: formatTimestamp(log.timestamp)
         },
-        { 
-          type: "t", 
+        {
+          type: "t",
           text: log.user_id || 'System',
           title: `User: ${log.user_id || 'System'}`
         },
-        { 
-          type: "b", 
+        {
+          type: "b",
           text: log.action,
           color: log.action === 'CREATE' ? '#10B981' :
-                 log.action === 'UPDATE' ? '#3B82F6' :
-                 log.action === 'DELETE' ? '#EF4444' : '#6B7280',
+            log.action === 'UPDATE' ? '#3B82F6' :
+              log.action === 'DELETE' ? '#EF4444' : '#6B7280',
           title: `Action: ${log.action}`
         },
-        { 
-          type: "t", 
+        {
+          type: "t",
           text: log.entity,
           title: `Entity: ${log.entity}`
         },
-        { 
-          type: "t", 
+        {
+          type: "t",
           text: log.entity_id || 'N/A',
           title: `Entity ID: ${log.entity_id || 'N/A'}`
         },
-        { 
-          type: "t", 
+        {
+          type: "t",
           text: formatDetails(log.details),
           title: `Details: ${formatDetails(log.details)}`
         }
       ]);
-      
+
       // Highlight the row if it matches the ID from params
       if (String(log.audit_id) === id) {
         newColors.push("#26A7F680"); // Highlight color
       } else {
         newColors.push(""); // Default color
       }
-      
+
       newIds.push(log.audit_id);
     });
 
@@ -117,10 +117,33 @@ function Logs() {
 
   if (loading) {
     return (
-      <div className="logsPage p-4">
-        <h1 className="text-2xl font-bold mb-4">Audit Logs</h1>
-        <div className="p-4">Loading audit logs...</div>
+      <>
+       <div className='flex flex-col justify-center'>
+       <div className="logsPage p-4">
+          <CardSlider
+            caption={{
+              text: `Audit Logs (${logs.length} entries)`,
+              icon: "faClipboardList"
+            }}
+            titles={[
+              "Timestamp",
+              "User",
+              "Action",
+              "Entity",
+              "Entity ID",
+              "Details"
+            ]}
+            sizes={[3, 2, 2, 2, 2, 4]}
+            height="600px"
+            fields={[]}
+            navigation={[]} // No navigation needed for logs
+          />
+
+        </div>
+      <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600 self-center"></div>
       </div>
+       
+      </>
     );
   }
 
@@ -147,16 +170,16 @@ function Logs() {
         </div>
       ) : (
         <CardSlider
-          caption={{ 
-            text: `Audit Logs (${logs.length} entries)`, 
-            icon: "faClipboardList" 
+          caption={{
+            text: `Audit Logs (${logs.length} entries)`,
+            icon: "faClipboardList"
           }}
           titles={[
-            "Timestamp", 
-            "User", 
-            "Action", 
-            "Entity", 
-            "Entity ID", 
+            "Timestamp",
+            "User",
+            "Action",
+            "Entity",
+            "Entity ID",
             "Details"
           ]}
           sizes={[3, 2, 2, 2, 2, 4]}
@@ -168,17 +191,7 @@ function Logs() {
           selectedId={id} // Pass the selected ID to CardSlider if it supports it
         />
       )}
-       <div className='h2AndButtonContainer mt-8'>
-        <h2></h2>
-        <button
-          className="button uppercase buttonStyle"
-          onClick={fetchLogs}
-          disabled={loading}
-        >
-          <FontAwesomeIcon icon={faArrowRotateRight} className=' mr-1' />
-          {loading ? 'Refreshing...' : 'Refresh Logs'}
-        </button>
-      </div>
+    
     </div>
   );
 }

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import CardSlider from "../components/CardSlider"
-import { faPlus, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import Card from '../components/Card'
 import { risksAPI, governanceItemsAPI, incidentsAPI, complianceAPI } from "../services/api"
 import { useNavigate } from 'react-router-dom'
+import RisksOverview from '../components/RisksOverview'
+import IncidentsOverview from '../components/IncidentsOverview'
+import ComplianceOverview from '../components/ComplianceOverview'
 
 function Main() {
   const [risks, setRisks] = useState([]);
@@ -13,10 +13,19 @@ function Main() {
   const [frameworks, setFrameworks] = useState([]);
   const [requirements, setRequirements] = useState([]);
   const [controls, setControls] = useState([]);
-  const [controlFrameworkMap, setControlFrameworkMap] = useState({}); // Map control_id to framework_id
+  const [controlFrameworkMap, setControlFrameworkMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  // Function to calculate due date by adding months to a given date
+  const calculateDueDate = (baseDate, monthsToAdd) => {
+    if (!baseDate) return null;
+    
+    const date = new Date(baseDate);
+    date.setMonth(date.getMonth() + monthsToAdd);
+    return date;
+  };
 
   // Fetch all data from APIs
   useEffect(() => {
@@ -40,13 +49,12 @@ function Main() {
         // Fetch requirements and controls for each framework
         let allRequirements = [];
         let allControls = [];
-        let frameworkMap = {}; // Map requirement_id to framework_id
+        let frameworkMap = {};
         
         for (const framework of frameworksData) {
           try {
             const requirementsData = await complianceAPI.getRequirementsByFramework(framework.framework_id);
             
-            // Store framework_id for each requirement
             requirementsData.forEach(req => {
               frameworkMap[req.requirement_id] = framework.framework_id;
             });
@@ -57,7 +65,6 @@ function Main() {
               try {
                 const controlsData = await complianceAPI.getControlsByRequirement(requirement.requirement_id);
                 
-                // Store framework_id for each control
                 controlsData.forEach(control => {
                   frameworkMap[control.control_id] = frameworkMap[requirement.requirement_id];
                 });
@@ -88,22 +95,28 @@ function Main() {
     fetchAllData();
   }, []);
 
-  // Prepare combined data for CardSlider
-  const [sortedData, setSortedData] = useState({
-    fields: [],
-    ids: [],
-    navigation: []
+  // Prepare data for all overview components
+  const [overviewData, setOverviewData] = useState({
+    risks: { ids: [], fields: [] },
+    incidents: { ids: [], fields: [] },
+    compliance: { ids: [], fields: [] },
+    upcoming: { ids: [], fields: [], navigation: [] }
   });
 
   useEffect(() => {
     if (risks.length === 0 && governanceItems.length === 0 && incidents.length === 0 && controls.length === 0) return;
 
-    // Create combined array with all items and their metadata
     const allItems = [];
+    const risksData = { ids: [], fields: [] };
+    const incidentsData = { ids: [], fields: [] };
+    const complianceData = { ids: [], fields: [] };
 
-    // Add risks with their metadata
+    // Process risks
     risks.forEach((risk) => {
-      const date = risk.last_reviewed ? new Date(risk.last_reviewed) : new Date(0);
+      const dueDate = calculateDueDate(risk.last_reviewed, 2);
+      const date = dueDate || new Date(0);
+      
+      // For upcoming slider
       allItems.push({
         type: "risk",
         field: [
@@ -111,16 +124,32 @@ function Main() {
           { type: "b", text: "Risk Review", color: "#FFA72699" },
           { type: "t", text: risk.title },
           { type: "t", text: risk.owner || "Unassigned" },
-          { type: "t", text: risk.last_reviewed ? new Date(risk.last_reviewed).toLocaleDateString() : "No date" },
+          { type: "t", text: dueDate ? dueDate.toLocaleDateString() : "No date" },
           { type: "t", text: risk.status }
         ],
         id: risk.risk_id,
         path: "/dashboard/risks",
         date: date
       });
+
+      // For risks overview slider
+      risksData.ids.push(risk.risk_id);
+      risksData.fields.push([
+        { type: "t", text: risk.risk_id },
+        { type: "t", text: risk.title },
+        { type: "t", text: risk.category || "N/A" },
+        { type: "t", text: risk.owner || "Unassigned" },
+        { type: "t", text: risk.status },
+        { type: "t", text: risk.likelihood },
+        { type: "t", text: risk.impact },
+        { type: "t", text: risk.severity },
+        { type: "t", text: risk.last_reviewed ? new Date(risk.last_reviewed).toLocaleDateString() : "Never" },
+        { type: "i", text: "faPen", color: "#26A7F6" },
+        { type: "i", text: "faTrash", color: "#F44336" }
+      ]);
     });
 
-    // Add governance items with their metadata
+    // Process governance items
     governanceItems.forEach((item) => {
       const date = item.next_review ? new Date(item.next_review) : new Date(0);
       allItems.push({
@@ -139,9 +168,12 @@ function Main() {
       });
     });
 
-    // Add incidents with their metadata
+    // Process incidents
     incidents.forEach((incident) => {
-      const date = incident.reported_at ? new Date(incident.reported_at) : new Date(0);
+      const dueDate = calculateDueDate(incident.reported_at, 9);
+      const date = dueDate || new Date(0);
+      
+      // For upcoming slider
       allItems.push({
         type: "incident",
         field: [
@@ -149,20 +181,36 @@ function Main() {
           { type: "b", text: "Incident Review", color: "#3b82f699" },
           { type: "t", text: incident.title },
           { type: "t", text: incident.owner || "Unassigned" },
-          { type: "t", text: incident.reported_at ? new Date(incident.reported_at).toLocaleDateString() : "No date" },
+          { type: "t", text: dueDate ? dueDate.toLocaleDateString() : "No date" },
           { type: "t", text: incident.status }
         ],
         id: incident.incident_id,
         path: "/dashboard/incidents",
         date: date
       });
+
+      // For incidents overview slider
+      incidentsData.ids.push(incident.incident_id);
+      incidentsData.fields.push([
+        { type: "t", text: incident.title },
+        { type: "t", text: incident.category || "N/A" },
+        { type: "t", text: incident.status },
+        { type: "t", text: incident.severity },
+        { type: "t", text: incident.reported_at ? new Date(incident.reported_at).toLocaleDateString() : "N/A" },
+        { type: "t", text: incident.owner || "Unassigned" },
+        { type: "t", text: incident.description || "No description" },
+        { type: "i", text: "faPen", color: "#26A7F6" },
+        { type: "i", text: "faTrash", color: "#F44336" }
+      ]);
     });
 
-    // Add controls with their metadata - using framework_id instead of control_id
+    // Process controls
     controls.forEach((control) => {
-      const date = control.last_reviewed ? new Date(control.last_reviewed) : new Date(0);
-      const frameworkId = controlFrameworkMap[control.control_id] || control.control_id; // Fallback to control_id if framework not found
+      const dueDate = calculateDueDate(control.last_reviewed, 9);
+      const date = dueDate || new Date(0);
+      const frameworkId = controlFrameworkMap[control.control_id] || control.control_id;
       
+      // For upcoming slider
       allItems.push({
         type: "control",
         field: [
@@ -170,90 +218,102 @@ function Main() {
           { type: "b", text: "Control Review", color: "#ff00ff99" },
           { type: "t", text: control.control_name },
           { type: "t", text: control.owner || "Unassigned" },
-          { type: "t", text: control.last_reviewed ? new Date(control.last_reviewed).toLocaleDateString() : "No date" },
+          { type: "t", text: dueDate ? dueDate.toLocaleDateString() : "No date" },
           { type: "t", text: control.status }
         ],
-        id: frameworkId, // Use framework_id instead of control_id
+        id: frameworkId,
         path: "/dashboard/compliance",
         date: date
       });
+
+      // For compliance overview slider
+      complianceData.ids.push(control.control_id);
+      complianceData.fields.push([
+        { type: "t", text: control.control_id },
+        { type: "t", text: control.control_name },
+        { type: "t", text: control.description || "No description" },
+        { type: "t", text: control.owner || "Unassigned" },
+        { type: "t", text: control.status },
+        { type: "t", text: control.compliance_status || "Not assessed" },
+        { type: "t", text: control.last_reviewed ? new Date(control.last_reviewed).toLocaleDateString() : "Never" },
+        { type: "i", text: "faEdit", color: "#3b82f6" },
+        { type: "i", text: "faTrash", color: "#ef4444" }
+      ]);
     });
 
-    // Sort all items by date
+    // Sort all items by due date for upcoming slider
     const sortedItems = allItems.sort((a, b) => a.date - b.date);
+    const upcomingData = {
+      fields: sortedItems.map(item => item.field),
+      ids: sortedItems.map(item => item.id),
+      navigation: sortedItems.map((item, index) => ({
+        path: item.path,
+        start: index,
+        end: index
+      }))
+    };
 
-    // Extract sorted arrays
-    const sortedFields = sortedItems.map(item => item.field);
-    const sortedIds = sortedItems.map(item => item.id);
-    const sortedNavigation = sortedItems.map((item, index) => ({
-      path: item.path,
-      start: index,
-      end: index
-    }));
-
-    setSortedData({
-      fields: sortedFields,
-      ids: sortedIds,
-      navigation: sortedNavigation
+    setOverviewData({
+      risks: risksData,
+      incidents: incidentsData,
+      compliance: complianceData,
+      upcoming: upcomingData
     });
-  }, [risks, governanceItems, incidents, controls, controlFrameworkMap]);
 
-  // Calculate risk statistics
-  const totalRisks = risks.length;
-  const openRisks = risks.filter(risk => risk.status === "open").length;
-  const mitigatedRisks = risks.filter(risk => risk.status === "mitigated").length;
-  const closedRisks = risks.filter(risk => risk.status === "closed").length;
-  const highSeverityRisks = risks.filter(risk => risk.severity === "high" || risk.severity === "critical").length;
+  }, [risks, governanceItems, incidents, controls, controlFrameworkMap]);
 
   if (loading) {
     return (
-      <>
-        <div className="p-4">Loading dashboard data...</div>
-      </>
+      <div className="p-4">Loading dashboard data...</div>
     );
   }
 
   if (error) {
     return (
-      <>
-        <div className="p-4 text-red-500">Error: {error}</div>
-      </>
+      <div className="p-4 text-red-500">Error: {error}</div>
     );
   }
 
   return (
-    <>
+    <div className="space-y-6 p-4">
+      {/* Upcoming Reviews CardSlider */}
       <CardSlider
         caption={{ text: 'upcoming', icon: "faCalendarDay" }}
         titles={["Type", " ", "Title", "owner", "Due Date", "status"]}
         colors={[""]}
         sizes={[2, 8, 20, 6, 6, 6]}
-        navigation={sortedData.navigation}
-        ids={sortedData.ids}
-        fields={sortedData.fields}
+        navigation={overviewData.upcoming.navigation}
+        ids={overviewData.upcoming.ids}
+        fields={overviewData.upcoming.fields}
       />
       
-      <div className='p-3.5 flex flex-col bg-teal/90 rounded-2xl w-full h-full capitalize font-bold text-3xl gap-4'>
-        <div>
-          <FontAwesomeIcon icon={faTriangleExclamation} className='h1Icon' />
-          <span>Risks Overview</span>
-        </div>
-        <div className='cardsContainer'>
-          <Card title="Total Risks" value={totalRisks} model={1} />
-          <Card title="Mitigated" value={mitigatedRisks} model={2} />
-          <Card title="Open" value={openRisks} model={2} />
-          <Card title="Closed" value={closedRisks} model={2} />
-          <Card title="High Severity" value={highSeverityRisks} model={1} />
-        </div>
-        <div className='flex'>
-          <div className='button buttonStyle my-4' onClick={() => navigate("/dashboard/addRisk")}>
-            <FontAwesomeIcon icon={faPlus} className='mr-1' />
-            Add Risks
-          </div>
-        </div>
-      </div>
-    </>
-  )
+      {/* Risks Overview */}
+      <RisksOverview 
+        risks={risks}
+        allRisksIds={overviewData.risks.ids}
+        allRisksFields={overviewData.risks.fields}
+        onAddRisk={() => navigate("/dashboard/addRisk")}
+      />
+      
+      {/* Incidents Overview */}
+      <IncidentsOverview 
+        incidents={incidents}
+        allIncidentsIds={overviewData.incidents.ids}
+        allIncidentsFields={overviewData.incidents.fields}
+        onAddIncident={() => navigate("/dashboard/addIncident")}
+      />
+      
+      {/* Compliance Overview */}
+      <ComplianceOverview 
+        frameworks={frameworks}
+        requirements={requirements}
+        controls={controls}
+        allControlsIds={overviewData.compliance.ids}
+        allControlsFields={overviewData.compliance.fields}
+        onViewCompliance={() => navigate("/dashboard/compliance")}
+      />
+    </div>
+  );
 }
 
-export default Main
+export default Main;

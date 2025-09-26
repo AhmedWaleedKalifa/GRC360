@@ -48,12 +48,11 @@ const EditConfigurations = () => {
 
   if (loading) {
     return (
-      <div className='smallContainer'>
-        <div className="editConfig">
-          <h1 className="editConfigTitle">Edit Configuration</h1>
-          <div>Loading configuration...</div>
-        </div>
-      </div>
+     <>
+       <div className="h-full w-full flex flex-col justify-center items-center">
+          <div class="animate-spin rounded-full h-14 w-14 border-4 border-blue-200 border-t-blue-600 self-center"></div>
+       </div>
+     </>
     );
   }
 
@@ -82,7 +81,7 @@ const EditConfigurations = () => {
   return (
     <div className='smallContainer'>
       <div className="editConfig">
-        <h1 className="editConfigTitle">Edit Configuration</h1>
+        <h1 className="editConfigTitle">Edit {item?.key} </h1>
         <button className='templateBackLink' onClick={() => navigate(-1)}>
           <FontAwesomeIcon icon={faArrowLeft} className='text-2xl' />
         </button>

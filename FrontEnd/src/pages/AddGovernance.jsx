@@ -160,9 +160,9 @@ function AddGovernance() {
                         { 
                             id: "changeSummary", 
                             type: "text", 
-                            isInput: false, 
+                            isInput: true, 
                             label: "Change Summary:", 
-                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
+                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput" } 
                         },
                         { 
                             id: "approver", 

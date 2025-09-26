@@ -33,7 +33,7 @@ function EditControl() {
     }, [id,data])
     return (
         <>
-            {item &&
+            {item ?(
                 <div className='smallContainer'>
                     <div className="editConfig">
                         <h1 className="editConfigTitle">Edit Control</h1>
@@ -53,7 +53,13 @@ function EditControl() {
                             button={"Save"}
                         />
                     </div>
-                </div>
+                </div>):(
+                     <>
+                     <div className="h-full w-full flex flex-col justify-center items-center">
+                        <div class="animate-spin rounded-full h-14 w-14 border-4 border-blue-200 border-t-blue-600 self-center"></div>
+                     </div>
+                   </>
+                )
             }
         </>
     )

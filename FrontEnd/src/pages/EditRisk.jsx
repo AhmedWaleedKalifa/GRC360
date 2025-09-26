@@ -110,12 +110,9 @@ function EditRisk() {
 
     if (loading) {
         return (
-            <div className='smallContainer'>
-                <div className="editConfig">
-                    <h1 className="editConfigTitle">Edit Risk</h1>
-                    <div>Loading risk data...</div>
-                </div>
-            </div>
+            <div className="h-full w-full flex flex-col justify-center items-center">
+            <div class="animate-spin rounded-full h-14 w-14 border-4 border-blue-200 border-t-blue-600 self-center"></div>
+         </div>
         );
     }
 
@@ -162,14 +159,6 @@ function EditRisk() {
                             Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
                         },
                         { 
-                            id: "description", 
-                            type: "text", 
-                            isInput: false, 
-                            label: "Description:", 
-                            initialValue: item.description || "", 
-                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
-                        },
-                        { 
                             id: "category", 
                             type: "select", 
                             isInput: true, 
@@ -177,6 +166,14 @@ function EditRisk() {
                             selectList: allowedCategories, 
                             initialValue: item.category || "Other", 
                             Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        },
+                        { 
+                            id: "description", 
+                            type: "text", 
+                            isInput: true, 
+                            label: "Description:", 
+                            initialValue: item.description || "", 
+                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput" } 
                         },
                         { 
                             id: "owner", 
@@ -229,7 +226,7 @@ function EditRisk() {
                             isInput: true, 
                             label: "Last Reviewed:", 
                             initialValue: item.last_reviewed ? item.last_reviewed.split('T')[0] : "", 
-                            Class: { container: "editInputContainer col-span-2", label: "label", input: "select" } 
+                            Class: { container: "editInputContainer ", label: "label", input: "select" } 
                         },
                     ]}
                     button={loading ? "Saving..." : "Save"}

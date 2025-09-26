@@ -124,12 +124,11 @@ function EditGovernance() {
 
     if (loading) {
         return (
-            <div className='smallContainer'>
-                <div className="editConfig">
-                    <h1 className="editConfigTitle">Edit Governance</h1>
-                    <div>Loading governance data...</div>
-                </div>
-            </div>
+            <>
+       <div className="h-full w-full flex flex-col justify-center items-center">
+          <div class="animate-spin rounded-full h-14 w-14 border-4 border-blue-200 border-t-blue-600 self-center"></div>
+       </div>
+     </>
         );
     }
 
@@ -237,10 +236,10 @@ function EditGovernance() {
                         { 
                             id: "changeSummary", 
                             type: "text", 
-                            isInput: false, 
+                            isInput: true, 
                             label: "Change Summary:", 
                             initialValue: item.latest_change_summary || "", 
-                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
+                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput" } 
                         },
                         { 
                             id: "approver", 

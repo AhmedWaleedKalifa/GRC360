@@ -73,9 +73,18 @@ function Controls() {
     if (loading) {
         return (
             <>
-                <h2>FrameWorks / Requirements / {id}</h2>
-                <div className="p-4">Loading controls...</div>
-            </>
+            <h2>FrameWorks / framework name  / requirement name</h2>
+            <CardSlider
+                caption={{ text: `requirement name Controls` }}
+                titles={["#", "Name", "Status", "Owner", "Last Reviewed", "Reference", "Notes", "Edit"]}
+                sizes={[1, 16, 5, 6, 5, 5, 6, 2]}
+                ids={[]}
+                fields={[]}
+            />
+            <div onClick={() => { navigate(-1) }} className='button buttonStyle w-[fit-content] ml-2' >
+                Back
+            </div>
+        </>
         );
     }
 
@@ -102,8 +111,8 @@ function Controls() {
             <h2>FrameWorks / {framework?.framework_name || "Unknown"} / {requirement.requirement_name}</h2>
             <CardSlider
                 caption={{ text: `${requirement.requirement_name} Controls` }}
-                titles={["#", "Name", "Status", "Owner", "Last Reviewed", "Reference", "Notes", "Actions"]}
-                sizes={[1, 16, 5, 6, 5, 5, 6, 3]}
+                titles={["#", "Name", "Status", "Owner", "Last Reviewed", "Reference", "Notes", "Edit"]}
+                sizes={[1, 16, 5, 6, 5, 5, 6, 2]}
                 colors={[]}
                 ids={ids}
                 fields={fields}

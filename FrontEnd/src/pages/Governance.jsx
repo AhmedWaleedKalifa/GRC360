@@ -72,14 +72,14 @@ function Governance() {
     { type: "t", text: item.governance_name },
     { type: "t", text: item.type },
     { type: "t", text: item.owner || "Unassigned" },
-    { 
-      type: "b", 
+    {
+      type: "b",
       text: item.status,
-      color: item.status === "active" 
-        ? "#00ff0099" 
+      color: item.status === "active"
+        ? "#00ff0099"
         : item.status === "draft"
-        ? "#FFA72699"
-        : "#3b82f699"
+          ? "#FFA72699"
+          : "#3b82f699"
     },
     { type: "t", text: item.last_reviewed ? new Date(item.last_reviewed).toLocaleDateString() : "Never" },
     { type: "t", text: item.effective_date ? new Date(item.effective_date).toLocaleDateString() : "N/A" },
@@ -87,14 +87,14 @@ function Governance() {
     { type: "t", text: item.next_review ? new Date(item.next_review).toLocaleDateString() : "N/A" },
     { type: "t", text: "-" }, // Version (not in schema)
     { type: "t", text: item.latest_change_summary || "No changes" },
-    { 
-      type: "b", 
+    {
+      type: "b",
       text: item.approval_status,
-      color: item.approval_status === "approved" 
-        ? "#00ff0099" 
+      color: item.approval_status === "approved"
+        ? "#00ff0099"
         : item.approval_status === "pending"
-        ? "#FFA72699"
-        : "#ff000099"
+          ? "#FFA72699"
+          : "#ff000099"
     },
     { type: "t", text: item.approver || "N/A" },
     { type: "t", text: "N/A" }, // Confidentiality (not in schema)
@@ -104,40 +104,62 @@ function Governance() {
   ]);
 
   const ids = governanceItems.map(item => item.governance_id);
-  const colors = governanceItems.map(item => 
+  const colors = governanceItems.map(item =>
     String(item.governance_id) === id ? "#26A7F680" : ""
   );
 
   // Calculate expiring soon items
   const expiringSoon = governanceItems.filter(item => {
     if (!item.expiry_date) return false;
-    
+
     const expiry = new Date(item.expiry_date);
     const now = new Date();
-    
+
     const expiryYear = expiry.getFullYear();
     const expiryMonth = expiry.getMonth();
-    
+
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
-    
+
     // Check if expiry is in this month
     const isThisMonth = expiryYear === currentYear && expiryMonth === currentMonth;
-    
+
     // Check if expiry is in next month (handles year change too)
     const nextMonth = (currentMonth + 1) % 12;
     const nextMonthYear = currentMonth === 11 ? currentYear + 1 : currentYear;
-    
+
     const isNextMonth = expiryYear === nextMonthYear && expiryMonth === nextMonth;
-    
+
     return isThisMonth || isNextMonth;
   }).length;
 
   if (loading) {
     return (
       <>
+
         <h1><FontAwesomeIcon icon={faGavel} className='h1Icon' /> Governance</h1>
-        <div className="p-4">Loading governance items...</div>
+        <div className='cardsContainer'>
+          <Card title="Total Documents" value="0" model={1} />
+          <Card title="Active" value="0" model={2} />
+          <Card title="Expiring Soon" value="0" model={1} />
+          <Card title="Pending Approval" value="0" model={2} />
+        </div>
+        <div className='h2AndButtonContainer '>
+          <h2>Governance Items</h2>
+          <div className='button buttonStyle relative left-0' onClick={() => { navigate("/dashboard/addGovernance") }}>
+            <span className='opacity-0'> <FontAwesomeIcon icon={faPlus} className=' mr-1' />
+              Add Item</span>
+            <div class="absolute top-4 left-8 animate-spin rounded-full h-4 w-4 border-4 border-blue-200 border-t-blue-600 self-center"></div>
+          </div>
+
+        </div>
+        <CardSlider
+          titles={["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Approver", "Confidentiality", "Attachment", "Edit", "Delete"]}
+          sizes={[1, 4, 3, 3, 4, 4, 4, 4, 4, 3, 7, 4, 4, 4, 4, 2, 3]}
+          fields={[]}
+          ids={[]}
+        />
+        <div class="  animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600 self-center"></div>
       </>
     );
   }
@@ -168,8 +190,8 @@ function Governance() {
         </div >
       </div>
       <CardSlider
-        titles={["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Approver", "Confidentiality", "Attachment", "Actions", ""]}
-        sizes={[1, 4, 3, 3, 4, 4, 4, 4, 4, 3, 7, 4, 4, 4, 4, 2, 2]}
+        titles={["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Approver", "Confidentiality", "Attachment", "Edit", "Delete"]}
+        sizes={[1, 4, 3, 3, 4, 4, 4, 4, 4, 3, 7, 4, 4, 4, 4, 2, 3]}
         colors={colors}
         fields={fields}
         ids={ids}

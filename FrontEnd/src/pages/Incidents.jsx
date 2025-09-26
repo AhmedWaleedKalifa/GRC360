@@ -132,8 +132,60 @@ function Incidents() {
   const allIncidentsIds = incidents.map(incident => incident.incident_id);
 
   if (loading) {
-    return <div className="p-4">Loading incidents...</div>;
-  }
+    <>
+    <div className='w-full h-[fit-content] flex flex-row justify-between items-center'>
+      <h1><FontAwesomeIcon icon={faTriangleExclamation} className='h1Icon' /> Incidents</h1>
+      <div className='button buttonStyle' onClick={() => { nav('/dashboard/addIncident') }}>Add Incident</div>
+    </div>
+
+    <div className='cardsContainer'>
+      <Card title="Total Incidents" value='0' model={1} />
+      <Card title="Open" value='0' model={2} />
+      <Card title="Closed" value='0' model={1} />
+      <Card title="High Severity" value='0' model={2} />
+    </div>
+
+    <div className='flex flex-row items-center x w-full  flex-nowrap xl:flex-nowrap sm:flex-wrap'>
+    <div className='w-[50%] h-full flex flex-row items-center gap-4'>
+    <Chart 
+        title={"Incidents by Status"} 
+        array={[
+          { name: "Closed", value: 0, color: "#00ff0080" }, 
+          { name: "Investigating", value: 0, color: "#3b82f680" }, 
+          { name: "Open", value: 0, color: "#FFA72680" }
+        ]} 
+      />
+      <Progress 
+        title={"Resolution Progress"} 
+        footer={"incidents closed"} 
+        num='0'
+        all='0' 
+      />
+    </div>
+      <div className='w-[50%] h-full '>
+        <CardSlider
+          caption={{ text: "Recent Incidents", icon: "faClock" }}
+          titles={["Title", "Date", "Status"]}
+          sizes={[5, 5, 2]}
+          fields={[]}
+          ids={[]}
+          height={"408px"}
+        />
+      </div>
+    </div>
+<div className='flex flex-col justify-center'>
+
+<CardSlider
+      caption={{ text: "All Incidents", icon: "faFolder" }}
+      sizes={[7, 3, 6, 5, 5, 4, 10, 2, 2]}
+      titles={["Title", "Category", "Status", "Severity", "Reported At", "Owner", "Description", "Edit", "Delete"]}
+      ids={[]}
+      fields={[]}
+    />
+    <div class="animate-spin rounded-full h-14 w-14 border-4 border-blue-200 border-t-blue-600 self-center"></div>
+
+</div>
+  </>  }
 
   if (error) {
     return <div className="p-4 text-red-500">Error: {error}</div>;
@@ -185,8 +237,8 @@ function Incidents() {
 
       <CardSlider
         caption={{ text: "All Incidents", icon: "faFolder" }}
-        sizes={[6, 2, 4, 3, 3, 3, 7, 1.6, .8]}
-        titles={["Title", "Category", "Status", "Severity", "Reported At", "Owner", "Description", "Actions", ""]}
+        sizes={[7, 3, 6, 5, 5, 4, 10, 2, 2]}
+        titles={["Title", "Category", "Status", "Severity", "Reported At", "Owner", "Description", "Edit", "Delete"]}
         ids={allIncidentsIds}
         fields={allIncidentsFields}
         colors={colors}

@@ -93,19 +93,19 @@ function AddRisk() {
                             Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
                         },
                         { 
-                            id: "description", 
-                            type: "text", 
-                            isInput: false, 
-                            label: "Description:", 
-                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
-                        },
-                        { 
                             id: "category", 
                             type: "select", 
                             isInput: true, 
                             label: "Category:", 
                             selectList: allowedCategories, 
                             Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        },
+                        { 
+                            id: "description", 
+                            type: "text", 
+                            isInput: true, 
+                            label: "Description:", 
+                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput" } 
                         },
                         { 
                             id: "owner", 
@@ -156,7 +156,7 @@ function AddRisk() {
                             type: "date", 
                             isInput: true, 
                             label: "Last Reviewed:", 
-                            Class: { container: "editInputContainer col-span-2", label: "label", input: "select" } 
+                            Class: { container: "editInputContainer ", label: "label", input: "select" } 
                         },
                     ]}
                     button={loading ? "Adding..." : "Add"}

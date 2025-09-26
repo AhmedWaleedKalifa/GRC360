@@ -101,9 +101,26 @@ const Compliance = () => {
   if (loading) {
     return (
       <>
-        <h1><FontAwesomeIcon icon={faShield} className='h1Icon' />Compliance</h1>
-        <div className="p-4">Loading compliance data...</div>
-      </>
+      <h1><FontAwesomeIcon icon={faShield} className='h1Icon' />Compliance</h1>
+      <div className='cardsContainer'>
+        <Card title="Frameworks" value='0' model={1} color={"#ffbb28"} />
+        <Card title="Requirements" value='0'  model={2} color={"#00C49F"} />
+        <Card title="Controls" value='0'  model={1} color={"#F44336"} />
+      </div>
+
+      <div className='flex flex-col justify-center '>
+        <CardSlider
+          caption={{ text: "Compliance Frameworks", icon: "faShield" }}
+          titles={["Framework", "# Requirements", "# Controls"]}
+          navigation={[{start: 0, path: "/dashboard/requirements", end: frameworks.length - 1}]}
+          sizes={[1, 1, 1]}
+          ids={[]}
+          fields={[]}
+        />
+        <div class=" animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600 self-center"></div>
+
+      </div>
+    </>
     );
   }
 
@@ -128,7 +145,7 @@ const Compliance = () => {
       <div>
         <CardSlider
           caption={{ text: "Compliance Frameworks", icon: "faShield" }}
-          titles={["Framework", "# Requirements", "# Controls"]}
+          titles={["Framework", "Requirements", "Controls"]}
           navigation={[{start: 0, path: "/dashboard/requirements", end: frameworks.length - 1}]}
           sizes={[1, 1, 1]}
           colors={colors}

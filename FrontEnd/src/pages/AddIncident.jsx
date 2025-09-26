@@ -87,13 +87,7 @@ function AddIncident() {
                             required: true,
                             Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
                         },
-                        { 
-                            id: "description", 
-                            type: "text", 
-                            isInput: false, 
-                            label: "Description:", 
-                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
-                        },
+                       
                         { 
                             id: "category", 
                             type: "select", 
@@ -102,6 +96,13 @@ function AddIncident() {
                             selectList: allowedCategories, 
                             required: true,
                             Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        },
+                        { 
+                            id: "description", 
+                            type: "text", 
+                            isInput: true, 
+                            label: "Description:", 
+                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput " } 
                         },
                         { 
                             id: "owner", 

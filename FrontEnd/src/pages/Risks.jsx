@@ -142,13 +142,55 @@ function Risks() {
     if (loading) {
         return (
             <>
-                <h1>
-                    <FontAwesomeIcon icon={faChartSimple} className="h1Icon" />
-                    Risk Register
-                    {globalSearchQuery && <span style={{ fontSize: '1rem', marginLeft: '1rem', color: '#666' }}>Searching...</span>}
-                </h1>
-                <div className="p-4">Loading risks...</div>
-            </>
+            <h1>
+                <FontAwesomeIcon icon={faChartSimple} className="h1Icon" />
+                Risk Register
+                {globalSearchQuery && (
+                    <span style={{ fontSize: '1rem', marginLeft: '1rem', color: '#666' }}>
+                        - Search results for "{globalSearchQuery}" ({filteredRisks.length} found)
+                    </span>
+                )}
+            </h1>
+
+            <div className="cardsContainer">
+                <Card title="Total Risks" value="0" model={1} />
+                <Card title="Open Risks" value="0" model={2} />
+                <Card title="High Severity" value="0" model={1} />
+                <Card title="Reviewed This Month" value="0" model={2} />
+            </div>
+
+            <div className="h2AndButtonContainer">
+                <h2>Risk items</h2>
+                <div className="button buttonStyle relative left-0" onClick={() => { navigate("/dashboard/addRisk") }}>
+                   <span className='opacity-0'> <FontAwesomeIcon icon={faPlus} className="mr-1" />
+                   Add Risk</span>
+                   <div class="absolute top-4 left-8 animate-spin rounded-full h-4 w-4 border-4 border-blue-200 border-t-blue-600 self-center"></div>
+
+                </div>
+            </div>
+
+            
+                <CardSlider
+                    titles={[
+                        "ID",
+                        "Title",
+                        "Category",
+                        "Owner",
+                        "Status",
+                        "Likelihood",
+                        "Impact",
+                        "Severity",
+                        "Last Reviewed",
+                        "Edit",
+                        "Delete",
+                    ]}
+                    sizes={[2, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3]}
+                    ids={ids}
+                    fields={fields}
+                    colors={colors}
+                />
+            
+        </>
         );
     }
 
@@ -184,7 +226,7 @@ function Risks() {
             </div>
 
             <div className="h2AndButtonContainer">
-                <h2>Risks</h2>
+                <h2>Risk items</h2>
                 <div className="button buttonStyle" onClick={() => { navigate("/dashboard/addRisk") }}>
                     <FontAwesomeIcon icon={faPlus} className="mr-1" />
                     Add Risk
@@ -207,10 +249,10 @@ function Risks() {
                         "Impact",
                         "Severity",
                         "Last Reviewed",
-                        "Actions",
-                        "",
+                        "Edit",
+                        "Delete",
                     ]}
-                    sizes={[2, 8, 8, 8, 8, 8, 8, 8, 8, 8, 2]}
+                    sizes={[2, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3]}
                     ids={ids}
                     fields={fields}
                     colors={colors}
