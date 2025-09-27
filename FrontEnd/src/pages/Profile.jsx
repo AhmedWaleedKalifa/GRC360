@@ -1,49 +1,204 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Form from '../components/Form';
+import { useUser } from '../hooks/useUser';
+import { usersAPI } from '../services/api';
 
-function profile() {
-  const user = { username: "user",nickname:"userA", email: "user@gmail.com", password: "user123",phone:"01000000000",job_title:"Eng" };
-  return (
-    <>
+function Profile() {
+    const [loading, setLoading] = useState(true);
+    const [saveLoading, setSaveLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
+    // Get current user and permissions
+    const { currentUser, refreshUser, loading: userLoading } = useUser();
 
-      <div className='profile'>
-        <div className='profileHeader'><span>Welcome {user.job_title}. {user.username}</span></div>
-        <div className='profileBr'></div>
-        <div className='profileInfo'>
-          <img className='profileInfoImage' />
-          <div className='profileInfoTextContainer'>
-            <span className='profileInfoFirstSpan'>
-              User Name
-            </span>
-            <span className='profileInfoSecondSpan'>
-              User@gmail.com
-            </span>
-          </div>
-        </div>
+    // Safe user property access
+    const getCurrentUserName = () => {
+        return currentUser?.user_name || currentUser?.name || '';
+    };
 
-        <Form
-          fstyle={{ form: "profileForm", title: "profileFormTitle ", button: "profileFormButton col-span-2" }}
-          button="Edit"
-          inputarray={[
-            { id: "username", label: "User Name:", type: "text", isInput: true, initialValue: user.username, placeholder: "Your Name", Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } },
-            { id: "nickname", label: "Nick Name:", type: "text", isInput: true, initialValue: user.nickname, placeholder: "Your Nick Name", Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } },
-            { id: "email", label: "Email:", type: "email", isInput: true, initialValue: user.email, changeable: false, placeholder: "Your Full Name", Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } },
-            { id: "password", label: "Password:", type: "password", isInput: true, initialValue: user.password, placeholder: "Your Full Name", Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } },
-            { id: "phone", label: "Phone Number:", type: "text", isInput: true, initialValue: user.phone, placeholder: "Your Phone Number", Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } },
-          ]}
-          onSubmit={(data) => {
-            console.log("Form data:", data);
-            if (data.email && data.password) {
-              window.location.href = '/dashboard';
+    const getCurrentUserEmail = () => {
+        return currentUser?.email || '';
+    };
+
+    const getCurrentUserPhone = () => {
+        return currentUser?.phone || '';
+    };
+
+    const getCurrentUserJobTitle = () => {
+        return currentUser?.job_title || '';
+    };
+
+    const getCurrentUserId = () => {
+        return currentUser?.user_id || currentUser?.id || null;
+    };
+
+    // Handle form submission
+    const handleSubmit = async (formData) => {
+        try {
+            setSaveLoading(true);
+            setError(null);
+            
+            // Prepare user data for update
+            const userData = {
+                user_name: formData.user_name,
+                email: formData.email,
+                phone: formData.phone,
+                job_title: formData.job_title,
+                ...(formData.password && formData.password.trim() !== '' && { password: formData.password })
+            };
+            
+            console.log('Sending user data:', userData);
+            
+            // Get current user ID
+            const userId = getCurrentUserId();
+            if (!userId) {
+                throw new Error('User ID not found');
             }
-          }}
-        />
+            
+            // Call API to update the user profile
+            await usersAPI.update(userId, userData);
+            
+            // Show success message
+            alert('Profile updated successfully!');
+            
+            // Refresh user data to get updated information - this now works properly
+            if (refreshUser) {
+                await refreshUser();
+                console.log('User data refreshed successfully');
+            }
+            
+        } catch (err) {
+            console.error('Error updating profile:', err);
+            const errorMessage = err.message || 'Failed to update profile. Please try again.';
+            setError(errorMessage);
+            alert('Error: ' + errorMessage);
+        } finally {
+            setSaveLoading(false);
+        }
+    };
 
-      </div>
-    </>
+    // Set loading state based on user loading
+    useEffect(() => {
+        if (!userLoading && currentUser) {
+            setLoading(false);
+        }
+    }, [userLoading, currentUser]);
 
-  )
+    // Show loading while checking user data
+    if (userLoading || loading || !currentUser) {
+        return (
+            <div className="h-full w-full flex flex-col justify-center items-center">
+                <div className="animate-spin rounded-full h-14 w-14 border-4 border-blue-200 border-t-blue-500"></div>
+                <p className="mt-4 text-gray-600">Loading user data...</p>
+            </div>
+        );
+    }
+
+    return (
+        <>
+            <div className='profile'>
+                <div className='profileHeader'>
+                    <span>Welcome {getCurrentUserJobTitle() ? `${getCurrentUserJobTitle()}.` : ''} {getCurrentUserName()}</span>
+                </div>
+                <div className='profileBr'></div>
+                <div className='profileInfo'>
+                    <img 
+                        className='profileInfoImage' 
+                        src={'/default-avatar.png'} 
+                        alt="Profile" 
+                    />
+                    <div className='profileInfoTextContainer'>
+                        <span className='profileInfoFirstSpan'>
+                            {getCurrentUserName()}
+                        </span>
+                        <span className='profileInfoSecondSpan'>
+                            {getCurrentUserEmail()}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 h-fit rounded-2xl mt-4 text-center">
+                    Editing profile: {getCurrentUserName()}
+                </div>
+
+                {error && (
+                    <div className="text-red-500 p-4 bg-red-50 rounded-lg mt-4">
+                        Error: {error}
+                    </div>
+                )}
+
+                <Form
+                    fstyle={{ 
+                        form: "profileForm", 
+                        title: "profileFormTitle", 
+                        button: "profileFormButton col-span-2" 
+                    }}
+                    button={saveLoading ? "Saving..." : "Save Changes"}
+                    inputarray={[
+                        { 
+                            id: "user_name",
+                            label: "User Name:", 
+                            type: "text", 
+                            isInput: true, 
+                            initialValue: getCurrentUserName(), 
+                            placeholder: "Your Name", 
+                            required: true,
+                            Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } 
+                        },
+                        { 
+                            id: "email", 
+                            label: "Email:", 
+                            type: "email", 
+                            isInput: true, 
+                            initialValue: getCurrentUserEmail(), 
+                            changeable: false,
+                            placeholder: "Your Email", 
+                            required: true,
+                            Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } 
+                        },
+                        { 
+                            id: "password", 
+                            label: "New Password:", 
+                            type: "password", 
+                            isInput: true, 
+                            initialValue: "", 
+                            placeholder: "Enter new password (leave blank to keep current)", 
+                            required: false,
+                            Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } 
+                        },
+                        { 
+                            id: "phone", 
+                            label: "Phone Number:", 
+                            type: "tel", 
+                            isInput: true, 
+                            initialValue: getCurrentUserPhone(), 
+                            placeholder: "Your Phone Number", 
+                            required: false,
+                            Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } 
+                        },
+                        { 
+                            id: "job_title", 
+                            label: "Job Title:", 
+                            type: "text", 
+                            isInput: true, 
+                            initialValue: getCurrentUserJobTitle(), 
+                            placeholder: "Your Job Title", 
+                            required: false,
+                            Class: { container: "profileInputContainer", label: "profileFormLabel", input: "profileFormInput" } 
+                        },
+                    ]}
+                    onSubmit={handleSubmit}
+                />
+
+                <div className="mt-4 p-3 bg-gray-50 rounded-lg text-sm text-gray-600">
+                    <strong>Security Note:</strong> Password changes will take effect immediately. 
+                    Make sure to use a strong, unique password.
+                </div>
+            </div>
+        </>
+    );
 }
 
-export default profile
+export default Profile;

@@ -5,13 +5,18 @@ const { logAction } = require("./auditHelper");
 async function createThreat(req, res, next) {
   try {
     const { name, message, description, category, severity, detected_at } = req.body;
-    const user_id = req.user?.user_id;
 
     if (!name || !category || !severity) {
       throw new BadRequestError("Name, category, and severity are required");
     }
 
-    const threatData = {name,message,description,category,severity};
+    const threatData = {
+      name,
+      message,
+      description,
+      category,
+      severity
+    };
     
     if (detected_at) {
       threatData.detected_at = detected_at;
@@ -20,7 +25,7 @@ async function createThreat(req, res, next) {
     const newThreat = await db.addThreat(threatData);
 
     // Log the action
-    await logAction(user_id, "CREATE", "threat", newThreat.threat_id, {
+    await logAction(req, "CREATE", "threat", newThreat.threat_id, {
       name,
       category,
       severity
@@ -80,7 +85,6 @@ async function updateThreat(req, res, next) {
   try {
     const { id } = req.params;
     const fields = req.body;
-    const user_id = req.user?.user_id;
 
     if (Object.keys(fields).length === 0) {
       throw new BadRequestError("No fields to update");
@@ -94,7 +98,7 @@ async function updateThreat(req, res, next) {
     }
 
     // Log the action
-    await logAction(user_id, "UPDATE", "threat", parseInt(id), {
+    await logAction(req, "UPDATE", "threat", parseInt(id), {
       changed_fields: Object.keys(fields),
       old_severity: oldThreat.severity,
       new_severity: updatedThreat.severity
@@ -109,7 +113,6 @@ async function updateThreat(req, res, next) {
 async function deleteThreat(req, res, next) {
   try {
     const { id } = req.params;
-    const user_id = req.user?.user_id;
 
     const deletedThreat = await db.removeThreat(parseInt(id));
 
@@ -118,7 +121,7 @@ async function deleteThreat(req, res, next) {
     }
 
     // Log the action
-    await logAction(user_id, "DELETE", "threat", parseInt(id), {
+    await logAction(req, "DELETE", "threat", parseInt(id), {
       name: deletedThreat.name,
       category: deletedThreat.category
     });
@@ -128,6 +131,7 @@ async function deleteThreat(req, res, next) {
     next(err);
   }
 }
+
 async function searchThreats(req, res, next) {
   try {
     const { q } = req.query;
@@ -141,7 +145,6 @@ async function searchThreats(req, res, next) {
       throw new BadRequestError("Search query cannot be empty");
     }
 
-    console.log('Search query:', searchQuery);
     const threats = await db.searchThreatsByName(searchQuery);
 
     if (!threats || threats.length === 0) {
@@ -162,5 +165,5 @@ module.exports = {
   getThreatsByCategory,
   updateThreat,
   deleteThreat,
-  searchThreats, // Add this
+  searchThreats,
 };

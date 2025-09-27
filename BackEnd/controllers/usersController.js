@@ -1,5 +1,6 @@
 const db = require("../db/queries/users");
 const { ConflictError, BadRequestError, NotFoundError } = require("../errors/errors");
+const { logAction } = require("./auditHelper");
 
 async function createUser(req, res, next) {
   try {
@@ -14,7 +15,21 @@ async function createUser(req, res, next) {
       throw new ConflictError("Email already exists");
     }
 
-    const newUser = await db.addUser({role,user_name,email,password,job_title,phone,});
+    const newUser = await db.addUser({
+      role,
+      user_name,
+      email,
+      password,
+      job_title,
+      phone,
+    });
+
+    // Log the action
+    await logAction(req, "CREATE", "user", newUser.user_id, {
+      user_name,
+      email,
+      role
+    });
 
     res.status(201).json(newUser);
   } catch (err) {
@@ -63,11 +78,17 @@ async function updateUser(req, res, next) {
       throw new BadRequestError("No fields to update");
     }
 
+    const oldUser = await db.getUserById(parseInt(id));
     const updatedUser = await db.updateUser(parseInt(id), fields);
 
     if (!updatedUser) {
       throw new NotFoundError("User not found");
     }
+
+    // Log the action
+    await logAction(req, "UPDATE", "user", parseInt(id), {
+      changed_fields: Object.keys(fields)
+    });
 
     res.status(200).json(updatedUser);
   } catch (err) {
@@ -78,17 +99,25 @@ async function updateUser(req, res, next) {
 async function deleteUser(req, res, next) {
   try {
     const { id } = req.params;
+
     const deletedUser = await db.removeUser(parseInt(id));
 
     if (!deletedUser) {
       throw new NotFoundError("User not found");
     }
 
+    // Log the action
+    await logAction(req, "DELETE", "user", parseInt(id), {
+      user_name: deletedUser.user_name,
+      email: deletedUser.email
+    });
+
     res.status(200).json({ message: "User deleted successfully", user: deletedUser });
   } catch (err) {
     next(err);
   }
 }
+
 async function searchUsers(req, res, next) {
   try {
     const { q } = req.query;
@@ -102,7 +131,6 @@ async function searchUsers(req, res, next) {
       throw new BadRequestError("Search query cannot be empty");
     }
 
-    console.log('Search query:', searchQuery);
     const users = await db.searchUsersByName(searchQuery);
 
     if (!users || users.length === 0) {
@@ -115,12 +143,12 @@ async function searchUsers(req, res, next) {
     next(err);
   }
 }
+
 module.exports = {
   createUser,
   getUsers,
   getUserById,
   updateUser,
   deleteUser,
-  searchUsers, // Add this
-
+  searchUsers,
 };

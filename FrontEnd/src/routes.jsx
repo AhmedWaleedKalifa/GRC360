@@ -32,10 +32,10 @@ const routes = [
   },
  
   {
-    path: "dashboard",
+    path: "app",
     element: <Dashboard />,
     children: [
-      { index: true, element: <Main /> },
+      { path:"dashboard", element: <Main /> },
       { path: "compliance/:id?", element: <Compliance /> },
       { path: "requirements/:id?", element: <Requirements /> },
       { path: "controls/:id?", element: <Controls /> },

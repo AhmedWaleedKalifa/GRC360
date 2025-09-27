@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useOutletContext } from 'react-router-dom';
+import { useParams, useOutletContext, useNavigate } from 'react-router-dom';
 import CardSlider from '../components/CardSlider';
 import { configurationsAPI } from '../services/api';
+import { useUser } from '../hooks/useUser';
 
 function Configurations() {
   const [configurations, setConfigurations] = useState([]);
@@ -9,14 +10,20 @@ function Configurations() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { id } = useParams();
+  const navigate = useNavigate();
   
+  // Get current user and permissions
+  const { currentUser, permissions, loading: userLoading } = useUser();
+
   // Get search context from outlet
   const outletContext = useOutletContext();
   const globalSearchQuery = outletContext?.searchQuery || '';
 
   useEffect(() => {
-    fetchConfigurations();
-  }, [globalSearchQuery]);
+    if (permissions.canView) {
+      fetchConfigurations();
+    }
+  }, [globalSearchQuery, permissions.canView]);
 
   const fetchConfigurations = async () => {
     try {
@@ -25,10 +32,8 @@ function Configurations() {
       let data;
       
       if (globalSearchQuery) {
-        // Use search API when there's a global search query
         data = await configurationsAPI.search(globalSearchQuery);
       } else {
-        // Get all configurations when no search
         data = await configurationsAPI.getAll();
       }
       
@@ -46,18 +51,27 @@ function Configurations() {
   // Listen for global search events
   useEffect(() => {
     const handleGlobalSearch = (event) => {
-      if (event.detail.activeSection === 'Configurations') {
-        // The search will trigger the useEffect above
+      if (event.detail.activeSection === 'Configurations' && permissions.canView) {
+        fetchConfigurations();
       }
     };
 
     window.addEventListener('globalSearch', handleGlobalSearch);
     return () => window.removeEventListener('globalSearch', handleGlobalSearch);
-  }, []);
+  }, [permissions.canView]);
 
   const [fields, setFields] = useState([]);
   const [colors, setColors] = useState([]);
   const [ids, setIds] = useState([]);
+
+  // Edit configuration handler
+  const handleEditConfiguration = (configId) => {
+    if (!permissions.isAdmin) {
+      alert('You do not have permission to edit configurations. Admin access required.');
+      return;
+    }
+    window.location.href = `/app/editConfigurations/${configId}`;
+  };
 
   useEffect(() => {
     const newFields = [];
@@ -65,17 +79,29 @@ function Configurations() {
     const newColors = [];
     
     filteredConfigurations.forEach((config) => {
+      const actionButtons = [];
+      
+      if (permissions.isAdmin) {
+        actionButtons.push(
+          { 
+            type: "i", 
+            text: "faPen", 
+            color: "#26A7F6", 
+            click: () => handleEditConfiguration(config.config_id) 
+          }
+        );
+      }
+
       newFields.push([
         { type: "t", text: config.key },
         { type: "t", text: config.value },
-        { type: "i", text: "faPen", color: "#26A7F6", selfNav: "/dashboard/editConfigurations/" + config.config_id },
+        ...actionButtons
       ]);
       
-      // Set background color for selected configuration
       if (String(config.config_id) === id) {
-        newColors.push("#26A7F680"); // Highlight color with transparency
+        newColors.push("#26A7F680");
       } else {
-        newColors.push(""); // Default no color
+        newColors.push("");
       }
       
       newIds.push(config.config_id);
@@ -84,25 +110,54 @@ function Configurations() {
     setFields(newFields);
     setIds(newIds);
     setColors(newColors);
-  }, [id, filteredConfigurations]);
+  }, [id, filteredConfigurations, permissions.isAdmin]);
+
+  // Show loading while checking user permissions
+  if (userLoading) {
+    return (
+      <div className="h-full w-full flex flex-col justify-center items-center">
+        <div className="animate-spin rounded-full h-14 w-14 border-4 border-blue-200 border-t-blue-500"></div>
+        <p className="mt-4 text-gray-600">Loading user permissions...</p>
+      </div>
+    );
+  }
+
+  // Check if user has view permission
+  if (!permissions.canView) {
+    return (
+      <div className="h-full w-full flex flex-col justify-center items-center">
+        <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
+          You do not have permission to view configurations.
+        </p>
+        <button 
+          onClick={() => navigate('/app/dashboard')}
+          className="button buttonStyle"
+        >
+          Return to Dashboard
+        </button>
+      </div>
+    );
+  }
 
   if (loading) {
-    return <>
-      <div className='flex flex-col justify-center'>
-      <CardSlider
-        caption={{ text: "Configurations", icon: "faGear" }}
-        titles={["Name", "Value", "Edit"]}
-        sizes={[8, 8, 1]}
-        height={"500"}
-        ids={ids}
-        fields={[]}
-        colors={colors}
-        selectedId={id}
-      />
-      <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600 self-center"></div>
-      </div>
-
-    </>
+    return (
+      <>
+        <div className='flex flex-col justify-center'>
+          <CardSlider
+            caption={{ text: "Configurations", icon: "faGear" }}
+            titles={permissions.isAdmin ? ["Name", "Value", "Edit"] : ["Name", "Value"]}
+            sizes={permissions.isAdmin ? [8, 8, 1] : [12, 12]}
+            height={"500"}
+            ids={ids}
+            fields={[]}
+            colors={colors}
+            selectedId={id}
+          />
+          <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-500 self-center"></div>
+        </div>
+      </>
+    );
   }
 
   if (error) {
@@ -113,8 +168,8 @@ function Configurations() {
     <>
       <CardSlider
         caption={{ text: "Configurations", icon: "faGear" }}
-        titles={["Name", "Value", "Edit"]}
-        sizes={[8, 8, 1]}
+        titles={permissions.isAdmin ? ["Name", "Value", "Edit"] : ["Name", "Value"]}
+        sizes={permissions.isAdmin ? [8, 8, 1] : [12, 12]}
         height={"500"}
         ids={ids}
         fields={fields}

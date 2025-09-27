@@ -1,19 +1,34 @@
+// services/api.js - Complete updated version
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-// handle API requests
+// Get current user from localStorage
+const getCurrentUser = () => {
+  try {
+    const user = localStorage.getItem('currentUser');
+    return user ? JSON.parse(user) : null;
+  } catch (error) {
+    console.error('Error getting current user:', error);
+    return null;
+  }
+};
+
+// Enhanced apiRequest function to include user data
 async function apiRequest(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
   
-  // Get auth token if available
-  const token = localStorage.getItem('authToken');
+  // Get current user from localStorage
+  const currentUser = getCurrentUser();
   
   const defaultHeaders = {
     'Content-Type': 'application/json',
   };
   
-  // Add authorization header if token exists
-  if (token) {
-    defaultHeaders['Authorization'] = `Bearer ${token}`;
+  // Add user information to headers if user exists
+  if (currentUser) {
+    defaultHeaders['X-User-ID'] = currentUser.user_id || currentUser.id || '';
+    defaultHeaders['X-User-Name'] = currentUser.user_name || currentUser.name || '';
+    defaultHeaders['X-User-Email'] = currentUser.email || '';
+    defaultHeaders['X-User-Role'] = currentUser.role || '';
   }
   
   const config = {
@@ -23,6 +38,14 @@ async function apiRequest(endpoint, options = {}) {
     },
     ...options,
   };
+  
+  // Log the request for debugging
+  console.log('API Request:', {
+    url,
+    headers: config.headers,
+    method: config.method,
+    body: config.body
+  });
   
   try {
     const response = await fetch(url, config);
@@ -38,14 +61,15 @@ async function apiRequest(endpoint, options = {}) {
     throw error;
   }
 }
+
+// Rest of your existing API functions remain the same, but they will now automatically include user headers
 export const globalSearchAPI = {
   searchAll: async (query) => {
     try {
-      // Search across multiple modules simultaneously
       const searches = await Promise.allSettled([
         risksAPI.search(query),
         governanceItemsAPI.search(query),
-        complianceAPI.searchControls(query), // Add controls search
+        complianceAPI.searchControls(query),
         incidentsAPI.search(query),
       ]);
 
@@ -63,6 +87,7 @@ export const globalSearchAPI = {
     }
   }
 };
+
 // Configurations API calls
 export const configurationsAPI = {
   getAll: () => apiRequest('/configurations'),
@@ -193,6 +218,9 @@ export const auditLogsAPI = {
   delete: (id) => apiRequest(`/auditLogs/${id}`, {
     method: 'DELETE',
   }),
+  deleteAll: () => apiRequest('/auditLogs', {
+    method: 'DELETE',
+  }),
 };
 
 // Compliance API calls
@@ -247,8 +275,6 @@ export const complianceAPI = {
   }),
 };
 
-// Unified search function that searches across all modules
-
 // Helper function to get the appropriate API based on active module
 export const getModuleAPI = (activeModule) => {
   const apiMap = {
@@ -263,7 +289,7 @@ export const getModuleAPI = (activeModule) => {
     'Compliance Controls': complianceAPI
   };
 
-  return apiMap[activeModule] || risksAPI; // default to risksAPI
+  return apiMap[activeModule] || risksAPI;
 };
 
 // Helper function to get search function based on active module
@@ -280,5 +306,5 @@ export const getSearchFunction = (activeModule) => {
     'Compliance Controls': complianceAPI.searchControls
   };
 
-  return searchMap[activeModule] || risksAPI.search; // default to risks search
+  return searchMap[activeModule] || risksAPI.search;
 };

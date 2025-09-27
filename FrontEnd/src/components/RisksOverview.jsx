@@ -11,15 +11,10 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell
+  ResponsiveContainer
 } from "recharts";
 
-const RisksOverview = ({ risks, allRisksIds, allRisksFields, onAddRisk }) => {
+const RisksOverview = ({ risks, allRisksFields, onAddRisk, permissions }) => {
   // Calculate risk statistics
   const totalRisks = risks.length;
   const openRisks = risks.filter(risk => risk.status === "open").length;
@@ -50,65 +45,100 @@ const RisksOverview = ({ risks, allRisksIds, allRisksFields, onAddRisk }) => {
     return Object.values(grouped).sort((a, b) => new Date(a.month) - new Date(b.month));
   })();
 
-
-
-  const COLORS = ['#ff4d4d', '#ff6b6b', '#ffa726', '#42a5f5'];
+  // Custom tooltip for dark mode with high contrast
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 shadow-xl">
+          <p className="text-gray-900 dark:text-gray-100 font-bold">{label}</p>
+          {payload.map((entry, index) => (
+            <p key={index} className="text-gray-700 dark:text-gray-300 font-medium" style={{ color: entry.color }}>
+              {entry.name}: <span className="font-bold">{entry.value}</span>
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
-    <div className="space-y-6 bg-gray-50 p-6 rounded-xl">
-      {/* Header and Stats */}
-      <div className='p-3.5 flex flex-col bg-teal/90 rounded-2xl w-full capitalize font-bold text-3xl gap-4'>
+    <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-2xl  shadow-xl overflow-clip mx-2">
+       <div className='p-6 flex flex-col bg-gray-200 dark:bg-gray-800  w-full capitalize font-bold text-3xl gap-6'>
         <div className="flex items-center">
-          <FontAwesomeIcon icon={faChartSimple} className='h1Icon mr-2' />
-          <span>Risks Overview</span>
+          <FontAwesomeIcon icon={faChartSimple} className='h1Icon mr-3 text-[#FFA72699]' />
+          <span className="text-gray-900 dark:text-gray-100">Risks Overview</span>
         </div>
         <div className="cardsContainer">
-        <Card title="Total Risks" value={totalRisks} model={1} />
+          <Card title="Total Risks" value={totalRisks} model={1} />
           <Card title="Mitigated" value={mitigatedRisks} model={2} />
           <Card title="Open" value={openRisks} model={2} />
           <Card title="Closed" value={closedRisks} model={2} />
           <Card title="High Severity" value={highSeverityRisks} model={1} />
         </div>
         <div className='flex'>
-          <button className='button buttonStyle my-4' onClick={onAddRisk}>
-            <FontAwesomeIcon icon={faPlus} className='mr-1' />
-            Add Risks
-          </button>
+          {permissions.isAdmin ? (
+            <button 
+              className='button buttonStyle my-2'
+              onClick={onAddRisk}
+              title="Add new risk"
+            >
+              <FontAwesomeIcon icon={faPlus} className='mr-2' />
+              Add Risks
+            </button>
+          ) : (
+            <div 
+              className='button buttonStyle my-2 opacity-30 cursor-not-allowed'
+              title="Admin access required to add risks"
+            >
+              <FontAwesomeIcon icon={faPlus} className='mr-2' />
+              Add Risks
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Charts Section */}
-        {/* Line Chart */}
-        <div className=" p-4 rounded-xl min-h-60 shadow col-span-2 flex flex-row gap-8 ">
-         <div className='w-[50%]'>
-         <h3 className="text-lg font-bold mb-4">Risk Trends Over Time</h3>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={lineChartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="Closed" stroke="#8884d8" name="Closed" />
-              <Line type="monotone" dataKey="High Severity" stroke="#ff4d4d" name="High Severity" />
-              <Line type="monotone" dataKey="Mitigated" stroke="#00c853" name="Mitigated" />
-              <Line type="monotone" dataKey="Open" stroke="#ffb300" name="Open" />
-            </LineChart>
-          </ResponsiveContainer>
-         </div>
-          
-          <div className='w-[50%]'>
-          <CardSlider
-          caption={{ text: "All Risks", icon: "faChartSimple" }}
-          sizes={[2, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3]}
-          titles={["ID", "Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "Edit", "Delete"]}
-          ids={allRisksIds}
-          fields={allRisksFields}
-        />
+      {/* Chart and CardSlider Section */}
+      <div className="bg-gray-200 dark:bg-gray-800 p-6  shadow-lg flex flex-col lg:flex-row gap-8 min-h-96">
+        <div className='w-full lg:w-4/10'>
+          <h3 className="chartTitle mb-4 text-gray-900 dark:text-gray-100 font-bold text-xl">Risk Trends Over Time</h3>
+          <div className=" bg-white dark:bg-gray-900 rounded-xl p-4 border-2 border-gray-300 dark:border-gray-600">
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={lineChartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" strokeOpacity={0.5} />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="#6b7280"
+                  fontSize={12}
+                  tick={{ fill: '#6b7280' }}
+                />
+                <YAxis 
+                  stroke="#6b7280"
+                  fontSize={12}
+                  tick={{ fill: '#6b7280' }}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Line type="monotone" dataKey="Closed" stroke="#10b981" name="Closed" strokeWidth={3} dot={{ fill: '#10b981', r: 4 }} />
+                <Line type="monotone" dataKey="High Severity" stroke="#ef4444" name="High Severity" strokeWidth={3} dot={{ fill: '#ef4444', r: 4 }} />
+                <Line type="monotone" dataKey="Mitigated" stroke="#3b82f6" name="Mitigated" strokeWidth={3} dot={{ fill: '#3b82f6', r: 4 }} />
+                <Line type="monotone" dataKey="Open" stroke="#f59e0b" name="Open" strokeWidth={3} dot={{ fill: '#f59e0b', r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
+        </div>
+        
+        <div className='w-full lg:w-6/10'>
+        <h3 className=" mb-4   font-bold text-xl text-transparent"><span>.</span></h3>
+          <CardSlider
+            caption={{ text: "All Risks", icon: "faChartSimple" }}
+            sizes={[3,3,3,3,7,2,7]}
+            titles={[ "Title", "Category", "Status", "Severity", "Created At", "Owner", "Next Review"]}
+            ids={[]}
+            fields={allRisksFields}
+          />
+        </div>
       </div>
-
-   
     </div>
   );
 };

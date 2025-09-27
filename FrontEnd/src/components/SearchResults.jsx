@@ -1,7 +1,7 @@
 // components/SearchResults.jsx
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { risksAPI, usersAPI, governanceItemsAPI, incidentsAPI, threatsAPI, complianceAPI, configurationsAPI, auditLogsAPI, globalSearchAPI } from '../services/api';
+import { risksAPI, governanceItemsAPI, incidentsAPI, threatsAPI, complianceAPI, configurationsAPI, auditLogsAPI, globalSearchAPI } from '../services/api';
 import Field from './Field';
 import CardSlider from './CardSlider';
 
@@ -102,39 +102,39 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
     if (searchType === 'global' && item._type) {
       switch (item._type) {
         case 'risk':
-          return '/dashboard/risks';
+          return '/app/risks';
         case 'governance':
-          return '/dashboard/governance';
+          return '/app/governance';
         case 'control':
-          return '/dashboard/compliance';
+          return '/app/compliance';
         case 'incident':
-          return '/dashboard/incidents';
+          return '/app/incidents';
         case 'threat':
-          return '/dashboard/threats';
+          return '/app/threats';
         case 'logs': // Add logs case
-          return '/dashboard/logs';
+          return '/app/logs';
         default:
-          return '/dashboard';
+          return '/app/dashboard';
       }
     }
     
     switch (activeModule) {
       case 'Risks':
-        return '/dashboard/risks';
+        return '/app/risks';
       case 'Governance':
-        return '/dashboard/governance';
+        return '/app/governance';
       case 'Incidents':
-        return '/dashboard/incidents';
+        return '/app/incidents';
       case 'Threats':
-        return '/dashboard/threats';
+        return '/app/threats';
       case 'Configurations':
-        return '/dashboard/configurations';
+        return '/app/configurations';
       case 'Logs':
-        return '/dashboard/logs';
+        return '/app/logs';
       case 'Compliance':
-        return '/dashboard/compliance';
+        return '/app/compliance';
       default:
-        return '/dashboard';
+        return '/app/dashboard';
     }
   };
 
@@ -220,7 +220,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
   // Function to convert search results to Field format
   const convertResultsToFields = () => {
     if (searchType === 'global') {
-      return results.map((item, index) => [
+      return results.map((item) => [
         { type: "t", text: getModuleName(item), color: "#6b7280" },
         { type: "t", text: getItemTitle(item) || 'No Title' },
         { type: "t", text: item.description ? item.description.substring(0, 50) + '...' : 'No description' },
@@ -468,7 +468,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
         sizes={getSizes()}
         ids={ids}
         fields={fieldsData.map((field, index) => 
-          field.map((element, elemIndex) => {
+          field.map((element) => {
             if (element.type === "b" && element.text === "View") {
               return {
                 ...element,

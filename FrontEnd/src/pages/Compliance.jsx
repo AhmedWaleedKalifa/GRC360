@@ -112,12 +112,12 @@ const Compliance = () => {
         <CardSlider
           caption={{ text: "Compliance Frameworks", icon: "faShield" }}
           titles={["Framework", "# Requirements", "# Controls"]}
-          navigation={[{start: 0, path: "/dashboard/requirements", end: frameworks.length - 1}]}
+          navigation={[{start: 0, path: "/app/requirements", end: frameworks.length - 1}]}
           sizes={[1, 1, 1]}
           ids={[]}
           fields={[]}
         />
-        <div class=" animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600 self-center"></div>
+        <div class=" animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-500 self-center"></div>
 
       </div>
     </>
@@ -146,7 +146,7 @@ const Compliance = () => {
         <CardSlider
           caption={{ text: "Compliance Frameworks", icon: "faShield" }}
           titles={["Framework", "Requirements", "Controls"]}
-          navigation={[{start: 0, path: "/dashboard/requirements", end: frameworks.length - 1}]}
+          navigation={[{start: 0, path: "/app/requirements", end: frameworks.length - 1}]}
           sizes={[1, 1, 1]}
           colors={colors}
           ids={ids}

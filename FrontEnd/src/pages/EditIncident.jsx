@@ -3,19 +3,18 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Form from '../components/Form';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { incidentsAPI, usersAPI } from "../services/api";
+import { incidentsAPI } from "../services/api";
+import { useUser } from '../hooks/useUser';
 
 function EditIncident() {
     const { id } = useParams();
-    const [owners, setOwners] = useState([]);
-    const [severity, setSeverity] = useState([]);
-    const [status, setStatus] = useState([]);
-    const [category, setCategory] = useState([]);
     const [item, setItem] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [ownerName, setOwnerName] = useState("Loading...");
     const navigate = useNavigate();
+
+    // Get current user and permissions
+    const { currentUser, permissions, loading: userLoading } = useUser();
 
     // Allowed values from your database schema
     const allowedCategories = ['security', 'compliance', 'operational', 'technical', 'physical', 'environmental', 'personnel', 'other'];
@@ -23,21 +22,16 @@ function EditIncident() {
     const allowedSeverities = ['low', 'medium', 'high', 'critical'];
     const allowedPriorities = ['low', 'medium', 'high', 'urgent'];
 
-    // Get owner name from user ID
-    const getOwnerName = async (ownerId) => {
-        if (!ownerId) return "Unassigned";
-        
-        try {
-            const users = await usersAPI.getAll();
-            const user = users.find(u => u.user_id === ownerId);
-            return user ? user.user_name : "Unknown";
-        } catch (err) {
-            console.error('Error fetching user:', err);
-            return "Unknown";
-        }
+    // Safe user property access
+    const getCurrentUserName = () => {
+        return currentUser?.user_name || currentUser?.name || 'Current User';
     };
 
-    // Fetch incident data and users
+    const getCurrentUserId = () => {
+        return currentUser?.user_id || currentUser?.id || null;
+    };
+
+    // Fetch incident data
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -46,20 +40,6 @@ function EditIncident() {
                 // Fetch incident data
                 const incidentData = await incidentsAPI.getById(id);
                 setItem(incidentData);
-                
-                // Fetch users for owner dropdown
-                const usersData = await usersAPI.getAll();
-                const userNames = usersData.map(user => user.user_name);
-                setOwners(userNames);
-                
-                // Set the allowed values for dropdowns
-                setCategory(allowedCategories);
-                setStatus(allowedStatuses);
-                setSeverity(allowedSeverities);
-                
-                // Get owner name for display
-                const name = await getOwnerName(incidentData.owner);
-                setOwnerName(name);
                 
                 setError(null);
             } catch (err) {
@@ -70,40 +50,87 @@ function EditIncident() {
             }
         };
 
-        if (id) {
+        if (id && !userLoading) {
+            // Check permissions
+            if (!permissions.isAdmin) {
+                setError('You do not have permission to edit incidents. Admin access required.');
+                setLoading(false);
+                return;
+            }
+            
             fetchData();
         }
-    }, [id]);
+    }, [id, userLoading, permissions.isAdmin]);
 
     // Handle form submission
     const handleSubmit = async (formData) => {
+        if (!permissions.isAdmin) {
+            alert('You do not have permission to edit incidents. Admin access required.');
+            return;
+        }
+
         try {
-            // Convert owner name to user ID if needed
-            if (formData.owner && formData.owner !== "Unassigned") {
-                const users = await usersAPI.getAll();
-                const user = users.find(u => u.user_name === formData.owner);
-                if (user) {
-                    formData.owner = user.user_id;
-                }
-            } else {
-                formData.owner = null; // Set to null if unassigned
-            }
+            setLoading(true);
             
-            await incidentsAPI.update(id, formData);
+            // Prepare incident data with current user as owner
+            const incidentData = {
+                title: formData.title,
+                category: formData.category,
+                description: formData.description || "",
+                owner: getCurrentUserId(), // Use current user as owner
+                status: formData.status,
+                severity: formData.severity,
+                priority: formData.priority || "medium"
+            };
+            
+            await incidentsAPI.update(id, incidentData);
+            
+            // Show success message
+            alert('Incident updated successfully!');
+            
             navigate(-1); // Go back to previous page after successful update
         } catch (err) {
             console.error('Error updating incident:', err);
             alert('Failed to update incident');
+        } finally {
+            setLoading(false);
         }
     };
 
+    // Show loading while checking user permissions
+    if (userLoading) {
+        return (
+            <div className="h-full w-full flex flex-col justify-center items-center">
+                <div className="animate-spin rounded-full h-14 w-14 border-4 border-blue-200 border-t-blue-500"></div>
+                <p className="mt-4 text-gray-600">Loading user permissions...</p>
+            </div>
+        );
+    }
+
+    // Check if user has admin permission
+    if (!permissions.isAdmin) {
+        return (
+            <div className="h-full w-full flex flex-col justify-center items-center">
+                <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    You do not have permission to edit incidents. Admin access required.
+                </p>
+                <button 
+                    onClick={() => navigate('/app/incidents')}
+                    className="button buttonStyle"
+                >
+                    Return to Incidents
+                </button>
+            </div>
+        );
+    }
+
     if (loading) {
         return (
-            <>
             <div className="h-full w-full flex flex-col justify-center items-center">
-               <div class="animate-spin rounded-full h-14 w-14 border-4 border-blue-200 border-t-blue-600 self-center"></div>
+                <div className="animate-spin rounded-full h-14 w-14 border-4 border-blue-200 border-t-blue-500"></div>
+                <p className="mt-4 text-gray-600">Loading incident data...</p>
             </div>
-          </>
         );
     }
 
@@ -112,7 +139,13 @@ function EditIncident() {
             <div className='smallContainer'>
                 <div className="editConfig">
                     <h1 className="editConfigTitle">Edit Incident</h1>
-                    <div className="text-red-500">Error: {error}</div>
+                    <div className="text-red-500 p-4 bg-red-50 rounded-lg">Error: {error}</div>
+                    <button 
+                        onClick={() => navigate('/app/incidents')}
+                        className="button buttonStyle mt-4"
+                    >
+                        Back to Incidents
+                    </button>
                 </div>
             </div>
         );
@@ -123,7 +156,13 @@ function EditIncident() {
             <div className='smallContainer'>
                 <div className="editConfig">
                     <h1 className="editConfigTitle">Edit Incident</h1>
-                    <div>Incident not found</div>
+                    <div className="p-4 bg-yellow-50 rounded-lg">Incident not found</div>
+                    <button 
+                        onClick={() => navigate('/app/incidents')}
+                        className="button buttonStyle mt-4"
+                    >
+                        Back to Incidents
+                    </button>
                 </div>
             </div>
         );
@@ -132,10 +171,22 @@ function EditIncident() {
     return (
         <div className='smallContainer'>
             <div className="editConfig">
-                <h1 className="editConfigTitle">Edit Incident</h1>
+                <div className="flex items-center justify-center mb-6">
+                    <h1 className="editConfigTitle">Edit Incident</h1>
+                   
+                </div>
+                <div className='flex flex-row w-full justify-center relative bottom-6'>
+       <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+            Editing as: {getCurrentUserName()}
+          </div>
+       </div>
                 <button className='templateBackLink' onClick={() => navigate(-1)}>
-                    <FontAwesomeIcon icon={faArrowLeft} className='text-2xl' />
+                    <FontAwesomeIcon icon={faArrowLeft} className='text-2xl mr-2' />
+                    Back
                 </button>
+
+               
+                
                 <Form 
                     fstyle={{ form: "profileForm", button: "button buttonStyle col-span-2 mt-4" }}
                     onSubmit={handleSubmit}
@@ -144,8 +195,9 @@ function EditIncident() {
                             id: "title", 
                             type: "text", 
                             isInput: true, 
-                            label: "Title:", 
+                            label: "betweenTitle:", 
                             initialValue: item.title, 
+                            required: true,
                             Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
                         },
                         { 
@@ -153,33 +205,34 @@ function EditIncident() {
                             type: "select", 
                             isInput: true, 
                             label: "Category:", 
-                            selectList: category, 
+                            selectList: allowedCategories, 
                             initialValue: item.category, 
                             Class: { container: "editInputContainer", label: "label", input: "select" } 
                         },
                         { 
                             id: "description", 
-                            type: "text", 
+                            type: "textarea", 
                             isInput: true, 
                             label: "Description:", 
                             initialValue: item.description || "", 
-                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput" } 
+                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput h-24" } 
                         },
                         { 
-                            id: "owner", 
-                            type: "select", 
+                            changeable:false,
+                            id: "ownerDisplay", 
+                            type: "text", 
                             isInput: true, 
                             label: "Owner:", 
-                            selectList: ["Unassigned", ...owners], 
-                            initialValue: ownerName, 
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                            initialValue: getCurrentUserName(),
+                            disabled: true,
+                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput bg-gray-100" } 
                         },
                         { 
                             id: "status", 
                             type: "select", 
                             isInput: true, 
                             label: "Status:", 
-                            selectList: status, 
+                            selectList: allowedStatuses, 
                             initialValue: item.status, 
                             Class: { container: "editInputContainer", label: "label", input: "select" } 
                         },
@@ -188,7 +241,7 @@ function EditIncident() {
                             type: "select", 
                             isInput: true, 
                             label: "Severity:", 
-                            selectList: severity, 
+                            selectList: allowedSeverities, 
                             initialValue: item.severity, 
                             Class: { container: "editInputContainer", label: "label", input: "select" } 
                         },
@@ -202,7 +255,7 @@ function EditIncident() {
                             Class: { container: "editInputContainer", label: "label", input: "select" } 
                         },
                     ]}
-                    button={"Save"}
+                    button={loading ? "Saving..." : "Save Changes"}
                 />
             </div>
         </div>

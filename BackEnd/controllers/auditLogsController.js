@@ -9,7 +9,13 @@ async function createAuditLog(req, res, next) {
       throw new BadRequestError("Action and entity are required");
     }
 
-    const newAuditLog = await db.addAuditLog({  user_id,  action,  entity,  entity_id,  details,});
+    const newAuditLog = await db.addAuditLog({  
+      user_id,  
+      action,  
+      entity,  
+      entity_id,  
+      details,
+    });
 
     res.status(201).json(newAuditLog);
   } catch (err) {
@@ -31,11 +37,10 @@ async function getAuditLogs(req, res, next) {
   }
 }
 
-// ADD SEARCH CONTROLLER
 async function searchAuditLogs(req, res, next) {
   try {
-    const { q } = req.query; // Get search query from URL parameters
-    
+    const { q } = req.query;
+
     if (!q || q.trim() === '') {
       return res.status(400).json({ message: "Search query is required" });
     }
@@ -112,12 +117,32 @@ async function deleteAuditLog(req, res, next) {
   }
 }
 
+async function deleteAllAuditLogs(req, res, next) {
+  try {
+    // Log this action before deleting
+    await logAction(req, "DELETE_ALL", "audit_logs", null, {
+      logs_deleted: 'all',
+      timestamp: new Date().toISOString()
+    });
+
+    const result = await db.deleteAllAuditLogs();
+    
+    res.status(200).json({ 
+      message: "All audit logs deleted successfully",
+      deleted_count: result.rowCount || 0
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
+  deleteAllAuditLogs,
   createAuditLog,
   getAuditLogs,
   getAuditLogById,
   getAuditLogsByUser,
   getAuditLogsByEntity,
   deleteAuditLog,
-  searchAuditLogs, // Export the search controller
+  searchAuditLogs,
 };

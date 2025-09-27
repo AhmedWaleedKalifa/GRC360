@@ -1,10 +1,48 @@
 const pool = require("../pool");
 
 async function getAllAuditLogs() {
-  const { rows } = await pool.query("SELECT * FROM audit_logs ORDER BY timestamp DESC");
+  const { rows } = await pool.query(`
+    SELECT 
+      al.audit_id,
+      al.user_id,
+      u.user_name,
+      u.email,
+      al.action,
+      al.entity,
+      al.entity_id,
+      al.details,
+      al.timestamp
+    FROM audit_logs al
+    LEFT JOIN users u ON al.user_id = u.user_id
+    ORDER BY al.timestamp DESC
+  `);
   return rows;
 }
 
+// Updated search function
+async function searchAuditLogs(query) {
+  const { rows } = await pool.query(`
+    SELECT 
+      al.audit_id,
+      al.user_id,
+      u.user_name,
+      u.email,
+      al.action,
+      al.entity,
+      al.entity_id,
+      al.details,
+      al.timestamp
+    FROM audit_logs al
+    LEFT JOIN users u ON al.user_id = u.user_id
+    WHERE 
+      al.action ILIKE $1 OR 
+      al.entity ILIKE $1 OR 
+      al.details::text ILIKE $1 OR
+      u.user_name ILIKE $1
+    ORDER BY al.timestamp DESC
+  `, [`%${query}%`]);
+  return rows;
+}
 async function getAuditLogById(audit_id) {
   const { rows } = await pool.query("SELECT * FROM audit_logs WHERE audit_id = $1", [audit_id]);
   return rows[0] || null;
@@ -23,19 +61,7 @@ async function getAuditLogsByEntity(entity, entity_id) {
   return rows;
 }
 
-// ADD SEARCH FUNCTIONALITY
-async function searchAuditLogs(searchQuery) {
-  const searchTerm = `%${searchQuery}%`;
-  const { rows } = await pool.query(
-    `SELECT * FROM audit_logs 
-     WHERE 
-       action ILIKE $1 OR
-       details ILIKE $1
-     ORDER BY timestamp DESC`,
-    [searchTerm]
-  );
-  return rows;
-}
+
 
 async function addAuditLog({ user_id, action, entity, entity_id, details }) {
   const { rows } = await pool.query(
@@ -54,7 +80,10 @@ async function removeAuditLog(audit_id) {
   );
   return rows[0];
 }
-
+async function deleteAllAuditLogs() {
+  const { rows } = await pool.query('DELETE FROM audit_logs RETURNING *');
+  return rows;
+}
 module.exports = {
   getAllAuditLogs,
   getAuditLogById,
@@ -62,5 +91,6 @@ module.exports = {
   getAuditLogsByEntity,
   addAuditLog,
   removeAuditLog,
+  deleteAllAuditLogs,
   searchAuditLogs, // Export the search function
 };

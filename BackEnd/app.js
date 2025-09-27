@@ -3,11 +3,14 @@ const passport = require("passport");
 const LocalStrategy = require('passport-local').Strategy;
 const path = require("node:path");
 const cors = require('cors');
+const userExtractor = require('./middleware/userExtractor');
 
 const app=express();
 require('dotenv').config();
 
 app.use(express.json());
+app.use(userExtractor);
+
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
   origin: process.env.FRONTEND_URL,

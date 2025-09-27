@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Form from "../components/Form";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { configurationsAPI } from "../services/api";
+import { useUser } from "../hooks/useUser";
 
 const EditConfigurations = () => {
   const [item, setItem] = useState(null);
@@ -11,6 +12,12 @@ const EditConfigurations = () => {
   const [error, setError] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
+  const { currentUser, permissions, loading: userLoading } = useUser();
+
+  const getCurrentUserName = () => {
+    return currentUser?.user_name || currentUser?.name || 'Current User';
+  };
+
 
   // Fetch configuration by ID
   useEffect(() => {
@@ -48,11 +55,11 @@ const EditConfigurations = () => {
 
   if (loading) {
     return (
-     <>
-       <div className="h-full w-full flex flex-col justify-center items-center">
-          <div class="animate-spin rounded-full h-14 w-14 border-4 border-blue-200 border-t-blue-600 self-center"></div>
-       </div>
-     </>
+      <>
+        <div className="h-full w-full flex flex-col justify-center items-center">
+          <div class="animate-spin rounded-full h-14 w-14 border-4 border-blue-200 border-t-blue-500 self-center"></div>
+        </div>
+      </>
     );
   }
 
@@ -82,20 +89,24 @@ const EditConfigurations = () => {
     <div className='smallContainer'>
       <div className="editConfig">
         <h1 className="editConfigTitle">Edit {item?.key} </h1>
+        <div className='flex flex-row w-full justify-center relative '>
+          <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+            Editing as: {getCurrentUserName()}          </div>
+        </div>
         <button className='templateBackLink' onClick={() => navigate(-1)}>
           <FontAwesomeIcon icon={faArrowLeft} className='text-2xl' />
         </button>
-        <Form 
+        <Form
           fstyle={{ form: "editConfigForm", button: "button buttonStyle" }}
           onSubmit={handleSubmit}
           inputarray={[
-            { 
-              id: "value", 
-              type: "text", 
-              isInput: true, 
-              label: "Value:", 
-              initialValue: item?.value, 
-              Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
+            {
+              id: "value",
+              type: "text",
+              isInput: true,
+              label: "Value:",
+              initialValue: item?.value,
+              Class: { container: "editInputContainer", label: "label", input: "profileFormInput" }
             },
           ]}
           button={"Save"}

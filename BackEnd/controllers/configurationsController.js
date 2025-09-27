@@ -1,20 +1,23 @@
 const db = require("../db/queries/configurations");
-const { BadRequestError, NotFoundError } = require("../errors/errors");
+const { BadRequestError, NotFoundError, ConflictError } = require("../errors/errors");
 const { logAction } = require("./auditHelper");
 
 async function createConfiguration(req, res, next) {
   try {
     const { key, value, description } = req.body;
-    const user_id = req.user?.user_id;
 
     if (!key || !value) {
       throw new BadRequestError("Key and value are required");
     }
 
-    const newConfiguration = await db.addConfiguration({key,value,description,});
+    const newConfiguration = await db.addConfiguration({
+      key,
+      value,
+      description,
+    });
 
     // Log the action
-    await logAction(user_id, "CREATE", "configuration", newConfiguration.config_id, {
+    await logAction(req, "CREATE", "configuration", newConfiguration.config_id, {
       key,
       value
     });
@@ -32,7 +35,6 @@ async function updateConfiguration(req, res, next) {
   try {
     const { id } = req.params;
     const fields = req.body;
-    const user_id = req.user?.user_id;
 
     if (Object.keys(fields).length === 0) {
       throw new BadRequestError("No fields to update");
@@ -46,7 +48,7 @@ async function updateConfiguration(req, res, next) {
     }
 
     // Log the action
-    await logAction(user_id, "UPDATE", "configuration", parseInt(id), {
+    await logAction(req, "UPDATE", "configuration", parseInt(id), {
       changed_fields: Object.keys(fields)
     });
 
@@ -59,7 +61,6 @@ async function updateConfiguration(req, res, next) {
 async function deleteConfiguration(req, res, next) {
   try {
     const { id } = req.params;
-    const user_id = req.user?.user_id;
 
     const deletedConfiguration = await db.removeConfiguration(parseInt(id));
 
@@ -68,7 +69,7 @@ async function deleteConfiguration(req, res, next) {
     }
 
     // Log the action
-    await logAction(user_id, "DELETE", "configuration", parseInt(id), {
+    await logAction(req, "DELETE", "configuration", parseInt(id), {
       key: deletedConfiguration.key
     });
 
@@ -121,6 +122,7 @@ async function getConfigurationByKey(req, res, next) {
     next(err);
   }
 }
+
 async function searchConfigurations(req, res, next) {
   try {
     const { q } = req.query;
@@ -134,7 +136,7 @@ async function searchConfigurations(req, res, next) {
       throw new BadRequestError("Search query cannot be empty");
     }
 
-    const configurations = await db.searchConfigurationsByKey(searchQuery)
+    const configurations = await db.searchConfigurationsByKey(searchQuery);
 
     if (configurations.length === 0) {
       return res.status(404).json({ message: "No configurations found matching your search" });
@@ -146,8 +148,6 @@ async function searchConfigurations(req, res, next) {
     next(err);
   }
 }
-
-
 
 module.exports = {
   createConfiguration,

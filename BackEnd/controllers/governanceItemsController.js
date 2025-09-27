@@ -1,21 +1,32 @@
 const db = require("../db/queries/governanceItems");
 const { BadRequestError, NotFoundError } = require("../errors/errors");
-
 const { logAction } = require("./auditHelper");
 
 async function createGovernanceItem(req, res, next) {
   try {
     const { governance_name, type, owner, status, effective_date, expiry_date, next_review, last_reviewed, approval_status, approver, latest_change_summary, attachment } = req.body;
-    const user_id = req.user?.user_id;
 
     if (!governance_name || !type) {
       throw new BadRequestError("Governance name and type are required");
     }
 
-    const newGovernanceItem = await db.addGovernanceItem({governance_name,type,owner,status,effective_date,expiry_date,next_review,last_reviewed,approval_status,approver,latest_change_summary,attachment,});
+    const newGovernanceItem = await db.addGovernanceItem({
+      governance_name,
+      type,
+      owner,
+      status,
+      effective_date,
+      expiry_date,
+      next_review,
+      last_reviewed,
+      approval_status,
+      approver,
+      latest_change_summary,
+      attachment,
+    });
 
     // Log the action
-    await logAction(user_id, "CREATE", "governance_item", newGovernanceItem.governance_id, {
+    await logAction(req, "CREATE", "governance_item", newGovernanceItem.governance_id, {
       governance_name,
       type,
       status
@@ -31,7 +42,6 @@ async function updateGovernanceItem(req, res, next) {
   try {
     const { id } = req.params;
     const fields = req.body;
-    const user_id = req.user?.user_id;
 
     if (Object.keys(fields).length === 0) {
       throw new BadRequestError("No fields to update");
@@ -45,7 +55,7 @@ async function updateGovernanceItem(req, res, next) {
     }
 
     // Log the action
-    await logAction(user_id, "UPDATE", "governance_item", parseInt(id), {
+    await logAction(req, "UPDATE", "governance_item", parseInt(id), {
       changed_fields: Object.keys(fields)
     });
 
@@ -58,7 +68,6 @@ async function updateGovernanceItem(req, res, next) {
 async function deleteGovernanceItem(req, res, next) {
   try {
     const { id } = req.params;
-    const user_id = req.user?.user_id;
 
     const deletedGovernanceItem = await db.removeGovernanceItem(parseInt(id));
 
@@ -67,7 +76,7 @@ async function deleteGovernanceItem(req, res, next) {
     }
 
     // Log the action
-    await logAction(user_id, "DELETE", "governance_item", parseInt(id), {
+    await logAction(req, "DELETE", "governance_item", parseInt(id), {
       governance_name: deletedGovernanceItem.governance_name
     });
 
@@ -121,9 +130,6 @@ async function getGovernanceItemsByOwner(req, res, next) {
   }
 }
 
-
-
-
 async function getRisksForGovernanceItem(req, res, next) {
   try {
     const { id } = req.params;
@@ -145,6 +151,7 @@ async function getFrameworksForGovernanceItem(req, res, next) {
     next(err);
   }
 }
+
 async function searchGovernanceItems(req, res, next) {
   try {
     const { q } = req.query;
@@ -158,7 +165,6 @@ async function searchGovernanceItems(req, res, next) {
       throw new BadRequestError("Search query cannot be empty");
     }
 
-    console.log('Search query:', searchQuery);
     const governanceItems = await db.searchGovernanceItemsByName(searchQuery);
 
     if (!governanceItems || governanceItems.length === 0) {
@@ -181,5 +187,5 @@ module.exports = {
   deleteGovernanceItem,
   getRisksForGovernanceItem,
   getFrameworksForGovernanceItem,
-  searchGovernanceItems, // Add this
+  searchGovernanceItems,
 };

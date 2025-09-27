@@ -6,7 +6,6 @@ const { logAction } = require("./auditHelper");
 async function createFramework(req, res, next) {
   try {
     const { framework_id, framework_name, description } = req.body;
-    const user_id = req.user?.user_id; // Assuming user info is in req.user
 
     if (!framework_id || !framework_name) {
       throw new BadRequestError("Framework ID and name are required");
@@ -17,10 +16,14 @@ async function createFramework(req, res, next) {
       throw new ConflictError("Framework ID already exists");
     }
 
-    const newFramework = await db.addFramework({framework_id,framework_name,description,});
+    const newFramework = await db.addFramework({
+      framework_id,
+      framework_name,
+      description,
+    });
 
     // Log the action
-    await logAction(user_id, "CREATE", "compliance_framework", framework_id, {
+    await logAction(req, "CREATE", "compliance_framework", framework_id, {
       framework_name,
       description
     });
@@ -38,7 +41,6 @@ async function updateFramework(req, res, next) {
   try {
     const { id } = req.params;
     const fields = req.body;
-    const user_id = req.user?.user_id;
 
     if (Object.keys(fields).length === 0) {
       throw new BadRequestError("No fields to update");
@@ -52,7 +54,7 @@ async function updateFramework(req, res, next) {
     }
 
     // Log the action
-    await logAction(user_id, "UPDATE", "compliance_framework", id, {
+    await logAction(req, "UPDATE", "compliance_framework", id, {
       old_data: oldFramework,
       new_data: updatedFramework,
       changed_fields: Object.keys(fields)
@@ -67,7 +69,6 @@ async function updateFramework(req, res, next) {
 async function deleteFramework(req, res, next) {
   try {
     const { id } = req.params;
-    const user_id = req.user?.user_id;
 
     const deletedFramework = await db.removeFramework(id);
 
@@ -76,7 +77,7 @@ async function deleteFramework(req, res, next) {
     }
 
     // Log the action
-    await logAction(user_id, "DELETE", "compliance_framework", id, {
+    await logAction(req, "DELETE", "compliance_framework", id, {
       framework_name: deletedFramework.framework_name
     });
 
@@ -85,7 +86,6 @@ async function deleteFramework(req, res, next) {
     next(err);
   }
 }
-
 
 async function getFrameworks(req, res, next) {
   try {
@@ -120,7 +120,6 @@ async function getFrameworkById(req, res, next) {
 async function createRequirement(req, res, next) {
   try {
     const { requirement_id, framework_id, requirement_name, reference } = req.body;
-    const user_id = req.user?.user_id;
 
     if (!requirement_id || !framework_id || !requirement_name) {
       throw new BadRequestError("Requirement ID, framework ID, and name are required");
@@ -131,10 +130,15 @@ async function createRequirement(req, res, next) {
       throw new ConflictError("Requirement ID already exists");
     }
 
-    const newRequirement = await db.addRequirement({requirement_id,framework_id,requirement_name,reference,});
+    const newRequirement = await db.addRequirement({
+      requirement_id,
+      framework_id,
+      requirement_name,
+      reference,
+    });
 
     // Log the action
-    await logAction(user_id, "CREATE", "compliance_requirement", requirement_id, {
+    await logAction(req, "CREATE", "compliance_requirement", requirement_id, {
       requirement_name,
       framework_id,
       reference
@@ -148,7 +152,6 @@ async function createRequirement(req, res, next) {
     next(err);
   }
 }
-
 
 async function getRequirementsByFramework(req, res, next) {
   try {
@@ -179,11 +182,11 @@ async function getRequirementById(req, res, next) {
     next(err);
   }
 }
+
 async function updateRequirement(req, res, next) {
   try {
     const { id } = req.params;
     const fields = req.body;
-    const user_id = req.user?.user_id;
 
     if (Object.keys(fields).length === 0) {
       throw new BadRequestError("No fields to update");
@@ -197,7 +200,7 @@ async function updateRequirement(req, res, next) {
     }
 
     // Log the action
-    await logAction(user_id, "UPDATE", "compliance_requirement", id, {
+    await logAction(req, "UPDATE", "compliance_requirement", id, {
       changed_fields: Object.keys(fields)
     });
 
@@ -210,7 +213,6 @@ async function updateRequirement(req, res, next) {
 async function deleteRequirement(req, res, next) {
   try {
     const { id } = req.params;
-    const user_id = req.user?.user_id;
 
     const deletedRequirement = await db.removeRequirement(id);
 
@@ -219,7 +221,7 @@ async function deleteRequirement(req, res, next) {
     }
 
     // Log the action
-    await logAction(user_id, "DELETE", "compliance_requirement", id, {
+    await logAction(req, "DELETE", "compliance_requirement", id, {
       requirement_name: deletedRequirement.requirement_name
     });
 
@@ -233,7 +235,6 @@ async function deleteRequirement(req, res, next) {
 async function createControl(req, res, next) {
   try {
     const { control_id, requirement_id, control_name, status, owner, last_reviewed, reference, notes, description, attachment } = req.body;
-    const user_id = req.user?.user_id;
 
     if (!control_id || !requirement_id || !control_name) {
       throw new BadRequestError("Control ID, requirement ID, and name are required");
@@ -244,10 +245,21 @@ async function createControl(req, res, next) {
       throw new ConflictError("Control ID already exists");
     }
 
-    const newControl = await db.addControl({control_id,requirement_id,control_name,status,owner,last_reviewed,reference,notes,description,attachment,});
+    const newControl = await db.addControl({
+      control_id,
+      requirement_id,
+      control_name,
+      status,
+      owner,
+      last_reviewed,
+      reference,
+      notes,
+      description,
+      attachment,
+    });
 
     // Log the action
-    await logAction(user_id, "CREATE", "compliance_control", control_id, {
+    await logAction(req, "CREATE", "compliance_control", control_id, {
       control_name,
       requirement_id,
       status
@@ -306,11 +318,11 @@ async function getControlById(req, res, next) {
     next(err);
   }
 }
+
 async function updateControl(req, res, next) {
   try {
     const { id } = req.params;
     const fields = req.body;
-    const user_id = req.user?.user_id;
 
     if (Object.keys(fields).length === 0) {
       throw new BadRequestError("No fields to update");
@@ -324,7 +336,7 @@ async function updateControl(req, res, next) {
     }
 
     // Log the action
-    await logAction(user_id, "UPDATE", "compliance_control", id, {
+    await logAction(req, "UPDATE", "compliance_control", id, {
       changed_fields: Object.keys(fields)
     });
 
@@ -337,7 +349,6 @@ async function updateControl(req, res, next) {
 async function deleteControl(req, res, next) {
   try {
     const { id } = req.params;
-    const user_id = req.user?.user_id;
 
     const deletedControl = await db.removeControl(id);
 
@@ -346,7 +357,7 @@ async function deleteControl(req, res, next) {
     }
 
     // Log the action
-    await logAction(user_id, "DELETE", "compliance_control", id, {
+    await logAction(req, "DELETE", "compliance_control", id, {
       control_name: deletedControl.control_name
     });
 
@@ -355,7 +366,6 @@ async function deleteControl(req, res, next) {
     next(err);
   }
 }
-
 
 async function searchControls(req, res, next) {
   try {
@@ -370,7 +380,6 @@ async function searchControls(req, res, next) {
       throw new BadRequestError("Search query cannot be empty");
     }
 
-    console.log('Search query:', searchQuery);
     const controls = await db.searchControlsByName(searchQuery);
 
     if (!controls || controls.length === 0) {
@@ -383,6 +392,7 @@ async function searchControls(req, res, next) {
     next(err);
   }
 }
+
 async function searchFrameworks(req, res, next) {
   try {
     const { q } = req.query;
@@ -396,7 +406,6 @@ async function searchFrameworks(req, res, next) {
       throw new BadRequestError("Search query cannot be empty");
     }
 
-    console.log('Search query for frameworks:', searchQuery);
     const frameworks = await db.searchFrameworksByName(searchQuery);
 
     if (!frameworks || frameworks.length === 0) {
@@ -410,7 +419,6 @@ async function searchFrameworks(req, res, next) {
   }
 }
 
-// Add to module.exports
 module.exports = {
   // Frameworks
   createFramework,
@@ -418,7 +426,7 @@ module.exports = {
   getFrameworkById,
   updateFramework,
   deleteFramework,
-  searchFrameworks, // Add this
+  searchFrameworks,
   
   // Requirements
   createRequirement,

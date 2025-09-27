@@ -1,5 +1,5 @@
 import React from 'react';
-import { faPlus, faFire, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Card from './Card';
 import CardSlider from './CardSlider';
@@ -11,14 +11,10 @@ import {
     CartesianGrid,
     Tooltip,
     Legend,
-    ResponsiveContainer,
-    BarChart,
-    Bar,
-    Cell
+    ResponsiveContainer
 } from "recharts";
 
-const IncidentsOverview = ({ incidents, allIncidentsIds, allIncidentsFields, onAddIncident }) => {
-
+const IncidentsOverview = ({ incidents, allIncidentsIds, allIncidentsFields, onAddIncident, permissions }) => {
     // Calculate incident statistics
     const totalIncidents = incidents.length;
     const openIncidents = incidents.filter(incident => incident.status === "open").length;
@@ -61,27 +57,29 @@ const IncidentsOverview = ({ incidents, allIncidentsIds, allIncidentsFields, onA
         return Object.values(grouped).sort((a, b) => new Date(a.month) - new Date(b.month));
     })();
 
-    // Prepare data for bar chart (status distribution)
-    const statusData = [
-        { name: 'Open', value: openIncidents, color: '#ffb300' },
-        { name: 'Resolved', value: resolvedIncidents, color: '#00c853' },
-        { name: 'Investigating', value: incidents.filter(i => i.status === "investigating").length, color: '#3b82f6' }
-    ];
-
-    // Prepare data for severity distribution
-    const severityData = [
-        { name: 'Critical', value: incidents.filter(i => i.severity === 'critical').length, color: '#ff4d4d' },
-        { name: 'High', value: incidents.filter(i => i.severity === 'high').length, color: '#ff6b6b' },
-        { name: 'Medium', value: incidents.filter(i => i.severity === 'medium').length, color: '#ffa726' },
-        { name: 'Low', value: incidents.filter(i => i.severity === 'low').length, color: '#42a5f5' }
-    ];
+    // Custom tooltip for dark mode with high contrast
+    const CustomTooltip = ({ active, payload, label }) => {
+        if (active && payload && payload.length) {
+            return (
+                <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 shadow-xl">
+                    <p className="text-gray-900 dark:text-gray-100 font-bold">{label}</p>
+                    {payload.map((entry, index) => (
+                        <p key={index} className="text-gray-700 dark:text-gray-300 font-medium" style={{ color: entry.color }}>
+                            {entry.name}: <span className="font-bold">{entry.value}</span>
+                        </p>
+                    ))}
+                </div>
+            );
+        }
+        return null;
+    };
 
     return (
-        <div className="space-y-6 bg-gray-50 p-6 rounded-xl">
-            <div className='p-3.5 flex flex-col   rounded-2xl w-full capitalize font-bold text-3xl gap-4'>
+        <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-2xl  shadow-xl overflow-clip mx-2">
+            <div className='p-6 flex flex-col bg-gray-200 dark:bg-gray-800  w-full capitalize font-bold text-3xl gap-6'>
                 <div className="flex items-center">
-                    <FontAwesomeIcon icon={faTriangleExclamation} className='h1Icon mr-2' />
-                    <span>Incidents Overview</span>
+                    <FontAwesomeIcon icon={faTriangleExclamation} className='h1Icon mr-3 text-[#76A4EC]' />
+                    <span className="text-gray-900 dark:text-gray-100">Incidents Overview</span>
                 </div>
                 <div className="cardsContainer">
                     <Card title="Total Incidents" value={totalIncidents} model={1} />
@@ -94,46 +92,71 @@ const IncidentsOverview = ({ incidents, allIncidentsIds, allIncidentsFields, onA
                     )}
                 </div>
                 <div className='flex'>
-                    <button className='button buttonStyle my-4' onClick={onAddIncident}>
-                        <FontAwesomeIcon icon={faPlus} className='mr-1' />
-                        Add Incident
-                    </button>
-
+                    {permissions.isAdmin ? (
+                        <button 
+                            className='button buttonStyle my-2'
+                            onClick={onAddIncident}
+                            title="Add new incident"
+                        >
+                            <FontAwesomeIcon icon={faPlus} className='mr-2' />
+                            Add Incident
+                        </button>
+                    ) : (
+                        <div 
+                            className='button buttonStyle my-2 opacity-30 cursor-not-allowed'
+                            title="Admin access required to add incidents"
+                        >
+                            <FontAwesomeIcon icon={faPlus} className='mr-2' />
+                            Add Incident
+                        </div>
+                    )}
                 </div>
             </div>
 
-        
-                <div className="bg-white p-4 rounded-xl shadow col-span-2 min-h-60 flex flex-row gap-8">
-                  
-                    <div className='w-[50%]'>
-                        <CardSlider
-                            caption={{ text: "All Incidents", icon: "faFolder" }}
-                            sizes={[7, 3, 6, 5, 5, 4, 10, 2, 2]}
-                            titles={["Title", "Category", "Status", "Severity", "Reported At", "Owner", "Description", "Edit", "Delete"]}
-                            ids={allIncidentsIds}
-                            fields={allIncidentsFields}
-                        />
-                    </div>
-                    <div className='w-[50%]'>
-                        <h3 className="text-lg font-bold mb-4">Incident Trends Over Time</h3>
-                        <ResponsiveContainer width="100%" >
+            {/* Chart and CardSlider Section */}
+            <div className="bg-gray-200 dark:bg-gray-800 p-6  shadow-lg flex flex-col lg:flex-row gap-8 min-h-96 ">
+                <div className='w-full lg:w-4/10'>
+                    <h3 className="chartTitle mb-4 text-gray-900 dark:text-gray-100 font-bold text-xl">Incident Trends Over Time</h3>
+                    <div className=" bg-white dark:bg-gray-900 rounded-xl p-4 border-2 border-gray-300 dark:border-gray-600">
+                        <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={lineChartData}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                <XAxis dataKey="month" />
-                                <YAxis />
-                                <Tooltip />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" strokeOpacity={0.5} />
+                                <XAxis
+                                    dataKey="month"
+                                    stroke="#6b7280"
+                                    fontSize={12}
+                                    tick={{ fill: '#6b7280' }}
+                                />
+                                <YAxis
+                                    stroke="#6b7280"
+                                    fontSize={12}
+                                    tick={{ fill: '#6b7280' }}
+                                />
+                                <Tooltip content={<CustomTooltip />} />
                                 <Legend />
-                                <Line type="monotone" dataKey="Closed" stroke="#8884d8" name="Closed/Resolved" />
-                                <Line type="monotone" dataKey="Open" stroke="#ffb300" name="Open" />
-                                <Line type="monotone" dataKey="Investigating" stroke="#3b82f6" name="Investigating" />
-                                <Line type="monotone" dataKey="High Severity" stroke="#ff4d4d" name="High Severity" />
+                                <Line type="monotone" dataKey="Closed" stroke="#10b981" name="Closed/Resolved" strokeWidth={3} dot={{ fill: '#10b981', r: 4 }} />
+                                <Line type="monotone" dataKey="Open" stroke="#f59e0b" name="Open" strokeWidth={3} dot={{ fill: '#f59e0b', r: 4 }} />
+                                <Line type="monotone" dataKey="Investigating" stroke="#3b82f6" name="Investigating" strokeWidth={3} dot={{ fill: '#3b82f6', r: 4 }} />
+                                <Line type="monotone" dataKey="High Severity" stroke="#ef4444" name="High Severity" strokeWidth={3} dot={{ fill: '#ef4444', r: 4 }} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-            </div>
+                <div className='w-full lg:w-6/10'>
+                    <h3 className=" mb-4   font-bold text-xl text-transparent"><span>.</span></h3>
 
+                    <CardSlider
+                        caption={{ text: "All Incidents", icon: "faFolder" }}
+                        sizes={[3,3,3,3,7,2,6]}
+                        titles={[ "Title", "Category", "Status", "Severity", "Created At", "Owner", "Next Review"]}
+                        ids={allIncidentsIds}
+                        fields={allIncidentsFields}
+                        height={"500"}
+                    />
+                </div>
+            </div>
+        </div>
     );
 };
 

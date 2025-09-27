@@ -3,51 +3,43 @@ import Form from '../components/Form'
 import { useNavigate } from 'react-router-dom';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { incidentsAPI, usersAPI } from "../services/api";
+import { incidentsAPI } from "../services/api";
+import { useUser } from '../hooks/useUser';
 
 function AddIncident() {
     const navigate = useNavigate();
-    const [owners, setOwners] = useState([]);
     const [loading, setLoading] = useState(false);
     
+    // Get current user and permissions
+    const { currentUser, permissions, loading: userLoading } = useUser();
+
     // Allowed values from your database schema
     const allowedCategories = ['security', 'compliance', 'operational', 'technical', 'physical', 'environmental', 'personnel', 'other'];
     const allowedStatuses = ['reported', 'investigating', 'contained', 'open', 'resolved', 'closed', 'reopened'];
     const allowedSeverities = ['low', 'medium', 'high', 'critical'];
     const allowedPriorities = ['low', 'medium', 'high', 'urgent'];
 
-    // Fetch users for owner dropdown
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const usersData = await usersAPI.getAll();
-                const userNames = usersData.map(user => user.user_name);
-                setOwners(userNames);
-            } catch (err) {
-                console.error('Error fetching users:', err);
-            }
-        };
+    // Get current user name safely
+    const getCurrentUserName = () => {
+        return currentUser?.user_name || currentUser?.name || 'Current User';
+    };
 
-        fetchUsers();
-    }, []);
+    // Get current user ID safely
+    const getCurrentUserId = () => {
+        return currentUser?.user_id || currentUser?.id || null;
+    };
 
     // Handle form submission
     const handleSubmit = async (formData) => {
+        if (!permissions.isAdmin) {
+            alert('You do not have permission to add incidents. Admin access required.');
+            return;
+        }
+
         try {
             setLoading(true);
             
-            // Convert owner name to user ID if needed
-            if (formData.owner && formData.owner !== "Unassigned") {
-                const users = await usersAPI.getAll();
-                const user = users.find(u => u.user_name === formData.owner);
-                if (user) {
-                    formData.owner = user.user_id;
-                }
-            } else {
-                formData.owner = null; // Set to null if unassigned
-            }
-            
-            // Add default values for required fields
+            // Prepare incident data with current user as owner
             const incidentData = {
                 title: formData.title,
                 category: formData.category,
@@ -55,7 +47,8 @@ function AddIncident() {
                 description: formData.description || '',
                 status: formData.status || 'reported',
                 priority: formData.priority || 'medium',
-                owner: formData.owner || null
+                owner: getCurrentUserId(), // Use current user ID
+                reported_at: new Date().toISOString() // Add current timestamp
             };
             
             await incidentsAPI.create(incidentData);
@@ -68,13 +61,52 @@ function AddIncident() {
         }
     };
 
+    // Show loading while checking user permissions
+    if (userLoading) {
+        return (
+            <div className="h-full w-full flex flex-col justify-center items-center">
+                <div className="animate-spin rounded-full h-14 w-14 border-4 border-blue-200 border-t-blue-500"></div>
+                <p className="mt-4 text-gray-600">Loading user permissions...</p>
+            </div>
+        );
+    }
+
+    // Check if user has permission to add incidents
+    if (!permissions.isAdmin) {
+        return (
+            <div className="h-full w-full flex flex-col justify-center items-center">
+                <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    You do not have permission to add incidents. Admin access required.
+                </p>
+                <button 
+                    onClick={() => navigate('/app/incidents')}
+                    className="button buttonStyle"
+                >
+                    Return to Incidents
+                </button>
+            </div>
+        );
+    }
+
     return (
         <div className='smallContainer'>
             <div className="editConfig">
-                <h1 className="editConfigTitle">Add Incident</h1>
+                <div className="flex items-center justify-center mb-6">
+                    <h1 className="editConfigTitle">Add Incident</h1>
+                    
+                </div>
+                <div className='flex flex-row w-full justify-center relative bottom-6'>
+       <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+       Adding as: {getCurrentUserName()}          </div>
+       </div>
                 <button className='templateBackLink' onClick={() => navigate(-1)}>
-                    <FontAwesomeIcon icon={faArrowLeft} className='text-2xl' />
+                    <FontAwesomeIcon icon={faArrowLeft} className='text-2xl mr-2' />
+                    Back
                 </button>
+
+              
+                
                 <Form 
                     fstyle={{ form: "profileForm", button: "button buttonStyle col-span-2 mt-4" }}
                     onSubmit={handleSubmit}
@@ -87,7 +119,6 @@ function AddIncident() {
                             required: true,
                             Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
                         },
-                       
                         { 
                             id: "category", 
                             type: "select", 
@@ -99,18 +130,20 @@ function AddIncident() {
                         },
                         { 
                             id: "description", 
-                            type: "text", 
+                            type: "textarea", 
                             isInput: true, 
                             label: "Description:", 
-                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput " } 
+                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput h-24" } 
                         },
                         { 
-                            id: "owner", 
-                            type: "select", 
+                            changeable:false,
+                            id: "ownerDisplay", 
+                            type: "text", 
                             isInput: true, 
                             label: "Owner:", 
-                            selectList: ["Unassigned", ...owners], 
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                            initialValue: getCurrentUserName(),
+                            disabled: true,
+                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput bg-gray-100" } 
                         },
                         { 
                             id: "status", 
@@ -140,7 +173,7 @@ function AddIncident() {
                             Class: { container: "editInputContainer", label: "label", input: "select" } 
                         },
                     ]}
-                    button={loading ? "Adding..." : "Add"}
+                    button={loading ? "Adding..." : "Add Incident"}
                 />
             </div>
         </div>

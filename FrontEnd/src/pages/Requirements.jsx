@@ -57,7 +57,7 @@ function Requirements() {
                 ids={[]}
                 fields={[]}
             />
-            <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600 self-center"></div>
+            <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-500 self-center"></div>
            </div>
             <div onClick={() => { navigate(-1) }} className='button buttonStyle w-[fit-content] ml-2' >
                 Back to Overview
@@ -89,7 +89,7 @@ function Requirements() {
             <CardSlider
                 caption={{ text: `${framework.framework_name} Requirements/Domains` }}
                 titles={["#", "Requirement", "Reference"]}
-                navigation={[{ start: 0, path: "/dashboard/controls", end: requirements.length - 1 }]}
+                navigation={[{ start: 0, path: "/app/controls", end: requirements.length - 1 }]}
                 sizes={[1, 10, 6]}
                 colors={[]}
                 ids={ids}
