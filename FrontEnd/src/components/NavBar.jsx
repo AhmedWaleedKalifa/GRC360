@@ -32,10 +32,18 @@ function NavBar({ active, open, onSearch }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleUserChange = (user) => {
-    changeCurrentUser(user);
-    setShowUserDropdown(false);
-    window.location.reload();
+  const handleUserChange = async (user) => {
+    try {
+      // Change the current user without reloading the page
+      changeCurrentUser(user);
+      setShowUserDropdown(false);
+      
+      // Optional: Show a success message
+      console.log(`Switched to user: ${user.name}`);
+      
+    } catch (err) {
+      console.error('Error switching user:', err);
+    }
   };
 
   const handleRefreshUsers = async () => {
@@ -57,8 +65,6 @@ function NavBar({ active, open, onSearch }) {
     user: { label: 'Users', color: 'green', badge: 'User' },
     guest: { label: 'Guests', color: 'gray', badge: 'Guest' }
   };
-
- 
 
   return (
     <nav 
