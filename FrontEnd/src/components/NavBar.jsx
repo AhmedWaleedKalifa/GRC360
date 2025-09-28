@@ -51,18 +51,58 @@ function NavBar({ active, open, onSearch }) {
     guest: users.filter(user => user.role === 'guest')
   };
 
-  // Role display configuration
+  // Role display configuration with your color scheme
   const roleConfig = {
-    admin: { label: 'Administrators', color: 'blue', badge: 'Admin' },
-    moderator: { label: 'Moderators', color: 'purple', badge: 'Moderator' },
-    user: { label: 'Users', color: 'green', badge: 'User' },
-    guest: { label: 'Guests', color: 'gray', badge: 'Guest' }
+    admin: { 
+      label: 'Administrators', 
+      color: 'blue', 
+      badge: 'Admin',
+      bgLight: 'bg-blue-100',
+      textLight: 'text-blue-800',
+      bgDark: 'dark:bg-blue-900',
+      textDark: 'dark:text-blue-200',
+      gradientFrom: 'from-blue-400',
+      gradientTo: 'to-blue-600'
+    },
+    moderator: { 
+      label: 'Moderators', 
+      color: 'purple', 
+      badge: 'Moderator',
+      bgLight: 'bg-purple-100',
+      textLight: 'text-purple-800',
+      bgDark: 'dark:bg-purple-900',
+      textDark: 'dark:text-purple-200',
+      gradientFrom: 'from-purple-400',
+      gradientTo: 'to-purple-600'
+    },
+    user: { 
+      label: 'Users', 
+      color: 'green', 
+      badge: 'User',
+      bgLight: 'bg-green-100',
+      textLight: 'text-green-800',
+      bgDark: 'dark:bg-green-900',
+      textDark: 'dark:text-green-200',
+      gradientFrom: 'from-green-400',
+      gradientTo: 'to-green-600'
+    },
+    guest: { 
+      label: 'Guests', 
+      color: 'gray', 
+      badge: 'Guest',
+      bgLight: 'bg-gray-100',
+      textLight: 'text-gray-800',
+      bgDark: 'dark:bg-gray-700',
+      textDark: 'dark:text-gray-200',
+      gradientFrom: 'from-gray-400',
+      gradientTo: 'to-gray-600'
+    }
   };
 
   return (
     <nav 
       style={{ paddingLeft: `${!open ? "272px" : "96px" }` }} 
-      className=" bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700 "
+      className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700 transition-colors duration-200"
     >
       <div className="flex flex-row w-full h-full items-center justify-between p-4">
         {/* Left side - Search Bar */}
@@ -72,13 +112,15 @@ function NavBar({ active, open, onSearch }) {
         
         {/* Right side - User info and dropdown */}
         <div className="flex items-center space-x-4">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white hidden md:block">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 hidden md:block">
             Hello, {currentUser?.name}!
             <span className={`ml-2 px-2 py-1 text-xs rounded-full ${
               currentUser?.role === 'admin' 
                 ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
                 : currentUser?.role === 'moderator'
                 ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                : currentUser?.role === 'user'
+                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                 : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
             }`}>
               {currentUser?.role}
@@ -102,7 +144,7 @@ function NavBar({ active, open, onSearch }) {
               </div>
               <FontAwesomeIcon 
                 icon={loading ? faSync : faChevronDown} 
-                className={`text-gray-500 transition-all duration-200 ${
+                className={`text-gray-500 dark:text-gray-400 transition-all duration-200 ${
                   showUserDropdown ? 'rotate-180' : ''
                 } ${loading ? 'animate-spin' : ''}`}
                 size="xs"
@@ -119,10 +161,13 @@ function NavBar({ active, open, onSearch }) {
                     </div>
                     <button 
                       onClick={handleRefreshUsers}
-                      className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
                       title="Refresh users"
                     >
-                      <FontAwesomeIcon icon={faSync} className={`text-gray-500 ${loading ? 'animate-spin' : ''}`} />
+                      <FontAwesomeIcon 
+                        icon={faSync} 
+                        className={`text-gray-500 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} 
+                      />
                     </button>
                   </div>
                 </div>
@@ -143,15 +188,15 @@ function NavBar({ active, open, onSearch }) {
                               key={user.id}
                               onClick={() => handleUserChange(user)}
                               disabled={user.is_active === false}
-                              className={`w-full flex items-center justify-between p-3 text-left rounded-md transition-all duration-150 ${
+                              className={`w-full flex items-center justify-between p-3 text-left rounded-md transition-all duration-150 border ${
                                 currentUser?.id === user.id 
-                                  ? `bg-${config.color}-50 dark:bg-${config.color}-900/30 border border-${config.color}-200 dark:border-${config.color}-700` 
-                                  : 'hover:bg-gray-50 dark:hover:bg-gray-700 border border-transparent'
+                                  ? `${config.bgLight} ${config.textLight} ${config.bgDark} ${config.textDark} border-${config.color}-200 dark:border-${config.color}-700` 
+                                  : 'hover:bg-gray-50 dark:hover:bg-gray-700 border-transparent'
                               } ${user.is_active === false ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                               <div className="flex items-center space-x-3">
                                 <div className="flex-shrink-0">
-                                  <div className={`w-10 h-10 rounded-full bg-gradient-to-r from-${config.color}-400 to-${config.color}-600 flex items-center justify-center text-white font-bold shadow-sm`}>
+                                  <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${config.gradientFrom} ${config.gradientTo} flex items-center justify-center text-white font-bold shadow-sm`}>
                                     {user.name.split(' ').map(n => n[0]).join('')}
                                   </div>
                                 </div>
@@ -172,7 +217,7 @@ function NavBar({ active, open, onSearch }) {
                                   )}
                                 </div>
                               </div>
-                              <span className={`px-2 py-1 text-xs rounded-full bg-${config.color}-100 text-${config.color}-800 dark:bg-${config.color}-900 dark:text-${config.color}-200 font-medium shadow-sm`}>
+                              <span className={`px-2 py-1 text-xs rounded-full ${config.bgLight} ${config.textLight} ${config.bgDark} ${config.textDark} font-medium shadow-sm`}>
                                 {config.badge}
                               </span>
                             </button>
@@ -196,23 +241,23 @@ function NavBar({ active, open, onSearch }) {
 
           {/* Notification and Profile Icons */}
           <div className="flex items-center space-x-3">
-          <Link 
-  to="/pages/notifications" 
-  title="Notifications" 
-  className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
->
-  <FontAwesomeIcon 
-    icon={faBell} 
-    className="text-gray-600 dark:text-gray-300 text-lg" 
-  />
-  {unreadCount > 0 && (
-    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-800"></span>
-  )}
-</Link>
+            <Link 
+              to="/pages/notifications" 
+              title="Notifications" 
+              className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+            >
+              <FontAwesomeIcon 
+                icon={faBell} 
+                className="text-gray-600 dark:text-gray-300 text-lg" 
+              />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-800"></span>
+              )}
+            </Link>
             <Link 
               to="/pages/profile" 
               title="Profile" 
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
             >
               <FontAwesomeIcon 
                 icon={faCircleUser} 
