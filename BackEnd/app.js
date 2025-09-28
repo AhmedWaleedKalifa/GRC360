@@ -32,9 +32,10 @@ app.use(cors({
   credentials: true,
 }));
 
-// Ollama Configuration
-const OLLAMA_API_URL = 'http://localhost:11434/api/chat';
-const MODEL_NAME = 'deepseek-r1:1.5b';
+// DeepSeek API Configuration for OpenRouter
+const DEEPSEEK_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const DEEPSEEK_MODEL = 'deepseek/deepseek-r1'; // Correct model name for OpenRouter
+const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY; // Add this to your .env file
 
 // GRC360 System Prompt
 const systemPreprompt = `
@@ -106,8 +107,7 @@ const errorHandler = require("./middleware/errorHandler");
 // Routes
 app.get("/", (req, res) => res.send("GRC360 API Server is running!"));
 
-// AI Chat Endpoint - Now part of the main server (FIXED STREAMING)
-// AI Chat Endpoint - Improved error handling
+// AI Chat Endpoint - Using DeepSeek API via OpenRouter
 app.post("/api/chat", async (req, res) => {
   const { history } = req.body;
 
@@ -117,41 +117,66 @@ app.post("/api/chat", async (req, res) => {
     return res.status(400).json({ error: 'History is required and must be a non-empty array.' });
   }
 
+  // Validate API key
+  if (!DEEPSEEK_API_KEY) {
+    console.error('❌ DeepSeek API key is missing');
+    return res.status(500).json({ 
+      error: 'API configuration error: DeepSeek API key is not configured' 
+    });
+  }
+
   try {
     // Combine the system pre-prompt and knowledge base into a single system message
     const combinedSystemPrompt = `${systemPreprompt}\n\n${knowledgeBase}`;
     console.log('🤖 System prompt loaded, knowledge base length:', knowledgeBase.length);
 
-    // Add the combined system prompt as the first message
-    const ollamaMessages = [{
-      role: 'system',
-      content: combinedSystemPrompt
-    }].concat(history.map(msg => ({
-      role: msg.role === 'model' ? 'assistant' : 'user',
-      content: msg.text,
-    })));
+    // Format messages for DeepSeek API (OpenAI-compatible format)
+    const deepseekMessages = [
+      {
+        role: 'system',
+        content: combinedSystemPrompt
+      },
+      ...history.map(msg => ({
+        role: msg.role === 'model' ? 'assistant' : 'user',
+        content: msg.text,
+      }))
+    ];
 
-    console.log('📤 Sending request to Ollama with model:', MODEL_NAME);
+    console.log('📤 Sending request to DeepSeek API with model:', DEEPSEEK_MODEL);
     
-    const ollamaRequestBody = {
-      model: MODEL_NAME,
-      messages: ollamaMessages,
+    const requestBody = {
+      model: DEEPSEEK_MODEL,
+      messages: deepseekMessages,
       stream: true,
     };
 
-    const ollamaResponse = await fetch(OLLAMA_API_URL, {
+    const apiResponse = await fetch(DEEPSEEK_API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(ollamaRequestBody),
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
+        'HTTP-Referer': process.env.FRONTEND_URL || 'http://localhost:3000',
+        'X-Title': 'GRC360 Assistant'
+      },
+      body: JSON.stringify(requestBody),
     });
 
-    console.log('🔍 Ollama response status:', ollamaResponse.status);
+    console.log('🔍 DeepSeek API response status:', apiResponse.status);
 
-    if (!ollamaResponse.ok) {
-      const errorText = await ollamaResponse.text();
-      console.error('❌ Ollama API error:', errorText);
-      return res.status(ollamaResponse.status).json({ 
-        error: `Ollama API error (${ollamaResponse.status}): ${errorText}` 
+    if (!apiResponse.ok) {
+      const errorText = await apiResponse.text();
+      console.error('❌ DeepSeek API error:', errorText);
+      
+      let errorMessage = `DeepSeek API error (${apiResponse.status})`;
+      try {
+        const errorData = JSON.parse(errorText);
+        errorMessage = errorData.error?.message || errorMessage;
+      } catch (e) {
+        errorMessage = errorText || errorMessage;
+      }
+      
+      return res.status(apiResponse.status).json({ 
+        error: errorMessage 
       });
     }
 
@@ -163,11 +188,11 @@ app.post("/api/chat", async (req, res) => {
       'Connection': 'keep-alive'
     });
 
-    const reader = ollamaResponse.body.getReader();
+    const reader = apiResponse.body.getReader();
     const decoder = new TextDecoder();
     let fullResponseContent = '';
 
-    console.log('🔄 Starting to stream response from Ollama...');
+    console.log('🔄 Starting to stream response from DeepSeek API...');
 
     while (true) {
       const { done, value } = await reader.read();
@@ -181,11 +206,19 @@ app.post("/api/chat", async (req, res) => {
       
       for (const line of lines) {
         try {
-          const parsed = JSON.parse(line);
-          if (parsed.message && parsed.message.content) {
-            fullResponseContent += parsed.message.content;
-            // Send each chunk as it comes (streaming)
-            res.write(parsed.message.content);
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6); // Remove 'data: ' prefix
+            if (data === '[DONE]') {
+              break;
+            }
+            
+            const parsed = JSON.parse(data);
+            if (parsed.choices && parsed.choices[0]?.delta?.content) {
+              const content = parsed.choices[0].delta.content;
+              fullResponseContent += content;
+              // Send each chunk as it comes (streaming)
+              res.write(content);
+            }
           }
         } catch (error) {
           console.error('❌ Failed to parse stream chunk:', line, error);
@@ -193,21 +226,11 @@ app.post("/api/chat", async (req, res) => {
       }
     }
 
-    // Remove reasoning <think>...</think> blocks (multi-line safe)
-    const filteredContent = fullResponseContent
-      .replace(/<think>[\s\S]*?<\/think>/g, '') // remove everything inside <think>
-      .trim();
-
-    console.log('📝 Final filtered response length:', filteredContent.length);
+    console.log('📝 Final response length:', fullResponseContent.length);
     res.end(); // End the streaming response
 
   } catch (error) {
     console.error('💥 Error in /api/chat endpoint:', error);
-    if (error.code === 'ECONNREFUSED') {
-      return res.status(503).json({ 
-        error: `Could not connect to Ollama at ${OLLAMA_API_URL}. Make sure Ollama is running.` 
-      });
-    }
     res.status(500).json({ error: `Internal server error: ${error.message}` });
   }
 });
@@ -231,4 +254,5 @@ app.listen(PORT, (error) => {
   }
   console.log(`✅ GRC360 Server running on http://localhost:${PORT}`);
   console.log(`🤖 AI Chat endpoint available at /api/chat`);
+  console.log(`🔑 Using DeepSeek model: ${DEEPSEEK_MODEL}`);
 });
