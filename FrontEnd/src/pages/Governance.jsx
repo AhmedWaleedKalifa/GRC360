@@ -210,7 +210,7 @@ function Governance() {
             alert('You do not have permission to add governance items. Admin access required.');
             return;
         }
-        window.location.href = '/app/addGovernance';
+       navigate('/app/addGovernance');
     };
 
     const handleEditGovernance = (governanceId) => {
@@ -218,7 +218,7 @@ function Governance() {
             alert('You do not have permission to edit governance items. Admin access required.');
             return;
         }
-        window.location.href = `/app/editGovernance/${governanceId}`;
+       navigate(`/app/editGovernance/${governanceId}`);
     };
 
     // Calculate stats when data changes

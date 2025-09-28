@@ -56,7 +56,7 @@ function Controls() {
             alert('You do not have permission to edit controls. Admin access required.');
             return;
         }
-        window.location.href = `/app/editControl/${controlId}`;
+         navigate(`/app/editControl/${controlId}`);
     };
 
     // Prepare data for CardSlider

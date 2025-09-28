@@ -70,7 +70,7 @@ function Configurations() {
       alert('You do not have permission to edit configurations. Admin access required.');
       return;
     }
-    window.location.href = `/app/editConfigurations/${configId}`;
+   navigate(`/app/editConfigurations/${configId}`);
   };
 
   useEffect(() => {

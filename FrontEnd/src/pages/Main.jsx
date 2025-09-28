@@ -337,7 +337,7 @@ function Main() {
       alert('You do not have permission to add risks. Admin access required.');
       return;
     }
-    window.location.href = '/app/addRisk';
+    navigate('/app/addRisk');
   };
 
   const handleAddIncident = () => {
@@ -345,7 +345,7 @@ function Main() {
       alert('You do not have permission to add incidents. Admin access required.');
       return;
     }
-    window.location.href = '/app/addIncident';
+    navigate('/app/addIncident');
   };
 
   const handleViewCompliance = () => {

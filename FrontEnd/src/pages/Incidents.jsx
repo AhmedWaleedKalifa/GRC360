@@ -88,7 +88,7 @@ function Incidents() {
       alert('You do not have permission to add incidents. Admin access required.');
       return;
     }
-    window.location.href = '/app/addIncident';
+   navigate('/app/addIncident');
   };
 
   const handleEditIncident = (incidentId) => {
@@ -96,7 +96,7 @@ function Incidents() {
       alert('You do not have permission to edit incidents. Admin access required.');
       return;
     }
-    window.location.href = `/app/editIncident/${incidentId}`;
+    navigate(`/app/editIncident/${incidentId}`);
   };
 
   // Calculate stats whenever incidents change

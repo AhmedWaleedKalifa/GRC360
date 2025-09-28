@@ -107,11 +107,11 @@ function Risks() {
             return;
         }
         // Use window.location to force navigation if navigate() doesn't work
-        window.location.href = `/app/editRisk/${riskId}`;
+       navigate(`/app/editRisk/${riskId}`);
     };
 
     const handleViewRisk = (riskId) => {
-        window.location.href = `/app/viewRisk/${riskId}`;
+       navigate(`/app/viewRisk/${riskId}`);
     };
 
     const handleAddRisk = () => {
@@ -119,7 +119,7 @@ function Risks() {
             alert('You do not have permission to add risks. Admin access required.');
             return;
         }
-        window.location.href = '/app/addRisk';
+        navigate('/app/addRisk');
     };
 
     const [fields, setFields] = useState([]);
