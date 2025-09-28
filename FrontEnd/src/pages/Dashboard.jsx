@@ -6,6 +6,7 @@ import { faArrowRotateRight, faArrowUp } from "@fortawesome/free-solid-svg-icons
 import NavBar from "../components/NavBar";
 import { Outlet, useLocation } from "react-router-dom";
 import SearchResults from "../components/SearchResults";
+import AIChatBot from '../components/AIChatBot';
 
 export default function Dashboard() {
   const [lastRefreshed, setLastRefreshed] = useState(null);
@@ -109,8 +110,9 @@ export default function Dashboard() {
           <Outlet />
         </div>
       </main>
+      <AIChatBot />
 
-      <div className="control">
+      <div className="control ">
         <FontAwesomeIcon 
           icon={faArrowUp} 
           className="controlIcons" 
