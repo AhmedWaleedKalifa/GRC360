@@ -335,7 +335,7 @@ function Incidents() {
           <CardSlider
             caption={{ text: "Recent Incidents", icon: "faClock" }}
             titles={["Title", "Date", "Status"]}
-            sizes={[5, 5, 2]}
+            sizes={[11, 3, 3]}
             colors={["", "", ""]}
             ids={recentIncidentsIds}
             fields={recentIncidentsFields}
@@ -346,9 +346,9 @@ function Incidents() {
 
       <CardSlider
         caption={{ text: "All Incidents", icon: "faFolder" }}
-        sizes={permissions.isAdmin ? [7, 3, 6, 5, 5, 4, 10, 2, 2] : [7, 3, 6, 5, 5, 4, 10]}
+        sizes={permissions.isAdmin ? [18, 6, 7, 5, 5, 8, 18,2.2,3.7] : [16, 5, 5, 4, 5, 7, 20]}
         titles={permissions.isAdmin ? 
-          ["Title", "Category", "Status", "Severity", "Reported At", "Owner", "Description", "Edit", "Delete"] :
+          ["Title", "Category", "Status", "Severity", "Reported At", "Owner", "Description", `Edit`, `    Delete`] :
           ["Title", "Category", "Status", "Severity", "Reported At", "Owner", "Description"]
         }
         ids={allIncidentsIds}

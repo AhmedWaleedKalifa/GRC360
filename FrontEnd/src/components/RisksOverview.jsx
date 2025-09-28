@@ -132,7 +132,7 @@ const RisksOverview = ({ risks, allRisksFields, onAddRisk, permissions }) => {
         <h3 className=" mb-4   font-bold text-xl text-transparent"><span>.</span></h3>
           <CardSlider
             caption={{ text: "All Risks", icon: "faChartSimple" }}
-            sizes={[3,3,3,3,7,2,7]}
+            sizes={[20,6,7,6,7,7,7]}
             titles={[ "Title", "Category", "Status", "Severity", "Created At", "Owner", "Next Review"]}
             ids={[]}
             fields={allRisksFields}

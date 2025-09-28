@@ -12,9 +12,11 @@ function Threats() {
   const [fields, setFields] = useState([]);
   const [colors, setColors] = useState([]);
   const [ids, setIds] = useState([]);
+
   useEffect(() => {
     fetchThreats();
   }, []);
+
   // Update fields and colors when threats or id changes
   useEffect(() => {
     const newFields = [];
@@ -22,10 +24,22 @@ function Threats() {
     const newColors = [];
     
     threats.forEach((threat) => {
+      // Format the date for better readability
+      const formattedDate = threat.created_at 
+        ? new Date(threat.created_at).toLocaleDateString() 
+        : 'Unknown';
+      
+      // Create severity badge with colors
+      const severityBadge = {
+        type: "b",
+        text: threat.severity,
+        color: getSeverityColor(threat.severity)
+      };
+
       newFields.push([
         { type: "t", text: threat.message },
-        { type: "t", text: threat.severity },
-        { type: "t", text: threat.created_at },
+        severityBadge, // Use the colored badge instead of plain text
+        { type: "t", text: formattedDate },
       ]);
       
       // Highlight the row if it matches the ID from params
@@ -43,6 +57,26 @@ function Threats() {
     setColors(newColors);
   }, [threats, id]); // Re-run when threats or id changes
 
+  // Function to get color based on severity
+  const getSeverityColor = (severity) => {
+    if (!severity) return "#3b82f699"; // Default blue
+    
+    const severityLower = severity.toLowerCase();
+    
+    switch (severityLower) {
+      case 'critical':
+      case 'high':
+        return "#ff000099"; // Red
+      case 'medium':
+        return "#ffff0099"; // Yellow
+      case 'low':
+      case 'info':
+        return "#00ff0099"; // Green
+      default:
+        return "#3b82f699"; // Blue for unknown
+    }
+  };
+
   const fetchThreats = async () => {
     try {
       setLoading(true);
@@ -58,29 +92,33 @@ function Threats() {
   };
 
   if (loading) {
-    <>
-     {/* <div className='flex flex-col justify-center'>
-       <CardSlider
-      caption={{ text: "Live Threat Feed", icon: "faCircleExclamation" }}
-      titles={["description", "severity", "time"]}
-      sizes={[4, 1, 2]}
-      fields={[]}
-    />
-
-      </div> */}
-      <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600 self-center"></div>
-    </>
+    return (
+      <div className="flex flex-col items-center justify-center min-h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600"></div>
+        <p className="mt-2 text-gray-600">Loading threats...</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="p-4 text-red-500 text-center">
+        Error: {error}
+        <button 
+          onClick={fetchThreats} 
+          className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Retry
+        </button>
+      </div>
+    );
   }
 
   return (
     <CardSlider
       caption={{ text: "Live Threat Feed", icon: "faCircleExclamation" }}
-      titles={["description", "severity", "time"]}
-      sizes={[4, 1, 2]}
+      titles={["Description", "Severity", "Time"]}
+      sizes={[20, 4, 2]}
       colors={colors} // Use the colors array for highlighting
       height={"500"}
       fields={fields}

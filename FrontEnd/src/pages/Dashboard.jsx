@@ -70,12 +70,12 @@ export default function Dashboard() {
     localStorage.setItem("lastRefreshed", now);
     setLastRefreshed(now);
     setShowRefreshNotification(true);
+    
+    // Show notification briefly (500ms) then refresh immediately
     setTimeout(() => {
       setShowRefreshNotification(false);
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
-    }, 4000);
+      window.location.reload();
+    }, 500); // Reduced from 4000ms to 500ms
   };
 
   useEffect(() => {

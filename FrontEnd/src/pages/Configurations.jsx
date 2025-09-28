@@ -169,8 +169,8 @@ function Configurations() {
       <CardSlider
         caption={{ text: "Configurations", icon: "faGear" }}
         titles={permissions.isAdmin ? ["Name", "Value", "Edit"] : ["Name", "Value"]}
-        sizes={permissions.isAdmin ? [8, 8, 1] : [12, 12]}
-        height={"500"}
+        sizes={permissions.isAdmin ? [10, 10, 1] : [12, 12]}
+        height="600px"
         ids={ids}
         fields={fields}
         colors={colors}

@@ -30,8 +30,8 @@ const Field = forwardRef(({ mode = 1, sizes, id, color, navigation = "", values 
     >
       {values.map((element, index) => (
         <div
-
-          className="fieldDiv"
+        
+          className={element.type=="i"?"fieldDiv flex flex-row justify-center items-center":"fieldDiv"}
           title={String(element.text)}
           key={index}
           style={{ width: `${Math.trunc(sizes[index] || 0)}%` }}

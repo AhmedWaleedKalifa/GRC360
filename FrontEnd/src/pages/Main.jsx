@@ -54,6 +54,37 @@ function Main() {
     return user ? user.user_name || user.name : `User ${userId}`;
   };
 
+  // Function to get status color based on status and type
+  const getStatusColor = (status, type = '') => {
+    if (!status) return "#3b82f699"; // Default blue
+    
+    const statusLower = status.toLowerCase();
+    
+    switch (statusLower) {
+      case 'open':
+      case 'draft':
+      case 'pending':
+      case 'testing':
+        return "#FFA72699"; // Amber/Orange
+      case 'closed':
+      case 'approved':
+      case 'implemented':
+      case 'operational':
+        return "#00ff0099"; // Green
+      case 'active':
+      case 'under_review':
+        return "#3b82f699"; // Blue
+      case 'archived':
+      case 'expired':
+      case 'rejected':
+        return "#ff000099"; // Red
+      case 'requires_changes':
+        return "#ffff0099"; // Yellow
+      default:
+        return "#3b82f699"; // Blue for unknown
+    }
+  };
+
   // Fetch all data from APIs
   useEffect(() => {
     const fetchAllData = async () => {
@@ -164,7 +195,11 @@ function Main() {
           { type: "t", text: risk.title },
           { type: "t", text: ownerName },
           { type: "t", text: dueDate ? formatDateToMonthNumber(dueDate) : "No date" },
-          { type: "t", text: risk.status }
+          { 
+            type: "b", 
+            text: risk.status,
+            color: getStatusColor(risk.status, 'risk')
+          }
         ],
         id: risk.risk_id,
         path: "/app/risks",
@@ -179,11 +214,7 @@ function Main() {
         { 
           type: "b", 
           text: risk.status,
-          color: risk.status === "open" 
-              ? "#FFA72699" 
-              : risk.status === "closed" 
-              ? "#00ff0099" 
-              : "#3b82f699"
+          color: getStatusColor(risk.status, 'risk')
         },
         { 
           type: "b", 
@@ -213,7 +244,11 @@ function Main() {
           { type: "t", text: item.governance_name },
           { type: "t", text: ownerName },
           { type: "t", text: item.next_review ? formatDateToMonthNumber(item.next_review) : "No date" },
-          { type: "t", text: item.status }
+          { 
+            type: "b", 
+            text: item.status,
+            color: getStatusColor(item.status, 'governance')
+          }
         ],
         id: item.governance_id,
         path: "/app/governance",
@@ -236,7 +271,11 @@ function Main() {
           { type: "t", text: incident.title },
           { type: "t", text: ownerName },
           { type: "t", text: dueDate ? formatDateToMonthNumber(dueDate) : "No date" },
-          { type: "t", text: incident.status }
+          { 
+            type: "b", 
+            text: incident.status,
+            color: getStatusColor(incident.status, 'incident')
+          }
         ],
         id: incident.incident_id,
         path: "/app/incidents",
@@ -251,11 +290,7 @@ function Main() {
         { 
           type: "b", 
           text: incident.status,
-          color: incident.status === "open" 
-              ? "#FFA72699" 
-              : incident.status === "closed" 
-              ? "#00ff0099" 
-              : "#3b82f699"
+          color: getStatusColor(incident.status, 'incident')
         },
         { 
           type: "b", 
@@ -288,7 +323,11 @@ function Main() {
           { type: "t", text: control.control_name },
           { type: "t", text: ownerName },
           { type: "t", text: dueDate ? formatDateToMonthNumber(dueDate) : "No date" },
-          { type: "t", text: control.status }
+          { 
+            type: "b", 
+            text: control.status,
+            color: getStatusColor(control.status, 'control')
+          }
         ],
         id: frameworkId,
         path: "/app/compliance",
@@ -302,7 +341,11 @@ function Main() {
         { type: "t", text: control.control_name },
         { type: "t", text: control.description || "No description" },
         { type: "t", text: ownerName },
-        { type: "t", text: control.status },
+        { 
+          type: "b", 
+          text: control.status,
+          color: getStatusColor(control.status, 'control')
+        },
         { type: "t", text: control.compliance_status || "Not assessed" },
         { type: "t", text: control.last_reviewed ? formatDateToMonthNumber(control.last_reviewed) : "Never" },
         { type: "i", text: "faPen", color: "#26A7F6" },
@@ -387,9 +430,9 @@ function Main() {
         <div className='flex flex-col justify-center'>
           <CardSlider
             caption={{ text: 'upcoming', icon: "faCalendarDay" }}
-            titles={["Type", " ", "Title", "owner", "Due Date", "status"]}
+            titles={["", "Type", "Title", "owner", "Due Date", "status"]}
             colors={[""]}
-            sizes={[2, 8, 20, 6, 6, 6]}
+            sizes={[1, 8, 20, 6, 6, 6]}
             navigation={overviewData.upcoming.navigation}
             ids={overviewData.upcoming.ids}
             fields={overviewData.upcoming.fields}
@@ -440,9 +483,9 @@ function Main() {
       {/* Upcoming Reviews CardSlider */}
       <CardSlider
         caption={{ text: 'upcoming', icon: "faCalendarDay" }}
-        titles={["Type", " ", "Title", "owner", "Due Date", "status"]}
+        titles={["", "Type", "Title", "owner", "Due Date", "status"]}
         colors={[""]}
-        sizes={[2, 8, 20, 6, 6, 6]}
+        sizes={[1, 8, 20, 6, 6, 6]}
         navigation={overviewData.upcoming.navigation}
         ids={overviewData.upcoming.ids}
         fields={overviewData.upcoming.fields}

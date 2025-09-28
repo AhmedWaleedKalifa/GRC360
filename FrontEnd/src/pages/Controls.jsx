@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import Card from '../components/Card'
 import CardSlider from "../components/CardSlider"
 import { useNavigate, useParams } from 'react-router-dom'
-import { complianceAPI } from "../services/api"
+import { complianceAPI, usersAPI } from "../services/api"
 import { useUser } from '../hooks/useUser'
 
 function Controls() {
@@ -12,16 +12,28 @@ function Controls() {
     const [controls, setControls] = useState([]);
     const [requirement, setRequirement] = useState(null);
     const [framework, setFramework] = useState(null);
+    const [users, setUsers] = useState([]); // Add users state
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     // Get current user and permissions
     const { currentUser, permissions, loading: userLoading } = useUser();
 
+    // Function to get user name by ID
+    const getUserNameById = (userId) => {
+        if (!userId) return "Unassigned";
+        const user = users.find(u => u.user_id === userId || u.id === userId);
+        return user ? user.user_name || user.name : `User ${userId}`;
+    };
+
     useEffect(() => {
         const fetchControlsData = async () => {
             try {
                 setLoading(true);
+                
+                // Fetch users first
+                const usersData = await usersAPI.getAll();
+                setUsers(usersData);
                 
                 // Fetch requirement details
                 const requirementData = await complianceAPI.getRequirementById(id);
@@ -88,7 +100,7 @@ function Controls() {
                     ? "#FFA72699"
                     : "#ff000099"
             },
-            { type: "t", text: control.owner || "Unassigned" },
+            { type: "t", text: getUserNameById(control.owner) }, // Use owner name instead of ID
             { type: "t", text: control.last_reviewed ? new Date(control.last_reviewed).toLocaleDateString() : "Never" },
             { type: "t", text: control.reference || "N/A" },
             { type: "t", text: control.notes || "No notes" },
@@ -174,7 +186,7 @@ function Controls() {
                     ["#", "Name", "Status", "Owner", "Last Reviewed", "Reference", "Notes", "Edit"] :
                     ["#", "Name", "Status", "Owner", "Last Reviewed", "Reference", "Notes"]
                 }
-                sizes={permissions.isAdmin ? [1, 16, 5, 6, 5, 5, 6, 2] : [1, 16, 5, 6, 5, 5, 6]}
+                sizes={permissions.isAdmin ? [1, 12, 5, 6, 5, 5, 12, 1.8] : [1, 12, 5, 6, 5, 5, 12]}
                 colors={[]}
                 ids={ids}
                 fields={fields}

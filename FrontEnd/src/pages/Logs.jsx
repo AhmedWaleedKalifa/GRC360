@@ -417,7 +417,7 @@ function Logs() {
             "Entity ID",
             "Details"
           ]}
-          sizes={[3, 2, 2, 2, 2, 4]}
+          sizes={[4, 3, 2, 3, 2, 8]}
           colors={colors}
           height="600px"
           ids={ids}

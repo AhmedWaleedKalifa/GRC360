@@ -3,7 +3,7 @@ import { faCalculator, faInfoCircle, faChevronDown, faChevronUp } from '@fortawe
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const RiskFormulaCard = () => {
-    const [isVisible, setIsVisible] = useState(true);
+    const [isVisible, setIsVisible] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
 
     // If card is not visible, show only the toggle button

@@ -173,7 +173,6 @@ function Risks() {
             }
 
             newFields.push([
-                { type: "t", text: risk.risk_id },
                 { type: "t", text: risk.title },
                 { type: "t", text: risk.category || "Uncategorized" },
                 { type: "t", text: ownerName }, // Use owner name instead of ID
@@ -268,12 +267,45 @@ function Risks() {
                 </div>
 
                 <div className="h2AndButtonContainer">
-                    <h2>Risk items</h2>
-                    <div className={`button mr-2 ${permissions.isAdmin ? 'buttonStyle' : 'buttonStyle opacity-30 cursor-not-allowed'}`}>
+                {permissions.isAdmin ? (
+                    <button 
+                        className="button buttonStyle ml-2"
+                        onClick={handleAddRisk}
+                        title="Add new risk"
+                    >
+                        <FontAwesomeIcon icon={faPlus} className="mr-1" />
+                        Add Risk
+                    </button>
+                ) : (
+                    <div 
+                        className="button buttonStyle mr-2 opacity-30 cursor-not-allowed"
+                        title="Admin access required to add risks"
+                    >
                         <FontAwesomeIcon icon={faPlus} className="mr-1" />
                         Add Risk
                     </div>
+                )}
+            </div>
+
+            {filteredRisks.length === 0 ? (
+                <div className="p-4 text-center">
+                    {globalSearchQuery ? `No risks found matching "${globalSearchQuery}"` : "No risks found"}
                 </div>
+            ) : (
+                <CardSlider
+                caption={{ text: "Risks", icon: "faChartSimple" }}
+
+                    titles={permissions.isAdmin ? 
+                        [ "Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "Edit", "Delete"] :
+                        [ "Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "View"]
+                    }
+                    sizes={permissions.isAdmin ? [ 16, 6, 8, 5, 5, 4, 8, 8, 2, 3] : [16, 6, 8, 5, 5, 4, 8, 8, 2]}
+                    ids={ids}
+                    fields={fields}
+                    colors={colors}
+                    selectedId={id}
+                />
+            )}
 
                 <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-500 self-center"></div>
             </>
@@ -326,10 +358,9 @@ function Risks() {
             </div>
 
             <div className="h2AndButtonContainer">
-                <h2>Risk items</h2>
                 {permissions.isAdmin ? (
                     <button 
-                        className="button buttonStyle mr-2"
+                        className="button buttonStyle ml-2"
                         onClick={handleAddRisk}
                         title="Add new risk"
                     >
@@ -338,7 +369,7 @@ function Risks() {
                     </button>
                 ) : (
                     <div 
-                        className="button buttonStyle mr-2 opacity-30 cursor-not-allowed"
+                        className="button buttonStyle ml-2 opacity-30 cursor-not-allowed"
                         title="Admin access required to add risks"
                     >
                         <FontAwesomeIcon icon={faPlus} className="mr-1" />
@@ -353,11 +384,13 @@ function Risks() {
                 </div>
             ) : (
                 <CardSlider
+                caption={{ text: "Risks", icon: "faChartSimple" }}
+
                     titles={permissions.isAdmin ? 
-                        ["ID", "Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "Edit", "Delete"] :
-                        ["ID", "Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "View"]
+                        ["Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "Edit", "Delete"] :
+                        [ "Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "View"]
                     }
-                    sizes={permissions.isAdmin ? [2, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3] : [2, 8, 8, 8, 8, 8, 8, 8, 8, 6]}
+                    sizes={permissions.isAdmin ? [ 16, 6, 8, 5, 5, 4, 8, 8, 2, 3] : [16, 6, 8, 5, 5, 4, 8, 8, 2]}
                     ids={ids}
                     fields={fields}
                     colors={colors}

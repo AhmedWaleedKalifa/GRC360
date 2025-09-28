@@ -201,9 +201,9 @@ function EditControl() {
          
         </div>
        <div className='flex flex-row w-full justify-center relative bottom-6'>
-       <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-            Editing as: {getCurrentUserName()}
-          </div>
+       <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full dark:text-blue-400 dark:bg-blue-900/30">
+  Editing as: {getCurrentUserName()}
+</div>
        </div>
         <button className="templateBackLink" onClick={() => navigate(-1)}>
           <FontAwesomeIcon icon={faArrowLeft} className="text-2xl mr-2" />

@@ -9,7 +9,8 @@ import { useUser } from '../hooks/useUser'
 function NavBar({ active, open, onSearch }) {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const dropdownRef = useRef(null);
-  
+  const [unreadCount, setUnreadCount] = useState(0);
+
   const { 
     currentUser, 
     users, 
@@ -32,19 +33,11 @@ function NavBar({ active, open, onSearch }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleUserChange = async (user) => {
-    try {
-      // Change the current user without reloading the page
-      changeCurrentUser(user);
-      setShowUserDropdown(false);
-      
-      // Optional: Show a success message
-      console.log(`Switched to user: ${user.name}`);
-      
-    } catch (err) {
-      console.error('Error switching user:', err);
-    }
-  };
+  const handleUserChange = (user) => {
+    changeCurrentUser(user);
+    setShowUserDropdown(false);
+    window.location.reload();
+  }
 
   const handleRefreshUsers = async () => {
     await refreshUsers();
@@ -203,17 +196,19 @@ function NavBar({ active, open, onSearch }) {
 
           {/* Notification and Profile Icons */}
           <div className="flex items-center space-x-3">
-            <Link 
-              to="/pages/notifications" 
-              title="Notifications" 
-              className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            >
-              <FontAwesomeIcon 
-                icon={faBell} 
-                className="text-gray-600 dark:text-gray-300 text-lg" 
-              />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-800"></span>
-            </Link>
+          <Link 
+  to="/pages/notifications" 
+  title="Notifications" 
+  className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+>
+  <FontAwesomeIcon 
+    icon={faBell} 
+    className="text-gray-600 dark:text-gray-300 text-lg" 
+  />
+  {unreadCount > 0 && (
+    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-800"></span>
+  )}
+</Link>
             <Link 
               to="/pages/profile" 
               title="Profile" 

@@ -93,7 +93,7 @@ const AIChatBot = () => {
           className="fixed bottom-28 right-8 z-50 flex items-center justify-center w-14 h-14 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-700 dark:hover:bg-blue-600 dark:focus:ring-blue-400"
           title="Open AI Assistant"
         >
-          <FontAwesomeIcon icon={faMessage} className="text-xl" />
+          <FontAwesomeIcon icon={faRobot} className="text-xl" />
         </button>
       )}
 

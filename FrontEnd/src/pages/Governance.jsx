@@ -9,7 +9,7 @@ import { useUser } from '../hooks/useUser'
 
 // Mission Card Component
 const GovernanceMissionCard = () => {
-    const [isVisible, setIsVisible] = useState(true);
+    const [isVisible, setIsVisible] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
 
     if (!isVisible) {
@@ -292,8 +292,7 @@ function Governance() {
                         ? "#FFA72699"
                         : "#ff000099"
             },
-            { type: "t", text: item.approver || "N/A" },
-            { type: "t", text: "N/A" },
+           
             { type: "t", text: item.attachment ? "Has attachment" : "No file" },
             ...actionButtons
         ];
@@ -359,7 +358,6 @@ function Governance() {
                     <Card title="Pending Approval" value="0" model={2} />
                 </div>
                 <div className='h2AndButtonContainer '>
-                    <h2>Governance Items</h2>
                     <div className={`button buttonStyle mr-2 ${permissions.isAdmin ? '' : 'opacity-30 cursor-not-allowed'}`}>
                         <span className={permissions.isAdmin ? '' : 'opacity-0'}>
                             <FontAwesomeIcon icon={faPlus} className=' mr-1' />
@@ -371,11 +369,11 @@ function Governance() {
                     </div>
                 </div>
                 <CardSlider
-                    titles={permissions.isAdmin ? 
-                        ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Approver", "Confidentiality", "Attachment", "Edit", "Delete"] :
-                        ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Approver", "Confidentiality", "Attachment"]
+                     titles={permissions.isAdmin ? 
+                        ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status",  "Attachment", "Edit", "Delete"] :
+                        ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Attachment"]
                     }
-                    sizes={permissions.isAdmin ? [1, 4, 3, 3, 4, 4, 4, 4, 4, 3, 7, 4, 4, 4, 4, 2, 3] : [1, 4, 3, 3, 4, 4, 4, 4, 4, 3, 7, 4, 4, 4, 4]}
+                    sizes={permissions.isAdmin ? [1, 16, 5, 11, 9, 7, 7, 7, 6, 4, 9, 7, 4, 3,4] : [1, 16, 5, 9, 8, 7, 7, 7, 6, 4, 9, 7, 4]}
                     fields={[]}
                     ids={[]}
                 />
@@ -410,10 +408,9 @@ function Governance() {
             </div>
             
             <div className='h2AndButtonContainer '>
-                <h2>Governance Items</h2>
                 {permissions.isAdmin ? (
                     <button 
-                        className="button buttonStyle mr-2"
+                        className="button buttonStyle ml-2"
                         onClick={handleAddGovernance}
                         title="Add new governance item"
                     >
@@ -422,7 +419,7 @@ function Governance() {
                     </button>
                 ) : (
                     <div 
-                        className="button buttonStyle mr-2 opacity-30 cursor-not-allowed"
+                        className="button buttonStyle ml-2 opacity-30 cursor-not-allowed"
                         title="Admin access required to add governance items"
                     >
                         <FontAwesomeIcon icon={faPlus} className=' mr-1' />
@@ -432,11 +429,13 @@ function Governance() {
             </div>
             
             <CardSlider
+                            caption={{ text: "Governance Items", icon: "faGavel" }}
+
                 titles={permissions.isAdmin ? 
-                    ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Approver", "Confidentiality", "Attachment", "Edit", "Delete"] :
-                    ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Approver", "Confidentiality", "Attachment"]
+                    ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status",  "Attachment", "Edit", "Delete"] :
+                    ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Attachment"]
                 }
-                sizes={permissions.isAdmin ? [1, 4, 3, 3, 4, 4, 4, 4, 4, 3, 7, 4, 4, 4, 4, 2, 3] : [1, 4, 3, 3, 4, 4, 4, 4, 4, 3, 7, 4, 4, 4, 4]}
+                sizes={permissions.isAdmin ? [1, 16, 5, 11, 9, 7, 7, 7, 6, 4, 9, 7, 4, 3,4] : [1, 16, 5, 9, 8, 7, 7, 7, 6, 4, 9, 7, 4]}
                 colors={colors}
                 fields={fields}
                 ids={ids}

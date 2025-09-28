@@ -148,7 +148,7 @@ const IncidentsOverview = ({ incidents, allIncidentsIds, allIncidentsFields, onA
 
                     <CardSlider
                         caption={{ text: "All Incidents", icon: "faFolder" }}
-                        sizes={[3,3,3,3,7,2,6]}
+                        sizes={[14,6,7,5,5,6,6]}
                         titles={[ "Title", "Category", "Status", "Severity", "Created At", "Owner", "Next Review"]}
                         ids={allIncidentsIds}
                         fields={allIncidentsFields}
