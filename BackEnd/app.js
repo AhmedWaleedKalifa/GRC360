@@ -12,10 +12,23 @@ app.use(express.json());
 app.use(userExtractor);
 
 app.use(express.urlencoded({ extended: true }));
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL2,
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("CORS not allowed for this origin: " + origin));
+    }
+  },
+  credentials: true,
 }));
+
 
 const auditLogsRouter=require("./routes/auditLogsRouter")
 const complianceItemsRouter=require("./routes/complianceItemsRouter")
