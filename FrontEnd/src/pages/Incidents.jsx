@@ -324,14 +324,14 @@ function Incidents() {
               { name: "Open", value: open, color: "#FFA72680" }
             ]} 
           />
-          <Progress 
+        <Progress 
             title={"Resolution Progress"} 
             footer={"incidents closed"} 
             num={closed} 
             all={incidents.length} 
           />
         </div>
-        <div className='w-[50%] h-full '>
+        <div className='ml-4 w-[50%] h-full '>
           <CardSlider
             caption={{ text: "Recent Incidents", icon: "faClock" }}
             titles={["Title", "Date", "Status"]}

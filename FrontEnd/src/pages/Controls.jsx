@@ -26,6 +26,34 @@ function Controls() {
         return user ? user.user_name || user.name : `User ${userId}`;
     };
 
+    // Function to get status color based on new compliance values
+    const getStatusColor = (status) => {
+        switch (status) {
+            case "compliant":
+                return "#00ff0099"; // Green
+            case "partially compliant":
+                return "#FFA72699"; // Orange/Amber
+            case "not compliant":
+                return "#ff000099"; // Red
+            default:
+                return "#6b728099"; // Gray for unknown status
+        }
+    };
+
+    // Function to get status display text with proper capitalization
+    const getStatusDisplayText = (status) => {
+        switch (status) {
+            case "compliant":
+                return "Compliant";
+            case "partially compliant":
+                return "Partially Compliant";
+            case "not compliant":
+                return "Not Compliant";
+            default:
+                return status; // Fallback for any unexpected values
+        }
+    };
+
     useEffect(() => {
         const fetchControlsData = async () => {
             try {
@@ -91,14 +119,8 @@ function Controls() {
             { type: "t", text: control.control_name },
             { 
                 type: "b", 
-                text: control.status,
-                color: control.status === "implemented" 
-                    ? "#00ff0099" 
-                    : control.status === "operational"
-                    ? "#3b82f699"
-                    : control.status === "testing"
-                    ? "#FFA72699"
-                    : "#ff000099"
+                text: getStatusDisplayText(control.status),
+                color: getStatusColor(control.status)
             },
             { type: "t", text: getUserNameById(control.owner) }, // Use owner name instead of ID
             { type: "t", text: control.last_reviewed ? new Date(control.last_reviewed).toLocaleDateString() : "Never" },

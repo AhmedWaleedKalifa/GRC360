@@ -16,8 +16,22 @@ function EditControl() {
   // Get current user and permissions
   const { currentUser, permissions, loading: userLoading } = useUser();
 
-  // FIXED: Use only allowed status values that match database constraint
-  const allowedStatuses = ["active", "inactive", "retired"];
+  // UPDATED: Use new compliance status values that match database constraint
+  const allowedStatuses = ["compliant", "partially compliant", "not compliant"];
+
+  // Format status for display (capitalize)
+  const formatStatusForDisplay = (status) => {
+    switch (status) {
+      case "compliant":
+        return "Compliant";
+      case "partially compliant":
+        return "Partially Compliant";
+      case "not compliant":
+        return "Not Compliant";
+      default:
+        return status;
+    }
+  };
 
   // Safe user property access
   const getCurrentUserName = () => {
@@ -190,27 +204,26 @@ function EditControl() {
     );
   }
 
-  // Ensure the current item status is valid, fallback to 'active' if not
-  const currentStatus = allowedStatuses.includes(item.status) ? item.status : 'active';
+  // Ensure the current item status is valid, fallback to 'not compliant' if not
+  const currentStatus = allowedStatuses.includes(item.status) ? item.status : 'not compliant';
 
   return (
     <div className="smallContainer">
       <div className="editConfig">
         <div className="flex items-center justify-between mb-6">
           <h1 className="editConfigTitle">Edit Control</h1>
-         
         </div>
-       <div className='flex flex-row w-full justify-center relative bottom-6'>
-       <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full dark:text-blue-400 dark:bg-blue-900/30">
-  Editing as: {getCurrentUserName()}
-</div>
-       </div>
+        
+        <div className='flex flex-row w-full justify-center relative bottom-6'>
+          <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full dark:text-blue-400 dark:bg-blue-900/30">
+            Editing as: {getCurrentUserName()}
+          </div>
+        </div>
+        
         <button className="templateBackLink" onClick={() => navigate(-1)}>
           <FontAwesomeIcon icon={faArrowLeft} className="text-2xl mr-2" />
           Back
         </button>
-        
-      
 
         <Form
           fstyle={{
@@ -220,7 +233,7 @@ function EditControl() {
           onSubmit={handleSubmit}
           inputarray={[
             {
-              changeable:false,
+              changeable: false,
               id: "name",
               type: "text",
               isInput: true,
@@ -237,8 +250,8 @@ function EditControl() {
               id: "status",
               type: "select",
               isInput: true,
-              label: "Status:",
-              selectList: allowedStatuses,
+              label: "Compliance Status:",
+              selectList: allowedStatuses, // Use simple array of strings
               initialValue: currentStatus,
               required: true,
               Class: {
@@ -262,8 +275,7 @@ function EditControl() {
               },
             },
             {
-              changeable:false,
-
+              changeable: false,
               id: "reference",
               type: "text",
               isInput: true,
@@ -290,8 +302,6 @@ function EditControl() {
           ]}
           button={loading ? "Saving..." : "Save Changes"}
         />
-
-     
       </div>
     </div>
   );

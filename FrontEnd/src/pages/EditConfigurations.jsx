@@ -94,7 +94,7 @@ const EditConfigurations = () => {
   Editing as: {getCurrentUserName()}
 </div>
         </div>
-        <button className='templateBackLink' onClick={() => navigate("app/configuration")}>
+        <button className='templateBackLink' onClick={() => navigate("/app/configurations")}>
           <FontAwesomeIcon icon={faArrowLeft} className='text-2xl' />
         </button>
         <Form

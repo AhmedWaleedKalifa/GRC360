@@ -224,7 +224,7 @@ nav {
 
 /* progress style */
 .progress {
-  @apply flex flex-col gap-4 max-w-[48%]   p-6 min-w-44  w-full min-h-88 z-10 justify-center;
+  @apply flex flex-col gap-4    p-6 min-w-44  w-full h-full  z-10 justify-center;
 }
 
 .progressTitle {

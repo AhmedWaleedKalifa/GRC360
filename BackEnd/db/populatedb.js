@@ -36,22 +36,21 @@ const SQL = `
         updated_at     TIMESTAMP DEFAULT NOW()
     );
 
-    CREATE TABLE IF NOT EXISTS compliance_controls (
-        control_id    VARCHAR(50) PRIMARY KEY,
-        requirement_id VARCHAR(50) NOT NULL REFERENCES compliance_requirements(requirement_id) ON DELETE CASCADE,
-        control_name  VARCHAR(255) NOT NULL,
-        status        VARCHAR(50) DEFAULT 'draft' NOT NULL
-            CHECK (status IN ('draft', 'implemented', 'testing', 'operational', 'retired')),
-        owner         INT REFERENCES users(user_id) ON DELETE SET NULL,
-        last_reviewed DATE,
-        reference     VARCHAR(50),
-        notes         TEXT,
-        description   TEXT,
-        attachment    TEXT,
-        created_at    TIMESTAMP DEFAULT NOW(),
-        updated_at    TIMESTAMP DEFAULT NOW()
-    );
-
+ CREATE TABLE IF NOT EXISTS compliance_controls (
+    control_id    VARCHAR(50) PRIMARY KEY,
+    requirement_id VARCHAR(50) NOT NULL REFERENCES compliance_requirements(requirement_id) ON DELETE CASCADE,
+    control_name  VARCHAR(255) NOT NULL,
+    status        VARCHAR(50) DEFAULT 'not compliant' NOT NULL
+        CHECK (status IN ('compliant', 'partially compliant', 'not compliant')),
+    owner         INT REFERENCES users(user_id) ON DELETE SET NULL,
+    last_reviewed DATE,
+    reference     VARCHAR(50),
+    notes         TEXT,
+    description   TEXT,
+    attachment    TEXT,
+    created_at    TIMESTAMP DEFAULT NOW(),
+    updated_at    TIMESTAMP DEFAULT NOW()
+);
     CREATE TABLE IF NOT EXISTS configurations (
         config_id SERIAL PRIMARY KEY,
         key       VARCHAR(100) UNIQUE NOT NULL,
@@ -163,7 +162,36 @@ const SQL = `
     CREATE INDEX IF NOT EXISTS idx_incidents_owner ON incidents(owner);
     CREATE INDEX IF NOT EXISTS idx_threats_detected_at ON threats(detected_at);
 `;
+// const SQL = `
+// -- Use transaction for safety
+// BEGIN;
 
+// -- First, check if the constraint exists and drop it if it does
+// DO $$ 
+// BEGIN 
+//     IF EXISTS (
+//         SELECT 1 FROM information_schema.table_constraints 
+//         WHERE constraint_name = 'compliance_controls_status_check' 
+//         AND table_name = 'compliance_controls'
+//     ) THEN
+//         ALTER TABLE compliance_controls DROP CONSTRAINT compliance_controls_status_check;
+//     END IF;
+// END $$;
+
+// -- Update all existing records to 'not compliant'
+// UPDATE compliance_controls SET status = 'not compliant';
+
+// -- Add the new check constraint
+// ALTER TABLE compliance_controls 
+// ADD CONSTRAINT compliance_controls_status_check 
+// CHECK (status IN ('compliant', 'partially compliant', 'not compliant'));
+
+// -- Update the default value
+// ALTER TABLE compliance_controls 
+// ALTER COLUMN status SET DEFAULT 'not compliant';
+
+// COMMIT;
+// `;
 // =======================
 // SSL Setup
 // =======================
