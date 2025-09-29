@@ -32,10 +32,18 @@ app.use(cors({
   credentials: true,
 }));
 
-// DeepSeek API Configuration for OpenRouter
-const DEEPSEEK_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const DEEPSEEK_MODEL = 'deepseek/deepseek-r1'; // Correct model name for OpenRouter
-const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY; // Add this to your .env file
+// OpenRouter Configuration - Using FREE models
+const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+// Choose one of these FREE models:
+const FREE_MODELS = [
+  "openai/gpt-4o-mini",
+  "anthropic/claude-3-haiku",
+  "mistralai/mistral-7b-instruct",
+  "meta-llama/llama-3.2-3b-instruct"
+];
+
+let SELECTED_MODEL = FREE_MODELS[0];
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
 // GRC360 System Prompt
 const systemPreprompt = `
@@ -49,6 +57,8 @@ Your job is to assist users with understanding the GRC application, including:
 - Security configurations
 
 Be helpful, professional, and provide accurate information about GRC concepts and the application functionality.
+
+Keep responses concise and focused on GRC topics. If you don't know something, admit it rather than making up information.
 `;
 
 const knowledgeFolder = path.join(__dirname, "knowledge");
@@ -107,7 +117,7 @@ const errorHandler = require("./middleware/errorHandler");
 // Routes
 app.get("/", (req, res) => res.send("GRC360 API Server is running!"));
 
-// AI Chat Endpoint - Using DeepSeek API via OpenRouter
+// AI Chat Endpoint - Using FREE models via OpenRouter
 app.post("/api/chat", async (req, res) => {
   const { history } = req.body;
 
@@ -118,10 +128,10 @@ app.post("/api/chat", async (req, res) => {
   }
 
   // Validate API key
-  if (!DEEPSEEK_API_KEY) {
-    console.error('❌ DeepSeek API key is missing');
+  if (!OPENROUTER_API_KEY) {
+    console.error('❌ OpenRouter API key is missing');
     return res.status(500).json({ 
-      error: 'API configuration error: DeepSeek API key is not configured' 
+      error: 'API configuration error: OpenRouter API key is not configured' 
     });
   }
 
@@ -129,9 +139,10 @@ app.post("/api/chat", async (req, res) => {
     // Combine the system pre-prompt and knowledge base into a single system message
     const combinedSystemPrompt = `${systemPreprompt}\n\n${knowledgeBase}`;
     console.log('🤖 System prompt loaded, knowledge base length:', knowledgeBase.length);
+    console.log('🚀 Using FREE model:', SELECTED_MODEL);
 
-    // Format messages for DeepSeek API (OpenAI-compatible format)
-    const deepseekMessages = [
+    // Format messages for OpenRouter API (OpenAI-compatible format)
+    const messages = [
       {
         role: 'system',
         content: combinedSystemPrompt
@@ -142,37 +153,48 @@ app.post("/api/chat", async (req, res) => {
       }))
     ];
 
-    console.log('📤 Sending request to DeepSeek API with model:', DEEPSEEK_MODEL);
+    console.log('📤 Sending request to OpenRouter API with model:', SELECTED_MODEL);
     
     const requestBody = {
-      model: DEEPSEEK_MODEL,
-      messages: deepseekMessages,
+      model: SELECTED_MODEL,
+      messages: messages,
       stream: true,
+      max_tokens: 2048, // Reduced for free models to avoid token limits
     };
 
-    const apiResponse = await fetch(DEEPSEEK_API_URL, {
+    const apiResponse = await fetch(OPENROUTER_API_URL, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
         'HTTP-Referer': process.env.FRONTEND_URL || 'http://localhost:3000',
         'X-Title': 'GRC360 Assistant'
       },
       body: JSON.stringify(requestBody),
     });
 
-    console.log('🔍 DeepSeek API response status:', apiResponse.status);
+    console.log('🔍 OpenRouter API response status:', apiResponse.status);
 
     if (!apiResponse.ok) {
       const errorText = await apiResponse.text();
-      console.error('❌ DeepSeek API error:', errorText);
+      console.error('❌ OpenRouter API error:', errorText);
       
-      let errorMessage = `DeepSeek API error (${apiResponse.status})`;
+      let errorMessage = `OpenRouter API error (${apiResponse.status})`;
       try {
         const errorData = JSON.parse(errorText);
         errorMessage = errorData.error?.message || errorMessage;
       } catch (e) {
         errorMessage = errorText || errorMessage;
+      }
+      
+      // If one model fails, try the next one in the list
+      if (apiResponse.status === 402 || errorMessage.includes('credits')) {
+        const currentIndex = FREE_MODELS.indexOf(SELECTED_MODEL);
+        if (currentIndex < FREE_MODELS.length - 1) {
+          console.log(`🔄 Switching from ${SELECTED_MODEL} to ${FREE_MODELS[currentIndex + 1]}`);
+          SELECTED_MODEL = FREE_MODELS[currentIndex + 1];
+          // You might want to implement retry logic here
+        }
       }
       
       return res.status(apiResponse.status).json({ 
@@ -192,7 +214,7 @@ app.post("/api/chat", async (req, res) => {
     const decoder = new TextDecoder();
     let fullResponseContent = '';
 
-    console.log('🔄 Starting to stream response from DeepSeek API...');
+    console.log('🔄 Starting to stream response from OpenRouter API...');
 
     while (true) {
       const { done, value } = await reader.read();
@@ -254,5 +276,6 @@ app.listen(PORT, (error) => {
   }
   console.log(`✅ GRC360 Server running on http://localhost:${PORT}`);
   console.log(`🤖 AI Chat endpoint available at /api/chat`);
-  console.log(`🔑 Using DeepSeek model: ${DEEPSEEK_MODEL}`);
+  console.log(`🔑 Using FREE model: ${SELECTED_MODEL}`);
+  console.log(`🆓 Available free models: ${FREE_MODELS.join(', ')}`);
 });
