@@ -99,7 +99,7 @@ const AIChatBot = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-28 right-8 z-50 w-96 h-[600px] bg-gray-200 dark:bg-gray-800 rounded-2xl shadow-2xl border-2 border-gray-400 dark:border-gray-700/40 flex flex-col backdrop-blur-lg bg-gradient-to-r from-white/20 via-transparent to-white/20 dark:from-black/20 dark:via-transparent dark:to-black/20">
+        <div className="fixed  bottom-28 right-8 z-250 w-96 h-[60%] bg-gray-200 dark:bg-gray-800 rounded-2xl shadow-2xl border-2 border-gray-400 dark:border-gray-700/40 flex flex-col backdrop-blur-lg bg-gradient-to-r from-white/20 via-transparent to-white/20 dark:from-black/20 dark:via-transparent dark:to-black/20 ">
           {/* Header */}
           <div className="flex items-center justify-between p-4 bg-gray-300/80 dark:bg-gray-700/80 rounded-t-2xl border-b border-gray-300/40 dark:border-gray-700/40">
             <div className="flex items-center space-x-3">
