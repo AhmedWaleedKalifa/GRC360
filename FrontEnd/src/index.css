@@ -407,7 +407,7 @@ main {
 
 /* login style */
 .login {
-  @apply flex items-center justify-center bg-gradient-to-b from-gray-100 to-gray-200 w-full h-screen dark:from-gray-900 dark:to-gray-800;
+  @apply flex  justify-center bg-gradient-to-b from-gray-100 to-gray-200 w-full h-screen dark:from-gray-900 dark:to-gray-800;
 }
 
 .loginContainer {
