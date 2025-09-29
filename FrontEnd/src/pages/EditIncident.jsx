@@ -195,7 +195,7 @@ function EditIncident() {
                             id: "title", 
                             type: "text", 
                             isInput: true, 
-                            label: "betweenTitle:", 
+                            label: "Title:", 
                             initialValue: item.title, 
                             required: true,
                             Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
