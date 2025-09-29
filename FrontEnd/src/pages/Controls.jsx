@@ -208,7 +208,7 @@ function Controls() {
                     ["#", "Name", "Status", "Owner", "Last Reviewed", "Reference", "Notes", "Edit"] :
                     ["#", "Name", "Status", "Owner", "Last Reviewed", "Reference", "Notes"]
                 }
-                sizes={permissions.isAdmin ? [1, 12, 5, 6, 5, 5, 12, 1.8] : [1, 12, 5, 6, 5, 5, 12]}
+                sizes={permissions.isAdmin ? [1, 12, 7, 6, 5, 5, 12, 1.8] : [1, 12, 5, 6, 5, 5, 12]}
                 colors={[]}
                 ids={ids}
                 fields={fields}

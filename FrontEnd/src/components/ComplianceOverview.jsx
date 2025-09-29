@@ -127,15 +127,19 @@ const ComplianceOverview = ({ frameworks, requirements, controls, onViewComplian
     <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-2xl shadow-xl overflow-clip mx-2">
       {/* Header and Stats */}
       <div className='p-6 flex flex-col bg-gray-200 dark:bg-gray-800 w-full capitalize font-bold text-3xl gap-6'>
-        <div className="flex items-center">
-          <FontAwesomeIcon icon={faShield} className='h1Icon mr-3 text-[#ED56F1]' />
-          <span className="text-gray-900 dark:text-gray-100">Compliance Overview</span>
-        </div>
+        {/* Header and Progress in same line */}
+          <div className="flex items-center">
+            <FontAwesomeIcon icon={faShield} className='h1Icon mr-3 text-[#ED56F1]' />
+            <span className="text-gray-900 dark:text-gray-100">Compliance Overview</span>
+          </div>
+          
+          {/* Progress bar taking majority of width */}
+           
         
         {/* New Compliance Status Cards */}
         <div className="cardsContainer">
-        
           <Card 
+          maxSize="33%"
             title="Compliant" 
             value={compliantControls.length} 
             model={1} 
@@ -144,6 +148,8 @@ const ComplianceOverview = ({ frameworks, requirements, controls, onViewComplian
             subtitle="Fully compliant"
           />
           <Card 
+                    maxSize="33%"
+
             title="Partially Compliant" 
             value={partiallyCompliantControls.length} 
             model={2} 
@@ -152,6 +158,8 @@ const ComplianceOverview = ({ frameworks, requirements, controls, onViewComplian
             subtitle="Needs improvement"
           />
           <Card 
+                    maxSize="33%"
+
             title="Not Compliant" 
             value={notCompliantControls.length} 
             model={2} 
@@ -159,17 +167,13 @@ const ComplianceOverview = ({ frameworks, requirements, controls, onViewComplian
             iconColor="#ef4444"
             subtitle="Requires attention"
           />
-          <div className='h-30 w-80 min-w-74'> <Progress 
-  title="Compliance Rate" 
-  footer="controls compliant" 
-  num={compliantControls.length} 
-  all={totalControls} 
-/></div>
         </div>
-
-       
-
-      
+        <Progress 
+              title="Compliance Rate" 
+              footer="controls compliant" 
+              num={compliantControls.length} 
+              all={totalControls} 
+            />
         <div className='flex'>
           <button className='button buttonStyle my-2' onClick={onViewCompliance}>
             <FontAwesomeIcon icon={faCheckCircle} className='mr-2' />
@@ -226,15 +230,6 @@ const ComplianceOverview = ({ frameworks, requirements, controls, onViewComplian
                   name="Not Compliant" 
                   strokeWidth={3} 
                   dot={{ fill: '#ef4444', r: 4 }} 
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="Compliance Rate" 
-                  stroke="#3b82f6" 
-                  name="Compliance Rate %" 
-                  strokeWidth={2} 
-                  strokeDasharray="5 5"
-                  dot={{ fill: '#3b82f6', r: 3 }} 
                 />
               </LineChart>
             </ResponsiveContainer>
