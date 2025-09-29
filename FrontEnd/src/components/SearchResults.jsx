@@ -1,7 +1,7 @@
 // components/SearchResults.jsx
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { risksAPI, governanceItemsAPI, incidentsAPI, threatsAPI, complianceAPI, configurationsAPI, auditLogsAPI, globalSearchAPI } from '../services/api';
+import { risksAPI, governanceItemsAPI, incidentsAPI, threatsAPI, complianceAPI, configurationsAPI, auditLogsAPI, globalSearchAPI, usersAPI } from '../services/api';
 import Field from './Field';
 import CardSlider from './CardSlider';
 
@@ -28,15 +28,35 @@ const formatDetails = (details) => {
 
 function SearchResults({ activeModule, searchQuery, onClose }) {
   const [results, setResults] = useState([]);
+  const [users, setUsers] = useState([]); // Add users state
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchType, setSearchType] = useState('single'); // 'single' or 'global'
   const navigate = useNavigate();
 
+  // Function to get user name by ID
+  const getUserNameById = (userId) => {
+    if (!userId) return "Unassigned";
+    const user = users.find(u => u.user_id === userId || u.id === userId);
+    return user ? user.user_name || user.name : `User ${userId}`;
+  };
+
+  // Fetch users from API
+  const fetchUsers = async () => {
+    try {
+      const usersData = await usersAPI.getAll();
+      setUsers(usersData);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+    }
+  };
+
   useEffect(() => {
     if (searchQuery.trim()) {
       performSearch();
     }
+    // Fetch users when component mounts
+    fetchUsers();
   }, [searchQuery, activeModule]);
 
   const performSearch = async () => {
@@ -194,7 +214,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
       if (item._type === 'logs') {
         return `${item.action} on ${item.entity}`;
       }
-      return item.title || item.name || item.user_name || item.governance_name || item.framework_name || 'Unknown Item';
+      return item.title || item.name || item.user_name || item.governance_name || item.control_name || 'Unknown Item';
     }
     
     switch (activeModule) {
@@ -229,15 +249,13 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
     }
     
     return results.map((item, index) => {
-      const itemId = getItemId(item);
       
       switch (activeModule) {
         case 'Risks':
           return [
-            { type: "t", text: itemId || index + 1 },
             { type: "t", text: item.title || 'No Title' },
             { type: "t", text: item.category || 'Uncategorized' },
-            { type: "t", text: item.owner || 'Unknown' },
+            { type: "t", text: getUserNameById(item.owner) || 'Unknown' }, // Use owner name instead of ID
             { 
               type: "b", 
               text: item.status || 'Unknown',
@@ -247,8 +265,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
                 ? "#00ff0099" 
                 : "#3b82f699"
             },
-            { type: "t", text: item.likelihood || 'Unknown' },
-            { type: "t", text: item.impact || 'Unknown' },
+           
             { 
               type: "b", 
               text: item.severity || 'Unknown',
@@ -264,10 +281,9 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
         
         case 'Governance':
           return [
-            { type: "t", text: index + 1 },
             { type: "t", text: item.governance_name || 'No Name' },
             { type: "t", text: item.type || 'Unknown' },
-            { type: "t", text: item.owner || 'Unassigned' },
+            { type: "t", text: getUserNameById(item.owner) || 'Unassigned' }, // Use owner name instead of ID
             { 
               type: "b", 
               text: item.status || 'Unknown',
@@ -278,23 +294,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
                 : "#3b82f699"
             },
             { type: "t", text: item.last_reviewed ? new Date(item.last_reviewed).toLocaleDateString() : "Never" },
-            { type: "t", text: item.effective_date ? new Date(item.effective_date).toLocaleDateString() : "N/A" },
-            { type: "t", text: item.expiry_date ? new Date(item.expiry_date).toLocaleDateString() : "N/A" },
-            { type: "t", text: item.next_review ? new Date(item.next_review).toLocaleDateString() : "N/A" },
-            { type: "t", text: "-" }, // Version
-            { type: "t", text: item.latest_change_summary || "No changes" },
-            { 
-              type: "b", 
-              text: item.approval_status || 'Unknown',
-              color: item.approval_status === "approved" 
-                ? "#00ff0099" 
-                : item.approval_status === "pending"
-                ? "#FFA72699"
-                : "#ff000099"
-            },
-            { type: "t", text: item.approver || "N/A" },
-            { type: "t", text: "N/A" }, // Confidentiality
-            { type: "t", text: item.attachment ? "Has attachment" : "No file" },
+           
             { type: "b", text: "View", color: "#3b82f6" }
           ];
         
@@ -329,8 +329,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
                 : "#00ff0099"
             },
             { type: "t", text: item.reported_at ? new Date(item.reported_at).toLocaleDateString() : 'Unknown' },
-            { type: "t", text: item.owner || 'Unassigned' },
-            { type: "t", text: item.description || 'No description' },
+            { type: "t", text: getUserNameById(item.owner) || 'Unassigned' }, // Use owner name instead of ID
             { type: "b", text: "View", color: "#3b82f6" }
           ];
         
@@ -360,7 +359,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
         case 'Logs':
           return [
             { type: "t", text: formatTimestamp(item.timestamp) },
-            { type: "t", text: item.user_id || 'System' },
+            { type: "t", text: getUserNameById(item.user_id) || 'System' }, // Use user name instead of ID
             { 
               type: "b", 
               text: item.action || 'Unknown',
@@ -394,13 +393,13 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
     
     switch (activeModule) {
       case 'Risks':
-        return ["ID", "Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "Actions"];
+        return [ "Title", "Category", "Owner", "Status",  "Severity", "Last Reviewed", "Actions"];
       case 'Governance':
-        return ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Approver", "Confidentiality", "Attachment", "Actions"];
+        return ["Name", "Type", "Owner", "Status", "Last Reviewed", "Actions"];
       case 'Compliance':
         return ["Framework", "# Requirements", "# Controls", "Actions"];
       case 'Incidents':
-        return ["Title", "Category", "Status", "Severity", "Reported At", "Owner", "Description", "Actions"];
+        return ["Title", "Category", "Status", "Severity", "Reported At", "Owner","Actions"];
       case 'Threats':
         return ["Description", "Severity", "Time", "Actions"];
       case 'Configurations':
@@ -415,24 +414,24 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
   // Function to get sizes based on search type
   const getSizes = () => {
     if (searchType === 'global') {
-      return [15, 25, 45, 15];
+      return [5, 14, 15, 3];
     }
     
     switch (activeModule) {
       case 'Risks':
-        return [2, 8, 8, 8, 8, 8, 8, 8, 8, 10];
+        return [ 12, 5, 7, 4, 4, 4, 3];
       case 'Governance':
-        return [1, 4, 3, 3, 4, 4, 4, 4, 4, 3, 7, 4, 4, 4, 4, 10];
+        return [10, 3,6, 5, 4, 3];
       case 'Compliance':
-        return [1, 1, 1, 1];
+        return [3, 3, 3, 1];
       case 'Incidents':
-        return [6, 2, 4, 3, 3, 3, 7, 10];
+        return [12, 5, 6, 5, 5, 8,4];
       case 'Threats':
-        return [4, 1, 2, 1];
+        return [16, 3, 3, 2];
       case 'Configurations':
-        return [4, 4, 2];
+        return [5, 5, 1];
       case 'Logs':
-        return [3, 2, 2, 2, 2, 4, 2];
+        return [3, 2, 2, 2, 2, 6, 2];
       default:
         return [3, 15, 12, 10, 5];
     }
@@ -467,6 +466,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
         titles={getTitles()}
         sizes={getSizes()}
         ids={ids}
+        height="300px"
         fields={fieldsData.map((field, index) => 
           field.map((element) => {
             if (element.type === "b" && element.text === "View") {
@@ -479,18 +479,12 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
           })
         )}
         colors={[]}
-        caption={{ 
-          text: searchType === 'global' 
-            ? `Global Search Results (${results.length} items)` 
-            : `${activeModule} Search Results`,
-          icon: "faSearch" 
-        }}
+       
         navigation={results.map((item, index) => ({
           start: index,
           end: index,
           path: `${getBaseNavigationPath(item)}`
         }))}
-        height={400}
       />
     );
   };
@@ -542,7 +536,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 flex  justify-center z-50 p-4">
       <div className="card cardStyle1 w-full max-w-4xl h-[600px] flex flex-col">
         <div className="cardSliderHeader rounded-t-2xl rounded-b-none shrink-0">
           <div className="cardSliderTitles cardSliderTitlesCaptions">
@@ -591,7 +585,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
             {!loading && !error && (
               <div className="h-full flex flex-col">
                 <div className="flex-1 p-4 overflow-y-auto search-results-scrollbar">
-                  {results.length > 3 ? renderResultsWithCardSlider() : renderSimpleResults()}
+                  {renderResultsWithCardSlider()}
                 </div>
               </div>
             )}
