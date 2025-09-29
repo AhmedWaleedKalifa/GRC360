@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouse, faShield, faTriangleExclamation, faCircleExclamation, faGavel, faGear, faChartSimple, faFileLines, faRightFromBracket, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { faHouse, faShield, faTriangleExclamation, faCircleExclamation, faGavel, faGear, faChartSimple, faFileLines, faRightFromBracket, faChevronRight, faChevronLeft, faLightbulb } from '@fortawesome/free-solid-svg-icons'
 import { Link, useLocation } from "react-router-dom"
 import { useEffect } from 'react';
 import { useUser } from '../hooks/useUser';
@@ -37,6 +37,9 @@ const SideBar = ({ open, setOpen, setActive, active }) => {
     } else if (location.pathname.startsWith("/app/configurations")) {
       setActive("Configurations");
       localStorage.setItem("active", "Configurations");
+    } else if (location.pathname.startsWith("/app/awareness")) {
+      setActive("Awareness");
+      localStorage.setItem("active", "Awareness");
     } else if (location.pathname === "/app/dashboard") {
       setActive("Main");
       localStorage.setItem("active", "Main");
@@ -123,7 +126,27 @@ const SideBar = ({ open, setOpen, setActive, active }) => {
               {!open == true ? <span>Dashboard</span> : <span></span>}
             </li>
           </Link>
-          
+          <Link 
+            to="/app/awareness"
+            title='Awareness'
+            className="link"
+            style={
+              active == "Awareness"
+                ? {
+                    backgroundImage: `linear-gradient(
+                      to right,
+                        #26A7F680, 
+                       #00000000
+                    )`,
+                  }
+                : {}
+            }
+          >
+            <li className="sidebarLi">
+              <FontAwesomeIcon icon={faLightbulb} className="sidebarClosedListItem sidebarLi" />
+              {!open == true ? <span>Awareness</span> : <span></span>}
+            </li>
+          </Link>
           <Link 
             to="/app/governance"
             title='Governance'
@@ -233,6 +256,8 @@ const SideBar = ({ open, setOpen, setActive, active }) => {
               {!open == true ? <span>Threats</span> : <span></span>}
             </li>
           </Link>
+
+         
           
           {/* Show Logs tab only for admin users */}
           {permissions.isAdmin && (

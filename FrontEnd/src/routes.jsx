@@ -1,3 +1,4 @@
+// routes.js
 import ErrorPage from "./pages/ErrorPage";
 import Dashboard from "./pages/Dashboard";
 import Main from "./pages/Main";
@@ -23,12 +24,14 @@ import EditGovernance from "./pages/EditGovernance";
 import Requirements from "./pages/Requirements";
 import Controls from "./pages/Controls";
 import EditControl from "./pages/EditControl";
+import Awareness from "./pages/Awareness";
+import TrainingModule from "./pages/TrainingModule"; // NEW
+
 const routes = [
   {
     path: "/",
     element: <Login />,
     errorElement: <ErrorPage />,
-
   },
  
   {
@@ -40,7 +43,8 @@ const routes = [
       { path: "requirements/:id?", element: <Requirements /> },
       { path: "controls/:id?", element: <Controls /> },
       { path: "editControl/:id?", element: <EditControl /> },
-
+      { path: "awareness/:id?", element: <Awareness /> },
+      { path: "training/:id", element: <TrainingModule /> }, // NEW TRAINING ROUTE
       
       { path: "configurations/:id?", element: <Configurations /> },
       { path: "governance/:id?", element: <Governance /> },
@@ -54,7 +58,6 @@ const routes = [
       {path:"addRisk",element:<AddRisk/>},
       {path:"addGovernance",element:<AddGovernance/>},
       {path:"editGovernance/:id?",element:<EditGovernance/>},
-
       {path:"addIncident",element:<AddIncident/>},
       { path: "threats/:id?", element: <Threats /> },
       { path: "*", element: <ErrorPage /> }
