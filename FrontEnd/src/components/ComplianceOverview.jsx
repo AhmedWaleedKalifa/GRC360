@@ -159,7 +159,7 @@ const ComplianceOverview = ({ frameworks, requirements, controls, onViewComplian
             iconColor="#ef4444"
             subtitle="Requires attention"
           />
-          <div className='h-30'> <Progress 
+          <div className='h-30 w-80 min-w-74'> <Progress 
   title="Compliance Rate" 
   footer="controls compliant" 
   num={compliantControls.length} 
