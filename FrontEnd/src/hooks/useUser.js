@@ -7,7 +7,7 @@ export const useUser = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  console.log("test")
   // Fetch all users from database
   const fetchUsers = useCallback(async () => {
     try {
