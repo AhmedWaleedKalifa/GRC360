@@ -296,15 +296,16 @@ const TrainingModule = () => {
                 </div>
               ) : (
                 <div className="aspect-w-16 aspect-h-9">
-                  <iframe
-                    src={module.videoUrl}
-                    title={currentStepData.title}
-                    className="w-full h-64 rounded-lg"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    onLoad={handleVideoWatched}
-                    onError={handleVideoError}
-                  ></iframe>
+                 <iframe
+  src={module.videoUrl}
+  title={currentStepData.title}
+  className="w-full h-64 rounded-lg"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+  onLoad={handleVideoWatched}
+  onError={handleVideoError}
+  referrerPolicy="strict-origin-when-cross-origin" // Add this line
+></iframe>
                 </div>
               )}
             </div>
@@ -704,8 +705,8 @@ const trainingModules = {
   1: {
     id: 1,
     title: "Phishing Awareness",
-    videoUrl: "https://www.youtube.com/embed/Y7ix6RITXM0",
-    duration: "25 min",
+    videoUrl: "https://www.youtube.com/embed/jcjJzVnZkTo?si=Evrfk3cxzzbXzXKO",
+            duration: "25 min",
     category: "Security",
     steps: [
       {
@@ -817,7 +818,7 @@ const trainingModules = {
   2: {
     id: 2,
     title: "Password Security",
-    videoUrl: "https://www.youtube.com/embed/eMOe-PLBy1k",
+    videoUrl: "https://www.youtube.com/embed/1jfm2E_wvBo?si=9d6ega9dLwq0vUnn",
     duration: "7 min",
     category: "Security",
     steps: [
