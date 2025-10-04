@@ -112,6 +112,8 @@ const incidentsRouter = require("./routes/incidentsRouter");
 const risksRouter = require("./routes/risksRouter");
 const threatsRouter = require("./routes/threatsRouter");
 const usersRouter = require("./routes/usersRouter");
+const awarenessRouter = require('./routes/awarenessRouter');
+
 const errorHandler = require("./middleware/errorHandler");
 
 // Routes
@@ -266,7 +268,7 @@ app.use("/incidents", incidentsRouter);
 app.use("/risks", risksRouter);
 app.use("/threats", threatsRouter);
 app.use("/users", usersRouter);
-
+app.use('/awareness', awarenessRouter); // This line is crucial
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3003;

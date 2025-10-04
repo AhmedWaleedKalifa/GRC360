@@ -1,4 +1,4 @@
-// pages/TrainingModule.jsx
+// pages/TrainingModule.jsx - COMPLETE UPDATED VERSION
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,113 +16,68 @@ import {
   faPlayCircle
 } from '@fortawesome/free-solid-svg-icons';
 import Progress from '../components/Progress';
+import { awarenessAPI } from '../services/api';
+import { useUser } from '../hooks/useUser';
 
 // Quiz Timer Component
 const QuizTimer = ({ timeLimit, onTimeUp, isActive }) => {
-  const [timeRemaining, setTimeRemaining] = useState(timeLimit);
-  const [isPaused, setIsPaused] = useState(false);
-  const timerRef = useRef(null);
-
+  const [timeLeft, setTimeLeft] = useState(timeLimit);
+  
   useEffect(() => {
-    if (isActive && !isPaused && timeRemaining > 0) {
-      timerRef.current = setInterval(() => {
-        setTimeRemaining(prev => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current);
-            onTimeUp?.();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-      clearInterval(timerRef.current);
+    if (!isActive) return;
+    
+    if (timeLeft <= 0) {
+      onTimeUp();
+      return;
     }
-
-    return () => clearInterval(timerRef.current);
-  }, [isActive, isPaused, timeRemaining, onTimeUp]);
-
-  useEffect(() => {
-    if (isActive) {
-      setTimeRemaining(timeLimit);
-      setIsPaused(false);
-    }
-  }, [isActive, timeLimit]);
-
+    
+    const timerId = setInterval(() => {
+      setTimeLeft(time => {
+        if (time <= 1) {
+          clearInterval(timerId);
+          onTimeUp();
+          return 0;
+        }
+        return time - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(timerId);
+  }, [timeLeft, isActive, onTimeUp]);
+  
   const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
+    const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
   };
-
-  const getProgressPercentage = () => {
-    return ((timeLimit - timeRemaining) / timeLimit) * 100;
-  };
-
-  const getTimeColor = () => {
-    const percentage = (timeRemaining / timeLimit) * 100;
-    if (percentage <= 20) return 'text-red-600';
-    if (percentage <= 40) return 'text-orange-500';
-    if (percentage <= 60) return 'text-yellow-500';
-    return 'text-green-600';
-  };
-
-  const getProgressColor = () => {
-    const percentage = getProgressPercentage();
-    if (percentage >= 80) return 'bg-red-500';
-    if (percentage >= 60) return 'bg-orange-400';
-    if (percentage >= 40) return 'bg-yellow-400';
-    return 'bg-green-500';
-  };
-
+  
+  const progress = (timeLeft / timeLimit) * 100;
+  const isWarning = timeLeft < 60; // Less than 1 minute
+  
   return (
-    <div className="flex items-center gap-4 bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-      <div className="flex items-center gap-3">
-        <FontAwesomeIcon 
-          icon={faClock} 
-          className={`text-2xl ${getTimeColor()}`} 
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center">
+          <FontAwesomeIcon 
+            icon={isWarning ? faExclamationTriangle : faClock} 
+            className={`mr-2 ${isWarning ? 'text-red-500' : 'text-blue-500'}`} 
+          />
+          <span className="font-semibold text-gray-700 dark:text-gray-300">
+            Time Remaining: {formatTime(timeLeft)}
+          </span>
+        </div>
+        <div className="text-sm text-gray-500 dark:text-gray-400">
+          {isWarning ? 'Hurry up!' : 'Keep going!'}
+        </div>
+      </div>
+      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+        <div 
+          className={`h-2 rounded-full transition-all duration-1000 ${
+            isWarning ? 'bg-red-500' : 'bg-blue-500'
+          }`}
+          style={{ width: `${progress}%` }}
         />
-        <div className="text-center">
-          <div className={`text-2xl font-bold ${getTimeColor()} font-mono`}>
-            {formatTime(timeRemaining)}
-          </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
-            Time Remaining
-          </div>
-        </div>
       </div>
-
-      {/* Progress Bar */}
-      <div className="flex-1">
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-          <div 
-            className={`h-3 rounded-full transition-all duration-1000 ${getProgressColor()}`}
-            style={{ width: `${getProgressPercentage()}%` }}
-          ></div>
-        </div>
-        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-          <span>0:00</span>
-          <span>{formatTime(timeLimit)}</span>
-        </div>
-      </div>
-
-      {/* Pause/Resume Button */}
-      <button
-        onClick={() => setIsPaused(!isPaused)}
-        disabled={!isActive || timeRemaining === 0}
-        className="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      >
-        <FontAwesomeIcon icon={isPaused ? faPlayCircle : faPause} />
-        <span>{isPaused ? 'Resume' : 'Pause'}</span>
-      </button>
-
-      {/* Time Warning */}
-      {timeRemaining <= 60 && timeRemaining > 0 && (
-        <div className="flex items-center gap-2 px-3 py-2 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg">
-          <FontAwesomeIcon icon={faExclamationTriangle} />
-          <span className="font-semibold">Hurry! {timeRemaining}s left</span>
-        </div>
-      )}
     </div>
   );
 };
@@ -130,6 +85,9 @@ const QuizTimer = ({ timeLimit, onTimeUp, isActive }) => {
 const TrainingModule = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { currentUser } = useUser();
+  
+  const [module, setModule] = useState(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
   const [score, setScore] = useState(0);
@@ -140,24 +98,63 @@ const TrainingModule = () => {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [timeUp, setTimeUp] = useState(false);
-  
-  const module = trainingModules[id];
-  const currentStepData = module?.steps[currentStep];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const currentStepData = module?.steps?.[currentStep];
 
   // Quiz time limits in seconds
   const QUIZ_TIME_LIMITS = {
     1: 900,  // 15 minutes for Phishing
-    2: 720,  // 12 minutes for Password Security
+    2: 720,  // 12 minutes for Password Security  
     3: 900,  // 15 minutes for Data Protection
     4: 600,  // 10 minutes for Ransomware
     5: 900   // 15 minutes for Remote Work
   };
 
+  // Load module data from backend
   useEffect(() => {
-    if (!module) {
-      navigate('/app/awareness');
+    loadModuleData();
+  }, [id]);
+
+  const loadModuleData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const moduleData = await awarenessAPI.getTrainingModuleById(id);
+      
+      if (!moduleData) {
+        throw new Error('Module not found');
+      }
+      
+      setModule(moduleData);
+      
+      // Update user progress to 'in_progress' if not started
+      if (currentUser?.user_id) {
+        try {
+          const userProgress = await awarenessAPI.getUserProgress(currentUser.user_id);
+          const currentModuleProgress = userProgress.find(p => p.module_id === parseInt(id));
+          
+          if (!currentModuleProgress || currentModuleProgress.status === 'not_started') {
+            await awarenessAPI.updateUserProgress(currentUser.user_id, id, {
+              status: 'in_progress',
+              progress_percentage: 0,
+              time_spent: 0
+            });
+          }
+        } catch (progressError) {
+          console.error('Failed to update user progress:', progressError);
+        }
+      }
+      
+    } catch (err) {
+      console.error('Failed to load module:', err);
+      setError('Failed to load training module. Please try again.');
+    } finally {
+      setLoading(false);
     }
-  }, [module, navigate]);
+  };
 
   const handleTimeUp = () => {
     setTimeUp(true);
@@ -185,11 +182,11 @@ const TrainingModule = () => {
   };
 
   const calculateScore = () => {
-    if (currentStepData.type !== 'quiz') return 0;
+    if (currentStepData?.step_type !== 'quiz') return 0;
     
     let correct = 0;
     currentStepData.questions.forEach(question => {
-      if (userAnswers[question.id] === question.correctAnswer) {
+      if (userAnswers[question.question_id] === question.correct_answer) {
         correct++;
       }
     });
@@ -204,25 +201,58 @@ const TrainingModule = () => {
     setVideoError(true);
   };
 
-  const handleFinishQuiz = () => {
-    setQuizCompleted(true);
+  const handleFinishQuiz = async () => {
     const finalScore = calculateScore();
+    setQuizCompleted(true);
     setScore(finalScore);
     setShowResults(true);
+
+    // Save quiz attempt to backend
+    if (currentUser?.user_id && module) {
+      try {
+        const answers = Object.keys(userAnswers).map(questionId => ({
+          question_id: parseInt(questionId),
+          selected_option: userAnswers[questionId],
+          is_correct: userAnswers[questionId] === currentStepData.questions.find(q => q.question_id === parseInt(questionId))?.correct_answer
+        }));
+
+        const correctAnswers = answers.filter(a => a.is_correct).length;
+        
+        await awarenessAPI.createQuizAttempt(currentUser.user_id, module.module_id, {
+          score: finalScore,
+          time_spent: 0, // You might want to track actual time
+          total_questions: currentStepData.questions.length,
+          correct_answers: correctAnswers,
+          answers: answers
+        });
+
+        // Update user progress
+        const status = finalScore >= 70 ? 'completed' : 'in_progress';
+        await awarenessAPI.updateUserProgress(currentUser.user_id, module.module_id, {
+          status: status,
+          progress_percentage: 100,
+          score: finalScore,
+          time_spent: 0 // Update with actual time if tracked
+        });
+
+      } catch (err) {
+        console.error('Failed to save quiz attempt:', err);
+      }
+    }
   };
 
   const handleNextStep = () => {
-    if (currentStepData.type === 'video' && !videoWatched && !videoError) {
+    if (currentStepData.step_type === 'video' && !videoWatched && !videoError) {
       alert('Please watch the video before proceeding to the quiz.');
       return;
     }
 
-    if (currentStepData.type === 'quiz' && !quizCompleted) {
+    if (currentStepData.step_type === 'quiz' && !quizCompleted) {
       alert('Please complete the quiz before proceeding.');
       return;
     }
 
-    if (currentStepData.type === 'quiz') {
+    if (currentStepData.step_type === 'quiz') {
       const finalScore = calculateScore();
       
       if (finalScore < 70) {
@@ -242,28 +272,13 @@ const TrainingModule = () => {
       setUserAnswers({});
     } else {
       setModuleCompleted(true);
-      updateModuleProgress();
     }
-  };
-
-  const updateModuleProgress = () => {
-    const progress = JSON.parse(localStorage.getItem('trainingProgress') || '{}');
-    progress[module.id] = {
-      completed: true,
-      score: score,
-      completedAt: new Date().toISOString(),
-      moduleTitle: module.title,
-      category: module.category
-    };
-    localStorage.setItem('trainingProgress', JSON.stringify(progress));
-    
-    window.dispatchEvent(new Event('trainingProgressUpdated'));
   };
 
   const renderStepContent = () => {
     if (!currentStepData) return null;
 
-    switch (currentStepData.type) {
+    switch (currentStepData.step_type) {
       case 'video':
         return (
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
@@ -296,16 +311,16 @@ const TrainingModule = () => {
                 </div>
               ) : (
                 <div className="aspect-w-16 aspect-h-9">
-                 <iframe
-  src={module.videoUrl}
-  title={currentStepData.title}
-  className="w-full h-64 rounded-lg"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  allowFullScreen
-  onLoad={handleVideoWatched}
-  onError={handleVideoError}
-  referrerPolicy="strict-origin-when-cross-origin" // Add this line
-></iframe>
+                  <iframe
+                    src={module.video_url}
+                    title={currentStepData.title}
+                    className="w-full h-64 rounded-lg"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    onLoad={handleVideoWatched}
+                    onError={handleVideoError}
+                    referrerPolicy="strict-origin-when-cross-origin"
+                  />
                 </div>
               )}
             </div>
@@ -340,11 +355,11 @@ const TrainingModule = () => {
         
         return (
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-            {/* Timer Section - Prominently Displayed */}
+            {/* Timer Section */}
             {quizStarted && !quizCompleted && (
               <div className="mb-6">
                 <QuizTimer 
-                  timeLimit={QUIZ_TIME_LIMITS[module.id]}
+                  timeLimit={QUIZ_TIME_LIMITS[module.module_id] || 600}
                   onTimeUp={handleTimeUp}
                   isActive={quizStarted && !quizCompleted}
                 />
@@ -372,88 +387,34 @@ const TrainingModule = () => {
               )}
             </div>
 
-            {timeUp && (
-              <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                <div className="flex items-center text-red-700 dark:text-red-300">
-                  <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" />
-                  <span className="font-semibold">Time's up! Your quiz has been automatically submitted.</span>
-                </div>
-              </div>
-            )}
-
-            {/* Quiz Progress */}
-            {!showResults && (
-              <div className="mb-6">
-                <Progress 
-                  title="Quiz Progress" 
-                  footer="questions completed" 
-                  num={Object.keys(userAnswers).length}
-                  all={currentStepData.questions.length}
-                />
-              </div>
-            )}
-
-            {/* Results Section */}
-            {showResults && (
-              <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <div className="text-center">
-                  <div className={`text-4xl font-bold mb-2 ${
-                    score >= 90 ? 'text-green-600' : 
-                    score >= 70 ? 'text-blue-600' : 'text-orange-500'
-                  }`}>
-                    {score}%
-                  </div>
-                  <div className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
-                    {score >= 90 ? 'Excellent! 🎉' : 
-                     score >= 70 ? 'Great Job! 👍' : 'Good Effort! 💪'}
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
-                    <div>
-                      <strong>Questions:</strong> {currentStepData.questions.length}
-                    </div>
-                    <div>
-                      <strong>Correct:</strong> {Math.round((score / 100) * currentStepData.questions.length)}/{currentStepData.questions.length}
-                    </div>
-                  </div>
-                  {score < 70 && (
-                    <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-900/20 rounded border border-orange-200 dark:border-orange-800">
-                      <p className="text-orange-700 dark:text-orange-300 text-sm">
-                        You need at least 70% to pass. Please review the material and try again.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Questions Section */}
+            {/* Quiz Questions */}
             {!showResults && (
               <div className="space-y-6 max-h-96 overflow-y-auto pr-2">
                 {currentStepData.questions.map((question, index) => (
-                  <div key={question.id} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <div key={question.question_id} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                     <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                      {index + 1}. {question.question}
+                      {index + 1}. {question.question_text}
                     </h4>
                     <div className="space-y-3">
                       {question.options.map((option, optionIndex) => (
                         <label
-                          key={optionIndex}
+                          key={option.option_id}
                           className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 ${
-                            userAnswers[question.id] === optionIndex
+                            userAnswers[question.question_id] === optionIndex
                               ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-sm'
                               : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                           } ${quizCompleted ? 'cursor-not-allowed opacity-80' : ''}`}
                         >
                           <input
                             type="radio"
-                            name={`question-${question.id}`}
+                            name={`question-${question.question_id}`}
                             value={optionIndex}
-                            checked={userAnswers[question.id] === optionIndex}
-                            onChange={() => handleAnswerSelect(question.id, optionIndex)}
+                            checked={userAnswers[question.question_id] === optionIndex}
+                            onChange={() => handleAnswerSelect(question.question_id, optionIndex)}
                             className="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500"
                             disabled={quizCompleted}
                           />
-                          <span className="text-gray-700 dark:text-gray-300 text-sm">{option}</span>
+                          <span className="text-gray-700 dark:text-gray-300 text-sm">{option.option_text}</span>
                         </label>
                       ))}
                     </div>
@@ -462,137 +423,146 @@ const TrainingModule = () => {
               </div>
             )}
 
-            {/* Quiz Review - Show correct answers after completion */}
+            {/* Results Section */}
             {showResults && (
-              <div className="mt-6">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                  Quiz Review
-                </h4>
-                <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                <div className="text-center mb-6">
+                  <h4 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                    {score >= 70 ? '🎉 Congratulations!' : '📚 Keep Learning!'}
+                  </h4>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    {score >= 70 
+                      ? `You passed with a score of ${score}%!` 
+                      : `Your score is ${score}%. You need 70% to pass.`}
+                  </p>
+                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-4">
+                    <div 
+                      className={`h-4 rounded-full ${
+                        score >= 70 ? 'bg-green-500' : 'bg-red-500'
+                      }`}
+                      style={{ width: `${score}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Question Review */}
+                <div className="space-y-4">
                   {currentStepData.questions.map((question, index) => {
-                    const userAnswer = userAnswers[question.id];
-                    const isCorrect = userAnswer === question.correctAnswer;
+                    const userAnswer = userAnswers[question.question_id];
+                    const isCorrect = userAnswer === question.correct_answer;
                     
                     return (
-                      <div key={question.id} className={`p-4 border rounded-lg ${
-                        isCorrect 
-                          ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20' 
-                          : 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20'
+                      <div key={question.question_id} className={`p-4 border rounded-lg ${
+                        isCorrect ? 'border-green-200 bg-green-50 dark:bg-green-900/20' : 'border-red-200 bg-red-50 dark:bg-red-900/20'
                       }`}>
-                        <div className="flex items-start justify-between mb-3">
-                          <h5 className="font-semibold text-gray-900 dark:text-gray-100">
-                            {index + 1}. {question.question}
-                          </h5>
-                          <span className={`px-2 py-1 text-xs rounded-full ${
-                            isCorrect 
-                              ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' 
-                              : 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'
+                        <div className="flex items-start mb-2">
+                          <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold mr-2 ${
+                            isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
                           }`}>
-                            {isCorrect ? 'Correct' : 'Incorrect'}
+                            {index + 1}
                           </span>
+                          <span className="font-medium">{question.question_text}</span>
                         </div>
-                        
-                        <div className="space-y-2">
-                          {question.options.map((option, optionIndex) => {
-                            let bgColor = 'bg-white dark:bg-gray-800';
-                            let borderColor = 'border-gray-300 dark:border-gray-600';
-                            let textColor = 'text-gray-700 dark:text-gray-300';
-                            
-                            if (optionIndex === question.correctAnswer) {
-                              bgColor = 'bg-green-100 dark:bg-green-900/30';
-                              borderColor = 'border-green-300 dark:border-green-700';
-                              textColor = 'text-green-800 dark:text-green-200';
-                            } else if (optionIndex === userAnswer && !isCorrect) {
-                              bgColor = 'bg-red-100 dark:bg-red-900/30';
-                              borderColor = 'border-red-300 dark:border-red-700';
-                              textColor = 'text-red-800 dark:text-red-200';
-                            }
-                            
-                            return (
-                              <div
-                                key={optionIndex}
-                                className={`p-3 border rounded-lg ${bgColor} ${borderColor} ${textColor}`}
-                              >
-                                <div className="flex items-center">
-                                  {optionIndex === question.correctAnswer && (
-                                    <FontAwesomeIcon 
-                                      icon={faCheckCircle} 
-                                      className="text-green-500 mr-2" 
-                                    />
-                                  )}
-                                  {optionIndex === userAnswer && !isCorrect && optionIndex !== question.correctAnswer && (
-                                    <FontAwesomeIcon 
-                                      icon={faExclamationTriangle} 
-                                      className="text-red-500 mr-2" 
-                                    />
-                                  )}
-                                  <span>{option}</span>
-                                  {optionIndex === question.correctAnswer && (
-                                    <span className="ml-auto text-xs font-semibold text-green-600 dark:text-green-400">
-                                      Correct Answer
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
+                        {!isCorrect && (
+                          <div className="ml-8 text-sm text-gray-600 dark:text-gray-400">
+                            <p>Correct answer: {question.options[question.correct_answer]?.option_text}</p>
+                            {question.explanation && (
+                              <p className="mt-1 italic">Explanation: {question.explanation}</p>
+                            )}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
                 </div>
+
+                {/* Navigation Buttons */}
+                <div className="flex justify-between mt-6">
+                  <button
+                    onClick={() => {
+                      setShowResults(false);
+                      setQuizCompleted(false);
+                      setUserAnswers({});
+                    }}
+                    className="button bg-gray-500 text-white hover:bg-gray-600"
+                    disabled={score >= 70}
+                  >
+                    Retry Quiz
+                  </button>
+                  
+                  <button
+                    onClick={handleNextStep}
+                    className="button buttonStyle"
+                    disabled={score < 70}
+                  >
+                    {currentStep < module.steps.length - 1 ? 'Next Step' : 'Complete Module'}
+                  </button>
+                </div>
               </div>
             )}
 
-            {/* Navigation Buttons */}
-            <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {!showResults ? (
-                  <>
-                    <div className="font-semibold">
-                      {allQuestionsAnswered ? 'All questions answered' : `${currentStepData.questions.length - Object.keys(userAnswers).length} questions remaining`}
-                    </div>
-                    <div>Minimum passing score: 70%</div>
-                  </>
-                ) : (
-                  <div className={`font-semibold ${score >= 70 ? 'text-green-600' : 'text-red-600'}`}>
-                    {score >= 70 ? 'Quiz Passed! 🎉' : 'Quiz Failed - Please try again'}
-                  </div>
-                )}
+            {/* Start Quiz Button (if not started) */}
+            {!quizStarted && !quizCompleted && (
+              <div className="text-center py-8">
+                <button
+                  onClick={startQuiz}
+                  className="button buttonStyle text-lg px-8 py-3"
+                >
+                  <FontAwesomeIcon icon={faPlay} className="mr-2" />
+                  Start Quiz
+                </button>
+                <p className="text-gray-500 dark:text-gray-400 mt-2">
+                  You'll have {Math.floor((QUIZ_TIME_LIMITS[module.module_id] || 600) / 60)} minutes to complete the quiz
+                </p>
               </div>
-              
-              {showResults ? (
-                <button
-                  onClick={handleNextStep}
-                  disabled={score < 70}
-                  className="button buttonStyle disabled:opacity-50 disabled:cursor-not-allowed px-6"
-                >
-                  {score >= 70 ? 'Continue' : 'Retry Quiz'}
-                </button>
-              ) : (
-                <button
-                  onClick={handleFinishQuiz}
-                  disabled={!allQuestionsAnswered}
-                  className="button buttonStyle disabled:opacity-50 disabled:cursor-not-allowed px-6"
-                >
-                  Submit Quiz
-                </button>
-              )}
-            </div>
+            )}
           </div>
         );
 
       default:
-        return null;
+        return (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+              {currentStepData.title}
+            </h3>
+            <div className="prose dark:prose-invert max-w-none">
+              {currentStepData.content && (
+                <div 
+                  className="text-gray-600 dark:text-gray-400"
+                  dangerouslySetInnerHTML={{ __html: currentStepData.content }}
+                />
+              )}
+            </div>
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={handleNextStep}
+                className="button buttonStyle"
+              >
+                {currentStep < module.steps.length - 1 ? 'Next' : 'Complete'}
+              </button>
+            </div>
+          </div>
+        );
     }
   };
 
-  if (!module) {
+  if (loading) {
+    return (
+      <div className="container flex items-center justify-center min-h-96">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading training module...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !module) {
     return (
       <div className="container flex items-center justify-center min-h-96">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            Training Module Not Found
+            {error || 'Training Module Not Found'}
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             The requested training module doesn't exist or has been moved.
@@ -608,51 +578,48 @@ const TrainingModule = () => {
     );
   }
 
+  // Completion Screen
   if (moduleCompleted) {
     return (
-      <div className="container flex items-center justify-center min-h-96">
-        <div className="text-center bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg max-w-md w-full">
-          <FontAwesomeIcon 
-            icon={faCheckCircle} 
-            className="text-6xl text-green-500 mb-4" 
-          />
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            Congratulations!
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            You've successfully completed <strong>{module.title}</strong>
+      <div className="container">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg text-center">
+          <div className="text-6xl mb-6">🎉</div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+            Module Completed!
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-6">
+            Congratulations on completing "{module.title}"
           </p>
-          <div className={`text-3xl font-bold mb-2 ${score >= 90 ? 'text-green-600' : score >= 70 ? 'text-blue-600' : 'text-orange-600'}`}>
-            Final Score: {score}%
+          <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-6 inline-block mb-6">
+            <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+              Final Score: {score}%
+            </div>
           </div>
-          <div className="mb-6">
-            {score >= 90 && <span className="text-green-500 font-semibold">Excellent work! 🎉</span>}
-            {score >= 70 && score < 90 && <span className="text-blue-500 font-semibold">Great job! 👍</span>}
-            {score < 70 && <span className="text-orange-500 font-semibold">Good effort! Keep learning 💪</span>}
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => navigate('/app/awareness')}
+              className="button buttonStyle"
+            >
+              Back to Training Dashboard
+            </button>
+            <button
+              onClick={() => {
+                // Option to retake the module
+                setCurrentStep(0);
+                setModuleCompleted(false);
+                setVideoWatched(false);
+                setVideoError(false);
+                setQuizStarted(false);
+                setQuizCompleted(false);
+                setShowResults(false);
+                setTimeUp(false);
+                setUserAnswers({});
+              }}
+              className="button bg-gray-500 text-white hover:bg-gray-600"
+            >
+              Review Module Again
+            </button>
           </div>
-          <button 
-            onClick={() => navigate('/app/awareness')}
-            className="button buttonStyle w-full mb-3"
-          >
-            Back to Awareness Dashboard
-          </button>
-          <button 
-            onClick={() => {
-              setCurrentStep(0);
-              setModuleCompleted(false);
-              setUserAnswers({});
-              setScore(0);
-              setVideoWatched(false);
-              setVideoError(false);
-              setQuizStarted(false);
-              setQuizCompleted(false);
-              setShowResults(false);
-              setTimeUp(false);
-            }}
-            className="button bg-gray-500 text-white w-full hover:bg-gray-600"
-          >
-            Retake Module
-          </button>
         </div>
       </div>
     );
@@ -698,591 +665,6 @@ const TrainingModule = () => {
       {renderStepContent()}
     </div>
   );
-};
-
-// Training modules data with REAL video URLs
-const trainingModules = {
-  1: {
-    id: 1,
-    title: "Phishing Awareness",
-    videoUrl: "https://www.youtube.com/embed/jcjJzVnZkTo?si=Evrfk3cxzzbXzXKO",
-            duration: "25 min",
-    category: "Security",
-    steps: [
-      {
-        type: "video",
-        title: "Understanding Phishing Attacks",
-        content: "Learn how to identify and protect yourself from phishing emails, texts, and calls that try to steal your personal information.",
-        duration: "5:30"
-      },
-      {
-        type: "quiz",
-        title: "Phishing Knowledge Test",
-        questions: [
-          {
-            id: 1,
-            question: "What is a phishing email?",
-            options: [
-              "A legitimate email from your bank",
-              "A malicious attempt to steal sensitive information",
-              "A promotional newsletter"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 2,
-            question: "How can you verify a suspicious sender?",
-            options: [
-              "Click the links to check the website",
-              "Contact the organization directly using official channels",
-              "Reply to the email asking for verification"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 3,
-            question: "Should you click links in emails from unknown senders?",
-            options: ["Yes, if they look interesting", "No, never click unknown links", "Only if the email seems urgent"],
-            correctAnswer: 1
-          },
-          {
-            id: 4,
-            question: "What is spear-phishing?",
-            options: [
-              "Random spam sent to millions of people",
-              "Targeted phishing attack aimed at specific individuals",
-              "A type of fishing sport"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 5,
-            question: "How should you report phishing attempts?",
-            options: [
-              "Ignore and delete them",
-              "Forward to your IT security team and then delete",
-              "Keep them for reference"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 6,
-            question: "Which of these is a red flag in phishing emails?",
-            options: [
-              "Professional company logo",
-              "Urgent action required with threats",
-              "Clear contact information"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 7,
-            question: "Is it safe to open attachments from unknown emails?",
-            options: ["Yes, if they're PDF files", "No, never open unexpected attachments", "Only if your antivirus is updated"],
-            correctAnswer: 1
-          },
-          {
-            id: 8,
-            question: "What should you do if you accidentally clicked a phishing link?",
-            options: [
-              "Nothing, it's probably fine",
-              "Immediately disconnect from internet and report it",
-              "Change your password later when convenient"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 9,
-            question: "What makes an email look suspicious?",
-            options: [
-              "Perfect grammar and spelling",
-              "Generic greetings like 'Dear Customer'",
-              "Official-looking email signatures"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 10,
-            question: "How often should you receive phishing awareness training?",
-            options: [
-              "Once when you start the job",
-              "Regularly throughout the year",
-              "Only after a security incident"
-            ],
-            correctAnswer: 1
-          }
-        ]
-      }
-    ]
-  },
-  2: {
-    id: 2,
-    title: "Password Security",
-    videoUrl: "https://www.youtube.com/embed/1jfm2E_wvBo?si=9d6ega9dLwq0vUnn",
-    duration: "7 min",
-    category: "Security",
-    steps: [
-      {
-        type: "video",
-        title: "Creating Strong Passwords",
-        content: "Learn the principles of creating strong, memorable passwords and why password security is crucial for protecting your accounts.",
-        duration: "6:15"
-      },
-      {
-        type: "quiz",
-        title: "Password Security Quiz",
-        questions: [
-          {
-            id: 1,
-            question: "What makes a password strong?",
-            options: [
-              "Using common words and dates",
-              "Length, complexity, and uniqueness",
-              "Writing it down somewhere safe"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 2,
-            question: "Should you reuse passwords across different accounts?",
-            options: ["Yes, it's easier to remember", "No, never reuse passwords", "Only for unimportant accounts"],
-            correctAnswer: 1
-          },
-          {
-            id: 3,
-            question: "What is multi-factor authentication?",
-            options: [
-              "Using multiple passwords",
-              "Two or more verification methods to prove your identity",
-              "Having backup email addresses"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 4,
-            question: "How often should you change important passwords?",
-            options: [
-              "Every week",
-              "Every 3-6 months or when compromised",
-              "Never change them"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 5,
-            question: "What is a password manager?",
-            options: [
-              "A notebook where you write passwords",
-              "Software that securely stores and generates passwords",
-              "A friend who remembers your passwords"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 6,
-            question: "Are passphrases more secure than complex passwords?",
-            options: [
-              "No, complex passwords are always better",
-              "Yes, they're longer and easier to remember",
-              "They are equally secure"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 7,
-            question: "Should you share passwords with IT support?",
-            options: [
-              "Yes, always when they ask",
-              "No, they should use temporary access methods",
-              "Only with senior IT staff"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 8,
-            question: "What indicates your password might be compromised?",
-            options: [
-              "You can't remember it",
-              "Unusual account activity or security alerts",
-              "The password is too old"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 9,
-            question: "Which of these is a weak password?",
-            options: [
-              "Blue42Sky!Running@",
-              "password123",
-              "Winter*Snowflake^99"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 10,
-            question: "Why is two-factor authentication important?",
-            options: [
-              "It makes logging in faster",
-              "It adds an extra layer of security",
-              "It's required by all websites"
-            ],
-            correctAnswer: 1
-          }
-        ]
-      }
-    ]
-  },
-  3: {
-    id: 3,
-    title: "Data Protection",
-    videoUrl: "https://www.youtube.com/embed/acijNEErf-c",
-    duration: "6 min",
-    category: "Compliance",
-    steps: [
-      {
-        type: "video",
-        title: "Data Classification and Handling",
-        content: "Understand how to properly classify, handle, and protect sensitive data according to company policies and regulations.",
-        duration: "7:45"
-      },
-      {
-        type: "quiz",
-        title: "Data Protection Quiz",
-        questions: [
-          {
-            id: 1,
-            question: "What is considered sensitive data?",
-            options: [
-              "Public company announcements",
-              "Personal information that could cause harm if exposed",
-              "General work instructions"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 2,
-            question: "How should confidential files be stored?",
-            options: [
-              "On your desktop for easy access",
-              "In encrypted, access-controlled locations",
-              "In personal cloud storage"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 3,
-            question: "Can you email customer data to external personal accounts?",
-            options: ["Yes, if it's urgent", "No, never", "Only with manager approval"],
-            correctAnswer: 1
-          },
-          {
-            id: 4,
-            question: "What is data classification?",
-            options: [
-              "Deleting old files",
-              "Categorizing data based on sensitivity and importance",
-              "Organizing files by date"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 5,
-            question: "Why encrypt sensitive data?",
-            options: [
-              "To make files smaller",
-              "To protect against unauthorized access",
-              "It's required for all files"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 6,
-            question: "How should you handle customer information?",
-            options: [
-              "Share only when requested",
-              "Follow company data protection policies strictly",
-              "Use it for personal reference"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 7,
-            question: "What is a data retention policy?",
-            options: [
-              "How to backup data",
-              "Rules for how long different data types should be kept",
-              "Methods for data encryption"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 8,
-            question: "Who should access classified company data?",
-            options: [
-              "Anyone in the company",
-              "Only authorized personnel with a need-to-know",
-              "All department members"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 9,
-            question: "What does GDPR protect?",
-            options: [
-              "Company trade secrets",
-              "Personal data and privacy of EU citizens",
-              "Financial transaction records"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 10,
-            question: "What should you do if you accidentally share sensitive data?",
-            options: [
-              "Try to delete it quietly",
-              "Immediately report to your supervisor and IT security",
-              "Nothing, if no one notices"
-            ],
-            correctAnswer: 1
-          }
-        ]
-      }
-    ]
-  },
-  4: {
-    id: 4,
-    title: "Ransomware Defense",
-    videoUrl: "https://www.youtube.com/embed/e1j3XKwR4Uw",
-    duration: "10 min",
-    category: "Security",
-    steps: [
-      {
-        type: "video",
-        title: "Understanding Ransomware Threats",
-        content: "Learn how ransomware works, how to prevent infections, and what to do if your system is compromised.",
-        duration: "4:20"
-      },
-      {
-        type: "quiz",
-        title: "Ransomware Protection Quiz",
-        questions: [
-          {
-            id: 1,
-            question: "What is ransomware?",
-            options: [
-              "A type of computer virus that displays ads",
-              "Malicious software that encrypts files and demands payment",
-              "Software that slows down your computer"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 2,
-            question: "How does ransomware typically spread?",
-            options: [
-              "Through computer overheating",
-              "Via malicious email attachments and infected websites",
-              "By using old software"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 3,
-            question: "Should you pay the ransom if infected?",
-            options: [
-              "Yes, to get your files back quickly",
-              "No, never pay - contact IT security immediately",
-              "Only if the amount is small"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 4,
-            question: "What is the primary impact of ransomware?",
-            options: [
-              "Faster computer performance",
-              "Loss of access to files and systems",
-              "Improved security awareness"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 5,
-            question: "How can you protect against ransomware?",
-            options: [
-              "Regular backups and security updates",
-              "Using simple passwords",
-              "Opening all email attachments"
-            ],
-            correctAnswer: 0
-          },
-          {
-            id: 6,
-            question: "Can phishing emails lead to ransomware?",
-            options: ["Yes, frequently", "No, they're different threats", "Only in rare cases"],
-            correctAnswer: 0
-          },
-          {
-            id: 7,
-            question: "What should antivirus software do?",
-            options: [
-              "Only remove old files",
-              "Detect and prevent malware infections",
-              "Make internet faster"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 8,
-            question: "How should you update software safely?",
-            options: [
-              "Use automatic updates from official sources",
-              "Download from any website offering updates",
-              "Never update to avoid problems"
-            ],
-            correctAnswer: 0
-          },
-          {
-            id: 9,
-            question: "What is safe browsing behavior?",
-            options: [
-              "Clicking on pop-up ads",
-              "Avoiding suspicious websites and downloads",
-              "Using the same password everywhere"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 10,
-            question: "What's the first step if you suspect ransomware?",
-            options: [
-              "Continue working normally",
-              "Disconnect from network and report immediately",
-              "Restart the computer repeatedly"
-            ],
-            correctAnswer: 1
-          }
-        ]
-      }
-    ]
-  },
-  5: {
-    id: 5,
-    title: "Remote Work Security",
-    videoUrl: "https://www.youtube.com/embed/rNtMMhemHRk",
-    duration: "6 min",
-    category: "Operations",
-    steps: [
-      {
-        type: "video",
-        title: "Secure Remote Work Practices",
-        content: "Essential security practices for working remotely, including secure connections, device protection, and data handling.",
-        duration: "8:30"
-      },
-      {
-        type: "quiz",
-        title: "Remote Work Security Quiz",
-        questions: [
-          {
-            id: 1,
-            question: "What are secure Wi-Fi practices for remote work?",
-            options: [
-              "Use public Wi-Fi without protection",
-              "Use VPN and secure, encrypted networks",
-              "Share Wi-Fi passwords with neighbors"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 2,
-            question: "Should work devices be shared with family members?",
-            options: ["Yes, for convenience", "No, never share work devices", "Only for quick tasks"],
-            correctAnswer: 1
-          },
-          {
-            id: 3,
-            question: "How to secure video conferences?",
-            options: [
-              "Use passwords and waiting rooms",
-              "Post meeting links publicly",
-              "Record all meetings automatically"
-            ],
-            correctAnswer: 0
-          },
-          {
-            id: 4,
-            question: "What is a VPN and why is it important?",
-            options: [
-              "Virtual Private Network that encrypts internet traffic",
-              "A type of computer virus",
-              "Video recording software"
-            ],
-            correctAnswer: 0
-          },
-          {
-            id: 5,
-            question: "How should sensitive information be handled remotely?",
-            options: [
-              "Follow the same security policies as in office",
-              "Be more relaxed about security at home",
-              "Print documents for easier access"
-            ],
-            correctAnswer: 0
-          },
-          {
-            id: 6,
-            question: "Is it safe to print confidential documents at home?",
-            options: [
-              "Yes, home printers are always secure",
-              "No, unless absolutely necessary and properly secured",
-              "Always safe if no one else is home"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 7,
-            question: "How to recognize phishing attempts while remote working?",
-            options: [
-              "Ignore all emails",
-              "Same methods as in office: check sender, links, content",
-              "Assume all remote communications are safe"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 8,
-            question: "What is endpoint protection?",
-            options: [
-              "Security software for individual devices",
-              "Network firewall only",
-              "Password management"
-            ],
-            correctAnswer: 0
-          },
-          {
-            id: 9,
-            question: "Why lock your device when stepping away?",
-            options: [
-              "To save battery life",
-              "Prevent unauthorized physical access",
-              "It makes the computer run faster"
-            ],
-            correctAnswer: 1
-          },
-          {
-            id: 10,
-            question: "How to report security incidents when working remotely?",
-            options: [
-              "Wait until you're back in the office",
-              "Use secure channels to report immediately",
-              "Handle it yourself to avoid bothering IT"
-            ],
-            correctAnswer: 1
-          }
-        ]
-      }
-    ]
-  }
 };
 
 export default TrainingModule;

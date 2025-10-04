@@ -1,4 +1,4 @@
-// pages/Awareness.jsx
+// pages/Awareness.jsx - UPDATED VERSION WITH MODULE CREATION
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,11 +12,252 @@ import {
   faFilter,
   faPlus,
   faEye,
-  faCertificate
+  faCertificate,
+  faTimes
 } from '@fortawesome/free-solid-svg-icons';
 import Card from '../components/Card';
 import CardSlider from '../components/CardSlider';
 import { useUser } from '../hooks/useUser';
+import { awarenessAPI, mapTrainingStatus } from '../services/api';
+
+// Module Creation Modal Component
+const CreateModuleModal = ({ isOpen, onClose, onModuleCreated }) => {
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    duration: '',
+    category: 'Security',
+    video_url: '',
+    importance: 'Medium',
+    status: 'active',
+    sort_order: 0
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      // Validate required fields
+      if (!formData.title || !formData.description || !formData.duration) {
+        throw new Error('Title, description, and duration are required');
+      }
+
+      const newModule = await awarenessAPI.createTrainingModule(formData);
+      onModuleCreated(newModule);
+      onClose();
+      
+      // Reset form
+      setFormData({
+        title: '',
+        description: '',
+        duration: '',
+        category: 'Security',
+        video_url: '',
+        importance: 'Medium',
+        status: 'active',
+        sort_order: 0
+      });
+    } catch (err) {
+      setError(err.message || 'Failed to create training module');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Create New Training Module
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+          >
+            <FontAwesomeIcon icon={faTimes} size="lg" />
+          </button>
+        </div>
+
+        {error && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+            <p className="text-red-700 dark:text-red-300">{error}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Title */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Title *
+              </label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter module title"
+              />
+            </div>
+
+            {/* Description */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Description *
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                required
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter module description"
+              />
+            </div>
+
+            {/* Duration */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Duration *
+              </label>
+              <input
+                type="text"
+                name="duration"
+                value={formData.duration}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="e.g., 25 min"
+              />
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Category
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="Security">Security</option>
+                <option value="Compliance">Compliance</option>
+                <option value="Operations">Operations</option>
+                <option value="General">General</option>
+              </select>
+            </div>
+
+            {/* Importance */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Importance
+              </label>
+              <select
+                name="importance"
+                value={formData.importance}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+
+            {/* Status */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Status
+              </label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="draft">Draft</option>
+              </select>
+            </div>
+
+            {/* Sort Order */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Sort Order
+              </label>
+              <input
+                type="number"
+                name="sort_order"
+                value={formData.sort_order}
+                onChange={handleChange}
+                min="0"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Video URL */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Video URL (Optional)
+              </label>
+              <input
+                type="url"
+                name="video_url"
+                value={formData.video_url}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://www.youtube.com/embed/..."
+              />
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Use YouTube embed URL format: https://www.youtube.com/embed/VIDEO_ID
+              </p>
+            </div>
+          </div>
+
+          {/* Form Actions */}
+          <div className="flex justify-end gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              disabled={loading}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {loading ? 'Creating...' : 'Create Module'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 const Awareness = () => {
   const navigate = useNavigate();
@@ -24,196 +265,117 @@ const Awareness = () => {
   const [activeTab, setActiveTab] = useState('training');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
-  // Enhanced training modules with progress tracking
-  const [trainingModules, setTrainingModules] = useState([
-    {
-      id: 1,
-      title: "Phishing Awareness",
-      description: "Learn to identify and report phishing attempts in emails, texts, and calls",
-      duration: "25 min",
-      category: "Security",
-      status: "not-started",
-      progress: 0,
-      assignedDate: "2024-01-25",
-      dueDate: "2024-02-25",
-      videoUrl: "https://www.youtube.com/embed/Y7ix6RITXM0",
-      importance: "High"
-    },
-    {
-      id: 2,
-      title: "Password Security", 
-      description: "Creating and managing secure passwords and authentication methods",
-      duration: "20 min",
-      category: "Security",
-      status: "not-started", 
-      progress: 0,
-      assignedDate: "2024-01-28",
-      dueDate: "2024-02-28",
-      videoUrl: "https://www.youtube.com/embed/5Mz2xL3F3mk",
-      importance: "High"
-    },
-    {
-      id: 3,
-      title: "Data Protection",
-      description: "Proper classification, handling and protection of sensitive information",
-      duration: "30 min", 
-      category: "Compliance",
-      status: "not-started",
-      progress: 0,
-      assignedDate: "2024-02-01", 
-      dueDate: "2024-03-01",
-      videoUrl: "https://www.youtube.com/embed/lB_tc1MLI8I",
-      importance: "Medium"
-    },
-    {
-      id: 4,
-      title: "Ransomware Defense",
-      description: "Understanding and preventing ransomware and malware threats",
-      duration: "25 min",
-      category: "Security",
-      status: "not-started",
-      progress: 0,
-      assignedDate: "2024-02-05",
-      dueDate: "2024-03-05",
-      videoUrl: "https://www.youtube.com/embed/leRw2nbp-jU",
-      importance: "High"
-    },
-    {
-      id: 5,
-      title: "Remote Work Security",
-      description: "Security best practices for working remotely and protecting company data",
-      duration: "35 min",
-      category: "Operations", 
-      status: "not-started",
-      progress: 0,
-      assignedDate: "2024-02-10",
-      dueDate: "2024-03-10",
-      videoUrl: "https://www.youtube.com/embed/IYbgOStzavo",
-      importance: "Medium"
+  // State for backend data
+  const [trainingModules, setTrainingModules] = useState([]);
+  const [userProgress, setUserProgress] = useState([]);
+  const [campaigns, setCampaigns] = useState([]);
+  const [stats, setStats] = useState({
+    total_modules: 0,
+    completed_modules: 0,
+    in_progress_modules: 0,
+    not_started_modules: 0,
+    overall_progress: 0,
+    average_score: 0
+  });
+
+  // Load data from backend
+  const loadAwarenessData = async () => {
+    if (!currentUser?.user_id) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [modulesData, progressData, campaignsData, statsData] = await Promise.all([
+        awarenessAPI.getTrainingModules(),
+        awarenessAPI.getUserProgress(currentUser.user_id),
+        awarenessAPI.getCampaigns(),
+        awarenessAPI.getUserTrainingStats(currentUser.user_id)
+      ]);
+
+      setTrainingModules(modulesData || []);
+      setUserProgress(progressData || []);
+      setCampaigns(campaignsData || []);
+      setStats(statsData || {
+        total_modules: 0,
+        completed_modules: 0,
+        in_progress_modules: 0,
+        not_started_modules: 0,
+        overall_progress: 0,
+        average_score: 0
+      });
+
+    } catch (err) {
+      console.error('Failed to load awareness data:', err);
+      setError('Failed to load training data. Please try again.');
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
-  const [campaigns, setCampaigns] = useState([
-    {
-      id: 1,
-      title: "Q1 Security Awareness",
-      description: "Quarterly security awareness campaign covering all essential topics",
-      participants: 45,
-      completionRate: 78,
-      startDate: "2024-01-01",
-      endDate: "2024-03-31",
-      status: "active",
-      modules: [1, 2, 4]
-    },
-    {
-      id: 2,
-      title: "Data Protection Refresh",
-      description: "Annual data protection and compliance training refresh",
-      participants: 52,
-      completionRate: 92,
-      startDate: "2024-01-10",
-      endDate: "2024-01-31",
-      status: "completed",
-      modules: [3]
-    },
-    {
-      id: 3,
-      title: "Remote Work Initiative",
-      description: "Focused campaign on secure remote work practices",
-      participants: 48,
-      completionRate: 65,
-      startDate: "2024-02-01",
-      endDate: "2024-02-28",
-      status: "upcoming",
-      modules: [5]
-    }
-  ]);
-
-  // Load progress from localStorage on component mount and refresh
   useEffect(() => {
-    const progress = JSON.parse(localStorage.getItem('trainingProgress') || '{}');
-    setTrainingModules(prev => 
-      prev.map(module => {
-        const moduleProgress = progress[module.id];
-        if (moduleProgress) {
-          return {
-            ...module,
-            status: moduleProgress.completed ? 'completed' : 'in-progress',
-            progress: moduleProgress.score || (moduleProgress.completed ? 100 : 50)
-          };
-        }
-        return module;
-      })
-    );
-  }, [refreshTrigger]);
+    loadAwarenessData();
+  }, [currentUser?.user_id]);
 
-  // Listen for training progress updates
-  useEffect(() => {
-    const handleProgressUpdate = () => {
-      setRefreshTrigger(prev => prev + 1);
-    };
+  // Handle new module creation
+  const handleModuleCreated = (newModule) => {
+    setTrainingModules(prev => [newModule, ...prev]);
+    // Refresh stats to reflect new module
+    loadAwarenessData();
+  };
 
-    window.addEventListener('trainingProgressUpdated', handleProgressUpdate);
-    return () => {
-      window.removeEventListener('trainingProgressUpdated', handleProgressUpdate);
-    };
-  }, []);
+  const handleCreateModule = () => {
+    setShowCreateModal(true);
+  };
+
+  // ... rest of your existing functions (getEnhancedTrainingModules, filteredTraining, etc.)
+  // Merge module data with user progress
+  const getEnhancedTrainingModules = () => {
+    return trainingModules.map(module => {
+      const progress = userProgress.find(p => p.module_id === module.module_id) || {};
+      
+      return {
+        id: module.module_id,
+        title: module.title,
+        description: module.description,
+        duration: module.duration,
+        category: module.category,
+        videoUrl: module.video_url,
+        importance: module.importance || 'Medium',
+        status: mapTrainingStatus(progress.status) || 'not-started',
+        progress: progress.progress_percentage || 0,
+        score: progress.score || 0,
+        assignedDate: progress.started_at ? new Date(progress.started_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      };
+    });
+  };
 
   // Filter training modules based on search and status
-  const filteredTraining = trainingModules.filter(module => {
+  const filteredTraining = getEnhancedTrainingModules().filter(module => {
     const matchesSearch = module.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         module.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         module.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          module.category.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || module.status === filterStatus;
+    
+    const statusMap = {
+      'all': () => true,
+      'not_started': (status) => status === 'not-started',
+      'in_progress': (status) => status === 'in-progress',
+      'completed': (status) => status === 'completed'
+    };
+    
+    const matchesStatus = statusMap[filterStatus] ? statusMap[filterStatus](module.status) : true;
+    
     return matchesSearch && matchesStatus;
   });
 
-  // Calculate statistics
-  const stats = {
-    totalModules: trainingModules.length,
-    completedModules: trainingModules.filter(m => m.status === 'completed').length,
-    inProgressModules: trainingModules.filter(m => m.status === 'in-progress').length,
-    notStartedModules: trainingModules.filter(m => m.status === 'not-started').length,
-    overallProgress: Math.round(
-      trainingModules.reduce((acc, module) => acc + module.progress, 0) / trainingModules.length
-    ),
-    averageScore: Math.round(
-      trainingModules.reduce((acc, module) => {
-        const progress = JSON.parse(localStorage.getItem('trainingProgress') || '{}');
-        const moduleProgress = progress[module.id];
-        return acc + (moduleProgress?.score || 0);
-      }, 0) / trainingModules.filter(m => trainingModules.some(tm => tm.id === m.id && JSON.parse(localStorage.getItem('trainingProgress') || '{}')[tm.id]?.completed)).length || 1
-    )
-  };
-
-  const handleStartTraining = (moduleId) => {
-    navigate(`/app/training/${moduleId}`);
-  };
-
-  const handleViewCertificate = (moduleId) => {
-    const progress = JSON.parse(localStorage.getItem('trainingProgress') || '{}');
-    const moduleProgress = progress[moduleId];
-    const module = trainingModules.find(m => m.id === moduleId);
-    
-    if (moduleProgress?.completed) {
-      alert(`Certificate of Completion for ${module?.title}\nScore: ${moduleProgress.score}%\nCompleted: ${new Date(moduleProgress.completedAt).toLocaleDateString()}`);
-    }
-  };
-
-  const handleCreateCampaign = () => {
-    if (permissions.isAdmin) {
-      // In a real app, this would open a campaign creation modal
-      alert('Create new campaign functionality would open here');
-    }
-  };
-
-  // Prepare data for CardSlider
+  // Prepare data for CardSlider - Training Modules
   const trainingFields = filteredTraining.map((module, index) => {
     const actionButtons = [];
-    const progress = JSON.parse(localStorage.getItem('trainingProgress') || '{}');
-    const moduleProgress = progress[module.id];
     
     if (module.status === 'not-started' || module.status === 'in-progress') {
       actionButtons.push(
@@ -246,6 +408,19 @@ const Awareness = () => {
       );
     }
 
+    // Add edit button for admins
+    if (permissions.isAdmin) {
+      actionButtons.push(
+        { 
+          type: "i", 
+          text: "faEdit", 
+          color: "#6b7280", 
+          click: () => handleEditModule(module.id),
+          title: "Edit Module"
+        }
+      );
+    }
+
     return [
       { type: "t", text: index + 1 },
       { 
@@ -268,7 +443,7 @@ const Awareness = () => {
         text: `${module.progress}%`,
         color: module.progress === 100 ? "#10b981" : module.progress > 50 ? "#3b82f6" : "#f59e0b"
       },
-      { type: "t", text: module.duration },
+      { type: "t", text: module.duration || 'N/A' },
       { 
         type: "t", 
         text: new Date(module.dueDate).toLocaleDateString(),
@@ -278,42 +453,87 @@ const Awareness = () => {
     ];
   });
 
-  const campaignFields = campaigns.map((campaign, index) => [
-    { type: "t", text: index + 1 },
-    { type: "t", text: campaign.title },
-    { type: "t", text: campaign.description },
-    { 
-      type: "b", 
-      text: campaign.status,
-      color: campaign.status === "active" 
-        ? "#10b98199" 
-        : campaign.status === "completed"
-        ? "#3b82f699"
-        : "#f59e0b99"
-    },
-    { type: "t", text: campaign.participants },
-    { type: "t", text: `${campaign.completionRate}%` },
-    { type: "t", text: new Date(campaign.startDate).toLocaleDateString() },
-    { type: "t", text: new Date(campaign.endDate).toLocaleDateString() }
-  ]);
+  const handleStartTraining = (moduleId) => {
+    navigate(`/app/training/${moduleId}`);
+  };
+
+  const handleViewCertificate = (moduleId) => {
+    const module = getEnhancedTrainingModules().find(m => m.id === moduleId);
+    const progress = userProgress.find(p => p.module_id === moduleId);
+    
+    if (progress?.status === 'completed') {
+      alert(`Certificate of Completion for ${module?.title}\nScore: ${progress.score}%\nCompleted: ${new Date(progress.completed_at).toLocaleDateString()}`);
+    }
+  };
+
+  const handleEditModule = (moduleId) => {
+    // Navigate to module editor or open edit modal
+    navigate(`/app/training-module-editor/${moduleId}`);
+  };
+
+  const handleCreateCampaign = () => {
+    if (permissions.isAdmin) {
+      // In a real app, this would open a campaign creation modal
+      alert('Create new campaign functionality would open here');
+    }
+  };
+
+  // ... rest of your existing JSX return statement
+  if (loading) {
+    return (
+      <div className="container flex items-center justify-center min-h-96">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading training data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container flex items-center justify-center min-h-96">
+        <div className="text-center">
+          <div className="text-red-500 text-xl mb-4">⚠️</div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Error Loading Data</h3>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={loadAwarenessData}
+            className="button buttonStyle"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container">
+      {/* Header with Create Button */}
       <div className="h2AndButtonContainer">
         <h2>Security Awareness & Training</h2>
-        {permissions.isAdmin && activeTab === 'campaigns' && (
-          <button className="button buttonStyle" onClick={handleCreateCampaign}>
-            <FontAwesomeIcon icon={faPlus} className="mr-2" />
-            New Campaign
-          </button>
-        )}
+        <div className="flex gap-4">
+          {permissions.isAdmin && activeTab === 'training' && (
+            <button className="button buttonStyle" onClick={handleCreateModule}>
+              <FontAwesomeIcon icon={faPlus} className="mr-2" />
+              New Module
+            </button>
+          )}
+          {permissions.isAdmin && activeTab === 'campaigns' && (
+            <button className="button buttonStyle" onClick={handleCreateCampaign}>
+              <FontAwesomeIcon icon={faPlus} className="mr-2" />
+              New Campaign
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Statistics Cards */}
       <div className="cardsContainer">
         <Card 
           title="Overall Progress" 
-          value={`${stats.overallProgress}%`} 
+          value={`${stats.overall_progress || 0}%`} 
           model={3} 
           icon={faChartLine}
           iconColor="#3b82f6"
@@ -321,7 +541,7 @@ const Awareness = () => {
         />
         <Card 
           title="Completed" 
-          value={stats.completedModules} 
+          value={stats.completed_modules || 0} 
           model={1} 
           icon={faCheckCircle}
           iconColor="#10b981"
@@ -329,7 +549,7 @@ const Awareness = () => {
         />
         <Card 
           title="In Progress" 
-          value={stats.inProgressModules} 
+          value={stats.in_progress_modules || 0} 
           model={2} 
           icon={faClock}
           iconColor="#f59e0b"
@@ -337,7 +557,7 @@ const Awareness = () => {
         />
         <Card 
           title="Average Score" 
-          value={`${stats.averageScore}%`} 
+          value={`${stats.average_score || 0}%`} 
           model={3} 
           icon={faCertificate}
           iconColor="#8b5cf6"
@@ -397,8 +617,8 @@ const Awareness = () => {
               onChange={(e) => setFilterStatus(e.target.value)}
             >
               <option value="all">All Status</option>
-              <option value="not-started">Not Started</option>
-              <option value="in-progress">In Progress</option>
+              <option value="not_started">Not Started</option>
+              <option value="in_progress">In Progress</option>
               <option value="completed">Completed</option>
             </select>
           </div>
@@ -410,8 +630,19 @@ const Awareness = () => {
                 No training modules found
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Try adjusting your search or filter criteria
+                {searchTerm || filterStatus !== 'all' 
+                  ? 'Try adjusting your search or filter criteria' 
+                  : 'No training modules available yet'}
               </p>
+              {permissions.isAdmin && (
+                <button 
+                  className="button buttonStyle mt-4"
+                  onClick={handleCreateModule}
+                >
+                  <FontAwesomeIcon icon={faPlus} className="mr-2" />
+                  Create Your First Module
+                </button>
+              )}
             </div>
           ) : (
             <CardSlider
@@ -425,18 +656,12 @@ const Awareness = () => {
         </div>
       )}
 
-      {/* Awareness Campaigns Tab */}
-      {activeTab === 'campaigns' && (
-        <div>
-          <CardSlider
-            caption={{ text: "Security Awareness Campaigns" }}
-            titles={["#", "Title", "Description", "Status", "Participants", "Completion", "Start Date", "End Date"]}
-            sizes={[1, 10, 12, 6, 4, 4, 5, 5]}
-            ids={campaigns.map(campaign => campaign.id)}
-            fields={campaignFields}
-          />
-        </div>
-      )}
+      {/* Create Module Modal */}
+      <CreateModuleModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onModuleCreated={handleModuleCreated}
+      />
     </div>
   );
 };

@@ -12,57 +12,79 @@ const getCurrentUser = () => {
   }
 };
 
-// Enhanced apiRequest function to include user data
+// Enhanced apiRequest function with better error handling
 async function apiRequest(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
-  
-  // Get current user from localStorage
   const currentUser = getCurrentUser();
-  
-  const defaultHeaders = {
-    'Content-Type': 'application/json',
-  };
-  
-  // Add user information to headers if user exists
-  if (currentUser) {
-    defaultHeaders['X-User-ID'] = currentUser.user_id || currentUser.id || '';
-    defaultHeaders['X-User-Name'] = currentUser.user_name || currentUser.name || '';
-    defaultHeaders['X-User-Email'] = currentUser.email || '';
-    defaultHeaders['X-User-Role'] = currentUser.role || '';
-  }
   
   const config = {
     headers: {
-      ...defaultHeaders,
+      'Content-Type': 'application/json',
+      ...(currentUser && {
+        'X-User-ID': currentUser.user_id || currentUser.id || '',
+        'X-User-Name': currentUser.user_name || currentUser.name || '',
+        'X-User-Email': currentUser.email || '',
+        'X-User-Role': currentUser.role || '',
+      }),
       ...options.headers,
     },
     ...options,
   };
   
-  // Log the request for debugging
-  console.log('API Request:', {
-    url,
-    headers: config.headers,
-    method: config.method,
-    body: config.body
-  });
+  // Add body to config if it exists and method is not GET/HEAD
+  if (options.body && !['GET', 'HEAD'].includes(options.method || 'GET')) {
+    config.body = JSON.stringify(options.body);
+  }
   
   try {
     const response = await fetch(url, config);
     
     if (!response.ok) {
+      // Handle specific HTTP status codes
+      if (response.status === 404) {
+        throw new Error('Requested resource not found');
+      } else if (response.status === 401) {
+        throw new Error('Authentication required');
+      } else if (response.status === 500) {
+        throw new Error('Server error - please try again later');
+      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    const data = await response.json();
-    return data;
+    // Handle empty responses
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return await response.json();
+    } else {
+      return { success: true };
+    }
   } catch (error) {
     console.error('API request failed:', error);
     throw error;
   }
 }
 
-// Rest of your existing API functions remain the same, but they will now automatically include user headers
+// Status mapping utilities
+export const mapTrainingStatus = (backendStatus) => {
+  const statusMap = {
+    'not_started': 'not-started',
+    'in_progress': 'in-progress',
+    'completed': 'completed'
+  };
+  return statusMap[backendStatus] || 'not-started';
+};
+
+export const mapCampaignStatus = (backendStatus) => {
+  const statusMap = {
+    'draft': 'draft',
+    'active': 'active', 
+    'completed': 'completed',
+    'cancelled': 'cancelled'
+  };
+  return statusMap[backendStatus] || 'draft';
+};
+
+// Global Search API
 export const globalSearchAPI = {
   searchAll: async (query) => {
     try {
@@ -96,11 +118,11 @@ export const configurationsAPI = {
   search: (query) => apiRequest(`/configurations/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiRequest('/configurations', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data,
   }),
   update: (id, data) => apiRequest(`/configurations/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(data),
+    body: data,
   }),
   delete: (id) => apiRequest(`/configurations/${id}`, {
     method: 'DELETE',
@@ -115,11 +137,11 @@ export const usersAPI = {
   search: (query) => apiRequest(`/users/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiRequest('/users', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data,
   }),
   update: (id, data) => apiRequest(`/users/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(data),
+    body: data,
   }),
   delete: (id) => apiRequest(`/users/${id}`, {
     method: 'DELETE',
@@ -134,11 +156,11 @@ export const risksAPI = {
   search: (query) => apiRequest(`/risks/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiRequest('/risks', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data,
   }),
   update: (id, data) => apiRequest(`/risks/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(data),
+    body: data,
   }),
   delete: (id) => apiRequest(`/risks/${id}`, {
     method: 'DELETE',
@@ -155,11 +177,11 @@ export const governanceItemsAPI = {
   search: (query) => apiRequest(`/governanceItems/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiRequest('/governanceItems', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data,
   }),
   update: (id, data) => apiRequest(`/governanceItems/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(data),
+    body: data,
   }),
   delete: (id) => apiRequest(`/governanceItems/${id}`, {
     method: 'DELETE',
@@ -174,11 +196,11 @@ export const incidentsAPI = {
   search: (query) => apiRequest(`/incidents/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiRequest('/incidents', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data,
   }),
   update: (id, data) => apiRequest(`/incidents/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(data),
+    body: data,
   }),
   delete: (id) => apiRequest(`/incidents/${id}`, {
     method: 'DELETE',
@@ -193,11 +215,11 @@ export const threatsAPI = {
   search: (query) => apiRequest(`/threats/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiRequest('/threats', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data,
   }),
   update: (id, data) => apiRequest(`/threats/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(data),
+    body: data,
   }),
   delete: (id) => apiRequest(`/threats/${id}`, {
     method: 'DELETE',
@@ -213,7 +235,7 @@ export const auditLogsAPI = {
   search: (query) => apiRequest(`/auditLogs/search?q=${encodeURIComponent(query)}`),
   create: (data) => apiRequest('/auditLogs', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data,
   }),
   delete: (id) => apiRequest(`/auditLogs/${id}`, {
     method: 'DELETE',
@@ -231,11 +253,11 @@ export const complianceAPI = {
   searchFrameworks: (query) => apiRequest(`/complianceItems/frameworks/search?q=${encodeURIComponent(query)}`),
   createFramework: (data) => apiRequest('/complianceItems/frameworks', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data,
   }),
   updateFramework: (id, data) => apiRequest(`/complianceItems/frameworks/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(data),
+    body: data,
   }),
   deleteFramework: (id) => apiRequest(`/complianceItems/frameworks/${id}`, {
     method: 'DELETE',
@@ -247,11 +269,11 @@ export const complianceAPI = {
   searchRequirements: (query) => apiRequest(`/complianceItems/requirements/search?q=${encodeURIComponent(query)}`),
   createRequirement: (data) => apiRequest('/complianceItems/requirements', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data,
   }),
   updateRequirement: (id, data) => apiRequest(`/complianceItems/requirements/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(data),
+    body: data,
   }),
   deleteRequirement: (id) => apiRequest(`/complianceItems/requirements/${id}`, {
     method: 'DELETE',
@@ -264,15 +286,129 @@ export const complianceAPI = {
   searchControls: (query) => apiRequest(`/complianceItems/controls/search?q=${encodeURIComponent(query)}`),
   createControl: (data) => apiRequest('/complianceItems/controls', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data,
   }),
   updateControl: (id, data) => apiRequest(`/complianceItems/controls/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(data),
+    body: data,
   }),
   deleteControl: (id) => apiRequest(`/complianceItems/controls/${id}`, {
     method: 'DELETE',
   }),
+};
+
+// Awareness API - COMPLETE UPDATED VERSION
+export const awarenessAPI = {
+  // Training Modules
+  getTrainingModules: () => apiRequest('/awareness/training-modules'),
+  getTrainingModuleById: (id) => apiRequest(`/awareness/training-modules/${id}`),
+  searchTrainingModules: (query) => apiRequest(`/awareness/training-modules/search?q=${encodeURIComponent(query)}`),
+  createTrainingModule: (data) => apiRequest('/awareness/training-modules', {
+    method: 'POST',
+    body: data,
+  }),
+  updateTrainingModule: (id, data) => apiRequest(`/awareness/training-modules/${id}`, {
+    method: 'PUT',
+    body: data,
+  }),
+  deleteTrainingModule: (id) => apiRequest(`/awareness/training-modules/${id}`, {
+    method: 'DELETE',
+  }),
+
+  // Module Steps
+  getModuleSteps: (moduleId) => apiRequest(`/awareness/training-modules/${moduleId}/steps`),
+  createStep: (moduleId, data) => apiRequest(`/awareness/training-modules/${moduleId}/steps`, {
+    method: 'POST',
+    body: data,
+  }),
+  updateStep: (stepId, data) => apiRequest(`/awareness/steps/${stepId}`, {
+    method: 'PUT',
+    body: data,
+  }),
+  deleteStep: (stepId) => apiRequest(`/awareness/steps/${stepId}`, {
+    method: 'DELETE',
+  }),
+
+  // Quiz Questions
+  getQuestionsByStepId: (stepId) => apiRequest(`/awareness/steps/${stepId}/questions`),
+  createQuestion: (stepId, data) => apiRequest(`/awareness/steps/${stepId}/questions`, {
+    method: 'POST',
+    body: data,
+  }),
+  updateQuestion: (questionId, data) => apiRequest(`/awareness/questions/${questionId}`, {
+    method: 'PUT',
+    body: data,
+  }),
+  deleteQuestion: (questionId) => apiRequest(`/awareness/questions/${questionId}`, {
+    method: 'DELETE',
+  }),
+
+  // Quiz Options
+  getOptionsByQuestionId: (questionId) => apiRequest(`/awareness/questions/${questionId}/options`),
+  createOption: (questionId, data) => apiRequest(`/awareness/questions/${questionId}/options`, {
+    method: 'POST',
+    body: data,
+  }),
+  updateOption: (optionId, data) => apiRequest(`/awareness/options/${optionId}`, {
+    method: 'PUT',
+    body: data,
+  }),
+  deleteOption: (optionId) => apiRequest(`/awareness/options/${optionId}`, {
+    method: 'DELETE',
+  }),
+
+  // User Progress
+  getUserProgress: (userId) => apiRequest(`/awareness/users/${userId}/progress`),
+  updateUserProgress: (userId, moduleId, data) => apiRequest(`/awareness/users/${userId}/progress/${moduleId}`, {
+    method: 'PUT',
+    body: data,
+  }),
+
+  // Quiz Attempts
+  createQuizAttempt: (userId, moduleId, data) => apiRequest(`/awareness/users/${userId}/quiz-attempts/${moduleId}`, {
+    method: 'POST',
+    body: data,
+  }),
+
+  // Campaigns
+  getCampaigns: () => apiRequest('/awareness/campaigns'),
+  getCampaignById: (id) => apiRequest(`/awareness/campaigns/${id}`),
+  searchCampaigns: (query) => apiRequest(`/awareness/campaigns/search?q=${encodeURIComponent(query)}`),
+  createCampaign: (data) => apiRequest('/awareness/campaigns', {
+    method: 'POST',
+    body: data,
+  }),
+  updateCampaign: (id, data) => apiRequest(`/awareness/campaigns/${id}`, {
+    method: 'PUT',
+    body: data,
+  }),
+  deleteCampaign: (id) => apiRequest(`/awareness/campaigns/${id}`, {
+    method: 'DELETE',
+  }),
+
+  // Campaign Modules
+  getCampaignModules: (campaignId) => apiRequest(`/awareness/campaigns/${campaignId}/modules`),
+  addCampaignModule: (campaignId, data) => apiRequest(`/awareness/campaigns/${campaignId}/modules`, {
+    method: 'POST',
+    body: data,
+  }),
+  removeCampaignModule: (campaignId, moduleId) => apiRequest(`/awareness/campaigns/${campaignId}/modules/${moduleId}`, {
+    method: 'DELETE',
+  }),
+
+  // User Campaign Assignments
+  getUserCampaignAssignments: (userId) => apiRequest(`/awareness/users/${userId}/campaign-assignments`),
+  assignUserToCampaign: (userId, campaignId) => apiRequest(`/awareness/users/${userId}/campaign-assignments/${campaignId}`, {
+    method: 'POST',
+  }),
+  updateUserCampaignAssignment: (assignmentId, data) => apiRequest(`/awareness/user-campaign-assignments/${assignmentId}`, {
+    method: 'PUT',
+    body: data,
+  }),
+
+  // Statistics
+  getUserTrainingStats: (userId) => apiRequest(`/awareness/users/${userId}/training-stats`),
+  getCampaignStats: (campaignId) => apiRequest(`/awareness/campaigns/${campaignId}/stats`),
 };
 
 // Helper function to get the appropriate API based on active module
