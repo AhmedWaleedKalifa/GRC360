@@ -141,9 +141,9 @@ const authAPI = {
 
 // AI API
 const aiAPI = {
-  chat: (message) => apiRequest('/api/ai/chat', { 
+  chat: (history) => apiRequest('/api/ai/chat', { 
     method: 'POST', 
-    body: { message } 
+    body: { history } 
   }),
 };
 

@@ -35,7 +35,16 @@ const allowedOrigins = [
   'https://69272fd483aaea52a1d06aab--grc36o.netlify.app',
   'https://grc36o.netlify.app'
 ].filter(Boolean);
-
+// Add this before your CORS middleware
+app.use((req, res, next) => {
+  console.log('=== CORS DEBUG INFO ===');
+  console.log('Request Origin:', req.headers.origin);
+  console.log('Request Method:', req.method);
+  console.log('Request Path:', req.path);
+  console.log('Allowed Origins:', allowedOrigins);
+  console.log('=== END CORS DEBUG ===');
+  next();
+});
 app.use(
   cors({
     origin: function (origin, callback) {
