@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Form from '../components/Form';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -36,11 +36,11 @@ function EditIncident() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                
+
                 // Fetch incident data
                 const incidentData = await incidentsAPI.getById(id);
                 setItem(incidentData);
-                
+
                 setError(null);
             } catch (err) {
                 setError('Failed to fetch data');
@@ -57,7 +57,7 @@ function EditIncident() {
                 setLoading(false);
                 return;
             }
-            
+
             fetchData();
         }
     }, [id, userLoading, permissions.isAdmin]);
@@ -71,7 +71,7 @@ function EditIncident() {
 
         try {
             setLoading(true);
-            
+
             // Prepare incident data with current user as owner
             const incidentData = {
                 title: formData.title,
@@ -82,12 +82,12 @@ function EditIncident() {
                 severity: formData.severity,
                 priority: formData.priority || "medium"
             };
-            
+
             await incidentsAPI.update(id, incidentData);
-            
+
             // Show success message
             alert('Incident updated successfully!');
-            
+
             navigate(-1); // Go back to previous page after successful update
         } catch (err) {
             console.error('Error updating incident:', err);
@@ -115,7 +115,7 @@ function EditIncident() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                     You do not have permission to edit incidents. Admin access required.
                 </p>
-                <button 
+                <button
                     onClick={() => navigate('/app/incidents')}
                     className="button buttonStyle"
                 >
@@ -140,7 +140,7 @@ function EditIncident() {
                 <div className="editConfig">
                     <h1 className="editConfigTitle">Edit Incident</h1>
                     <div className="text-red-500 p-4 bg-red-50 rounded-lg">Error: {error}</div>
-                    <button 
+                    <button
                         onClick={() => navigate('/app/incidents')}
                         className="button buttonStyle mt-4"
                     >
@@ -157,7 +157,7 @@ function EditIncident() {
                 <div className="editConfig">
                     <h1 className="editConfigTitle">Edit Incident</h1>
                     <div className="p-4 bg-yellow-50 rounded-lg">Incident not found</div>
-                    <button 
+                    <button
                         onClick={() => navigate('/app/incidents')}
                         className="button buttonStyle mt-4"
                     >
@@ -173,86 +173,86 @@ function EditIncident() {
             <div className="editConfig">
                 <div className="flex items-center justify-center mb-6">
                     <h1 className="editConfigTitle">Edit Incident</h1>
-                   
+
                 </div>
                 <div className='flex flex-row w-full justify-center relative bottom-6'>
-                <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full dark:text-blue-400 dark:bg-blue-900/30">
-  Editing as: {getCurrentUserName()}
-</div>
-       </div>
+                    <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full dark:text-blue-400 dark:bg-blue-900/30">
+                        Editing as: {getCurrentUserName()}
+                    </div>
+                </div>
                 <button className='templateBackLink' onClick={() => navigate(-1)}>
                     <FontAwesomeIcon icon={faArrowLeft} className='text-2xl mr-2' />
                     Back
                 </button>
 
-               
-                
-                <Form 
+
+
+                <Form
                     fstyle={{ form: "profileForm", button: "button buttonStyle col-span-2 mt-4" }}
                     onSubmit={handleSubmit}
                     inputarray={[
-                        { 
-                            id: "title", 
-                            type: "text", 
-                            isInput: true, 
-                            label: "Title:", 
-                            initialValue: item.title, 
+                        {
+                            id: "title",
+                            type: "text",
+                            isInput: true,
+                            label: "Title:",
+                            initialValue: item.title,
                             required: true,
-                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
+                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput" }
                         },
-                        { 
-                            id: "category", 
-                            type: "select", 
-                            isInput: true, 
-                            label: "Category:", 
-                            selectList: allowedCategories, 
-                            initialValue: item.category, 
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        {
+                            id: "category",
+                            type: "select",
+                            isInput: true,
+                            label: "Category:",
+                            selectList: allowedCategories,
+                            initialValue: item.category,
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
                         },
-                        { 
-                            id: "description", 
-                            type: "textarea", 
-                            isInput: true, 
-                            label: "Description:", 
-                            initialValue: item.description || "", 
-                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput h-24" } 
+                        {
+                            id: "description",
+                            type: "textarea",
+                            isInput: true,
+                            label: "Description:",
+                            initialValue: item.description || "",
+                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput h-24" }
                         },
-                        { 
-                            changeable:false,
-                            id: "ownerDisplay", 
-                            type: "text", 
-                            isInput: true, 
-                            label: "Owner:", 
+                        {
+                            changeable: false,
+                            id: "ownerDisplay",
+                            type: "text",
+                            isInput: true,
+                            label: "Owner:",
                             initialValue: getCurrentUserName(),
                             disabled: true,
-                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput bg-gray-100" } 
+                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput bg-gray-100" }
                         },
-                        { 
-                            id: "status", 
-                            type: "select", 
-                            isInput: true, 
-                            label: "Status:", 
-                            selectList: allowedStatuses, 
-                            initialValue: item.status, 
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        {
+                            id: "status",
+                            type: "select",
+                            isInput: true,
+                            label: "Status:",
+                            selectList: allowedStatuses,
+                            initialValue: item.status,
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
                         },
-                        { 
-                            id: "severity", 
-                            type: "select", 
-                            isInput: true, 
-                            label: "Severity:", 
-                            selectList: allowedSeverities, 
-                            initialValue: item.severity, 
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        {
+                            id: "severity",
+                            type: "select",
+                            isInput: true,
+                            label: "Severity:",
+                            selectList: allowedSeverities,
+                            initialValue: item.severity,
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
                         },
-                        { 
-                            id: "priority", 
-                            type: "select", 
-                            isInput: true, 
-                            label: "Priority:", 
-                            selectList: allowedPriorities, 
-                            initialValue: item.priority || "medium", 
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        {
+                            id: "priority",
+                            type: "select",
+                            isInput: true,
+                            label: "Priority:",
+                            selectList: allowedPriorities,
+                            initialValue: item.priority || "medium",
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
                         },
                     ]}
                     button={loading ? "Saving..." : "Save Changes"}

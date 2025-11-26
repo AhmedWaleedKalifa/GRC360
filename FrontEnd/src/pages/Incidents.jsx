@@ -1,6 +1,6 @@
 import { faPlus, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Card from '../components/Card'
 import CardSlider from '../components/CardSlider'
 import Progress from '../components/Progress'
@@ -18,7 +18,7 @@ function Incidents() {
   const [error, setError] = useState(null);
 
   // Get current user and permissions
-  const { currentUser, permissions, loading: userLoading } = useUser();
+  const { permissions, loading: userLoading } = useUser();
 
   // Stats for cards
   const [closed, setClosed] = useState(0);
@@ -88,7 +88,7 @@ function Incidents() {
       alert('You do not have permission to add incidents. Admin access required.');
       return;
     }
-   navigate('/app/addIncident');
+    navigate('/app/addIncident');
   };
 
   const handleEditIncident = (incidentId) => {
@@ -115,7 +115,7 @@ function Incidents() {
       } else if (incident.status === 'investigating') {
         newInvestigating += 1;
       }
-      
+
       if (incident.severity === 'high' || incident.severity === 'critical') {
         newHighSeverity += 1;
       }
@@ -145,7 +145,7 @@ function Incidents() {
   const allIncidentsFields = incidents.map(incident => {
     const actionButtons = [];
     const ownerName = getUserNameById(incident.owner); // Get owner name
-    
+
     if (permissions.isAdmin) {
       actionButtons.push(
         { type: "i", text: "faPen", color: "#26A7F6", click: () => handleEditIncident(incident.incident_id) },
@@ -181,7 +181,7 @@ function Incidents() {
     ];
   });
 
-  const colors = incidents.map(item => 
+  const colors = incidents.map(item =>
     String(item.incident_id) === id ? "#26A7F680" : ""
   );
   const recentIncidentsIds = incidents.slice(0, 5).map(incident => incident.incident_id);
@@ -205,7 +205,7 @@ function Incidents() {
         <p className="text-gray-600 dark:text-gray-400 mb-4">
           You do not have permission to view incidents.
         </p>
-        <button 
+        <button
           onClick={() => navigate('/app/dashboard')}
           className="button buttonStyle"
         >
@@ -235,19 +235,19 @@ function Incidents() {
 
         <div className='flex flex-row items-center x w-full flex-nowrap xl:flex-nowrap sm:flex-wrap'>
           <div className='w-[50%] h-full flex flex-row items-center gap-4'>
-            <Chart 
-              title={"Incidents by Status"} 
+            <Chart
+              title={"Incidents by Status"}
               array={[
-                { name: "Closed", value: 0, color: "#00ff0080" }, 
-                { name: "Investigating", value: 0, color: "#3b82f680" }, 
+                { name: "Closed", value: 0, color: "#00ff0080" },
+                { name: "Investigating", value: 0, color: "#3b82f680" },
                 { name: "Open", value: 0, color: "#FFA72680" }
-              ]} 
+              ]}
             />
-            <Progress 
-              title={"Resolution Progress"} 
-              footer={"incidents closed"} 
+            <Progress
+              title={"Resolution Progress"}
+              footer={"incidents closed"}
               num='0'
-              all='0' 
+              all='0'
             />
           </div>
           <div className='w-[50%] h-full flex flex-col justify-center'>
@@ -266,7 +266,7 @@ function Incidents() {
           <CardSlider
             caption={{ text: "All Incidents", icon: "faFolder" }}
             sizes={permissions.isAdmin ? [7, 3, 6, 5, 5, 4, 10, 2, 2] : [7, 3, 6, 5, 5, 4, 10]}
-            titles={permissions.isAdmin ? 
+            titles={permissions.isAdmin ?
               ["Title", "Category", "Status", "Severity", "Reported At", "Owner", "Description", "Edit", "Delete"] :
               ["Title", "Category", "Status", "Severity", "Reported At", "Owner", "Description"]
             }
@@ -288,7 +288,7 @@ function Incidents() {
       <div className='w-full h-[fit-content] flex flex-row justify-between items-center'>
         <h1><FontAwesomeIcon icon={faTriangleExclamation} className='h1Icon' /> Incidents</h1>
         {permissions.isAdmin ? (
-          <button 
+          <button
             className="button buttonStyle mr-2"
             onClick={handleAddIncident}
             title="Add new incident"
@@ -297,7 +297,7 @@ function Incidents() {
             Add Incident
           </button>
         ) : (
-          <div 
+          <div
             className="button buttonStyle mr-2 opacity-30 cursor-not-allowed"
             title="Admin access required to add incidents"
           >
@@ -316,19 +316,19 @@ function Incidents() {
 
       <div className='flex flex-row items-center x w-full flex-nowrap xl:flex-nowrap sm:flex-wrap mx-2'>
         <div className='w-[48%] h-full flex flex-row items-center gap-4'>
-          <Chart 
-            title={"Incidents by Status"} 
+          <Chart
+            title={"Incidents by Status"}
             array={[
-              { name: "Closed", value: closed, color: "#00ff0080" }, 
-              { name: "Investigating", value: investigating, color: "#3b82f680" }, 
+              { name: "Closed", value: closed, color: "#00ff0080" },
+              { name: "Investigating", value: investigating, color: "#3b82f680" },
               { name: "Open", value: open, color: "#FFA72680" }
-            ]} 
+            ]}
           />
-        <Progress 
-            title={"Resolution Progress"} 
-            footer={"incidents closed"} 
-            num={closed} 
-            all={incidents.length} 
+          <Progress
+            title={"Resolution Progress"}
+            footer={"incidents closed"}
+            num={closed}
+            all={incidents.length}
           />
         </div>
         <div className='ml-4 w-[50%] h-full '>
@@ -346,8 +346,8 @@ function Incidents() {
 
       <CardSlider
         caption={{ text: "All Incidents", icon: "faFolder" }}
-        sizes={permissions.isAdmin ? [18, 6, 7, 5, 5, 8, 18,2.2,3.7] : [16, 5, 5, 4, 5, 7, 20]}
-        titles={permissions.isAdmin ? 
+        sizes={permissions.isAdmin ? [18, 6, 7, 5, 5, 8, 18, 2.2, 3.7] : [16, 5, 5, 4, 5, 7, 20]}
+        titles={permissions.isAdmin ?
           ["Title", "Category", "Status", "Severity", "Reported At", "Owner", "Description", `Edit`, `    Delete`] :
           ["Title", "Category", "Status", "Severity", "Reported At", "Owner", "Description"]
         }

@@ -1,5 +1,9 @@
 const db = require("../db/queries/configurations");
-const { BadRequestError, NotFoundError, ConflictError } = require("../errors/errors");
+const {
+  BadRequestError,
+  NotFoundError,
+  ConflictError,
+} = require("../errors/errors");
 const { logAction } = require("./auditHelper");
 
 async function createConfiguration(req, res, next) {
@@ -17,10 +21,16 @@ async function createConfiguration(req, res, next) {
     });
 
     // Log the action
-    await logAction(req, "CREATE", "configuration", newConfiguration.config_id, {
-      key,
-      value
-    });
+    await logAction(
+      req,
+      "CREATE",
+      "configuration",
+      newConfiguration.config_id,
+      {
+        key,
+        value,
+      }
+    );
 
     res.status(201).json(newConfiguration);
   } catch (err) {
@@ -41,7 +51,10 @@ async function updateConfiguration(req, res, next) {
     }
 
     const oldConfiguration = await db.getConfigurationById(parseInt(id));
-    const updatedConfiguration = await db.updateConfiguration(parseInt(id), fields);
+    const updatedConfiguration = await db.updateConfiguration(
+      parseInt(id),
+      fields
+    );
 
     if (!updatedConfiguration) {
       throw new NotFoundError("Configuration not found");
@@ -49,7 +62,7 @@ async function updateConfiguration(req, res, next) {
 
     // Log the action
     await logAction(req, "UPDATE", "configuration", parseInt(id), {
-      changed_fields: Object.keys(fields)
+      changed_fields: Object.keys(fields),
     });
 
     res.status(200).json(updatedConfiguration);
@@ -70,10 +83,15 @@ async function deleteConfiguration(req, res, next) {
 
     // Log the action
     await logAction(req, "DELETE", "configuration", parseInt(id), {
-      key: deletedConfiguration.key
+      key: deletedConfiguration.key,
     });
 
-    res.status(200).json({ message: "Configuration deleted successfully", configuration: deletedConfiguration });
+    res
+      .status(200)
+      .json({
+        message: "Configuration deleted successfully",
+        configuration: deletedConfiguration,
+      });
   } catch (err) {
     next(err);
   }
@@ -130,7 +148,7 @@ async function searchConfigurations(req, res, next) {
     if (!q) {
       throw new BadRequestError("Search query is required");
     }
-    
+
     const searchQuery = q.trim();
     if (searchQuery.length === 0) {
       throw new BadRequestError("Search query cannot be empty");
@@ -139,7 +157,9 @@ async function searchConfigurations(req, res, next) {
     const configurations = await db.searchConfigurationsByKey(searchQuery);
 
     if (configurations.length === 0) {
-      return res.status(404).json({ message: "No configurations found matching your search" });
+      return res
+        .status(404)
+        .json({ message: "No configurations found matching your search" });
     }
 
     res.status(200).json(configurations);
@@ -156,5 +176,5 @@ module.exports = {
   getConfigurationByKey,
   updateConfiguration,
   deleteConfiguration,
-  searchConfigurations
+  searchConfigurations,
 };

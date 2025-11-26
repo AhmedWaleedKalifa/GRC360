@@ -5,8 +5,9 @@ const ErrorPage = () => {
     <div className="errorPageContainer">
       <h1 >ERROR 404</h1>
       <br />
-      <Link to="/" >
-        You can go back to the home page by clicking here, though!
+      You can go back to the home page by clicking
+      <Link to="/" className="text-blue-700 underline">
+        here
       </Link>
     </div>
   );

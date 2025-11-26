@@ -1,4 +1,3 @@
-import React from 'react'
 
 function Chart({ title, array = [{ name: "", value: 0, color: "" }] }) {
     let total = 0.0;
@@ -36,13 +35,13 @@ function Chart({ title, array = [{ name: "", value: 0, color: "" }] }) {
                     {total > 0 ? (
                         array.map((e, index) => (
                             <div
-                            className='mr-1 relative left-0 z-[20]'
+                                className='mr-1 relative left-0 z-[20]'
                                 key={index}
                                 title={e.name}
                                 style={{
                                     backgroundColor: e.color || "white",
                                     height: `${e.value * factor}%`,
-                                    width: `${60  / array.length}%`
+                                    width: `${60 / array.length}%`
                                 }}
                             />
                         ))

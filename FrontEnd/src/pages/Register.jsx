@@ -1,12 +1,15 @@
-// pages/Login.jsx
+// pages/Register.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authAPI } from '../services/api';
 
-const Login = () => {
+const Register = () => {
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: '',
+    role: 'user' // Fixed to 'user' role
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,18 +30,45 @@ const Login = () => {
     setError('');
   };
 
+  const validateForm = () => {
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return false;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return false;
+    }
+    if (!formData.name.trim()) {
+      setError('Name is required');
+      return false;
+    }
+    if (!formData.email.trim()) {
+      setError('Email is required');
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
 
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      const response = await authAPI.login(formData);
-      console.log('Login successful:', response);
+      const { confirmPassword, ...registerData } = formData;
+      // role is automatically set to 'user' - no need to send it
+      const response = await authAPI.register(registerData);
+      console.log('Registration successful:', response);
       navigate('/app/dashboard');
     } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
-      console.error('Login error:', err);
+      setError(err.message || 'Registration failed. Please try again.');
+      console.error('Registration error:', err);
     } finally {
       setLoading(false);
     }
@@ -52,15 +82,15 @@ const Login = () => {
         </div>
         
         <div className="form cardStyle1">
-          <h1 className="formTitle">Sign in to GRC360</h1>
+          <h1 className="formTitle">Create your account</h1>
           
           <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
             Or{' '}
             <Link
-              to="/register"
+              to="/"
               className="font-medium text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             >
-              create a new account
+              sign in to your existing account
             </Link>
           </p>
 
@@ -70,6 +100,23 @@ const Login = () => {
                 {error}
               </div>
             )}
+
+            <div className="inputContainer">
+              <label htmlFor="name" className="label">
+                Full Name
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                autoComplete="name"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                className="input"
+                placeholder="Enter your full name"
+              />
+            </div>
 
             <div className="inputContainer">
               <label htmlFor="email" className="label">
@@ -88,6 +135,8 @@ const Login = () => {
               />
             </div>
 
+            {/* Role selection removed - all users register as 'user' */}
+
             <div className="inputContainer">
               <label htmlFor="password" className="label">
                 Password
@@ -96,13 +145,35 @@ const Login = () => {
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 required
                 value={formData.password}
                 onChange={handleChange}
                 className="input"
-                placeholder="Enter your password"
+                placeholder="Enter your password (min 6 characters)"
               />
+            </div>
+
+            <div className="inputContainer">
+              <label htmlFor="confirmPassword" className="label">
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                required
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="input"
+                placeholder="Confirm your password"
+              />
+            </div>
+
+            <div className="text-xs text-gray-600 dark:text-gray-400 mb-4 p-3 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg">
+              <strong>Note:</strong> All new accounts are created as <span className="font-semibold text-blue-600 dark:text-blue-400">User</span> role. 
+              Administrator privileges can only be granted by existing administrators.
             </div>
 
             <button
@@ -116,10 +187,10 @@ const Login = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Signing in...
+                  Creating account...
                 </span>
               ) : (
-                'Sign in'
+                'Create account'
               )}
             </button>
           </form>
@@ -138,4 +209,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

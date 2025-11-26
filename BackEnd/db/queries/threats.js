@@ -1,17 +1,25 @@
 const pool = require("../pool");
 
 async function getAllThreats() {
-  const { rows } = await pool.query("SELECT * FROM threats ORDER BY detected_at DESC");
+  const { rows } = await pool.query(
+    "SELECT * FROM threats ORDER BY detected_at DESC"
+  );
   return rows;
 }
 
 async function getThreatById(threat_id) {
-  const { rows } = await pool.query("SELECT * FROM threats WHERE threat_id = $1", [threat_id]);
+  const { rows } = await pool.query(
+    "SELECT * FROM threats WHERE threat_id = $1",
+    [threat_id]
+  );
   return rows[0] || null;
 }
 
 async function getThreatsByCategory(category) {
-  const { rows } = await pool.query("SELECT * FROM threats WHERE category = $1 ORDER BY detected_at DESC", [category]);
+  const { rows } = await pool.query(
+    "SELECT * FROM threats WHERE category = $1 ORDER BY detected_at DESC",
+    [category]
+  );
   return rows;
 }
 
@@ -23,7 +31,14 @@ async function searchThreatsByName(substring) {
   return rows;
 }
 
-async function addThreat({ name, message, description, category, severity, detected_at }) {
+async function addThreat({
+  name,
+  message,
+  description,
+  category,
+  severity,
+  detected_at,
+}) {
   if (detected_at === undefined || detected_at === null) {
     const { rows } = await pool.query(
       `INSERT INTO threats (name, message, description, category, severity)

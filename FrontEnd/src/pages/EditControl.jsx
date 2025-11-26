@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import Form from '../components/Form';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,22 +16,9 @@ function EditControl() {
   // Get current user and permissions
   const { currentUser, permissions, loading: userLoading } = useUser();
 
-  // UPDATED: Use new compliance status values that match database constraint
   const allowedStatuses = ["compliant", "partially compliant", "not compliant"];
 
-  // Format status for display (capitalize)
-  const formatStatusForDisplay = (status) => {
-    switch (status) {
-      case "compliant":
-        return "Compliant";
-      case "partially compliant":
-        return "Partially Compliant";
-      case "not compliant":
-        return "Not Compliant";
-      default:
-        return status;
-    }
-  };
+
 
   // Safe user property access
   const getCurrentUserName = () => {
@@ -47,11 +34,9 @@ function EditControl() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        console.log('Fetching control with ID:', id);
 
         // Fetch control
         const controlData = await complianceAPI.getControlById(id);
-        console.log('Control data received:', controlData);
         setItem(controlData);
 
         setError(null);
@@ -70,14 +55,14 @@ function EditControl() {
         setLoading(false);
         return;
       }
-      
+
       // Validate that ID is a number or valid string
       if (!id || id === 'undefined' || id === 'null') {
         setError("Invalid control ID");
         setLoading(false);
         return;
       }
-      
+
       fetchData();
     }
   }, [id, userLoading, permissions.isAdmin]);
@@ -110,18 +95,17 @@ function EditControl() {
         notes: formData.notes || "",
       };
 
-      console.log('Submitting control data:', controlData);
 
       await complianceAPI.updateControl(id, controlData);
-      
+
       // Show success message
       alert('Control updated successfully!');
-      
+
       // Navigate back to compliance page
       navigate('/app/compliance');
     } catch (err) {
       console.error("Error updating control:", err);
-      
+
       // Provide more specific error messages
       if (err.message && err.message.includes('violates check constraint')) {
         alert("Failed to update control: Invalid status value. Please contact administrator.");
@@ -151,7 +135,7 @@ function EditControl() {
         <p className="text-gray-600 dark:text-gray-400 mb-4">
           You do not have permission to edit controls. Admin access required.
         </p>
-        <button 
+        <button
           onClick={() => navigate('/app/compliance')}
           className="button buttonStyle"
         >
@@ -176,7 +160,7 @@ function EditControl() {
         <div className="editConfig">
           <h1 className="editConfigTitle">Edit Control</h1>
           <div className="text-red-500 p-4 bg-red-50 rounded-lg mb-4">Error: {error}</div>
-          <button 
+          <button
             onClick={() => navigate('/app/compliance')}
             className="button buttonStyle"
           >
@@ -193,7 +177,7 @@ function EditControl() {
         <div className="editConfig">
           <h1 className="editConfigTitle">Edit Control</h1>
           <div className="p-4 bg-yellow-50 rounded-lg mb-4">Control not found for ID: {id}</div>
-          <button 
+          <button
             onClick={() => navigate('/app/compliance')}
             className="button buttonStyle"
           >
@@ -213,13 +197,13 @@ function EditControl() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="editConfigTitle">Edit Control</h1>
         </div>
-        
+
         <div className='flex flex-row w-full justify-center relative bottom-6'>
           <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full dark:text-blue-400 dark:bg-blue-900/30">
             Editing as: {getCurrentUserName()}
           </div>
         </div>
-        
+
         <button className="templateBackLink" onClick={() => navigate(-1)}>
           <FontAwesomeIcon icon={faArrowLeft} className="text-2xl mr-2" />
           Back
@@ -265,7 +249,7 @@ function EditControl() {
               type: "date",
               isInput: true,
               label: "Last Reviewed:",
-              initialValue: item.last_reviewed 
+              initialValue: item.last_reviewed
                 ? new Date(item.last_reviewed).toISOString().split('T')[0]
                 : "",
               Class: {

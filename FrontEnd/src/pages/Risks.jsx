@@ -9,7 +9,6 @@ import { risksAPI, usersAPI } from "../services/api"
 import { useUser } from '../hooks/useUser'
 
 function Risks() {
-    const [risks, setRisks] = useState([]);
     const [filteredRisks, setFilteredRisks] = useState([]);
     const [users, setUsers] = useState([]); // Add users state
     const [loading, setLoading] = useState(true);
@@ -18,7 +17,7 @@ function Risks() {
     const { id } = useParams();
 
     // Get current user and permissions
-    const { currentUser, permissions, loading: userLoading } = useUser();
+    const {  permissions, loading: userLoading } = useUser();
 
     // Get search context from outlet
     const outletContext = useOutletContext();
@@ -43,7 +42,6 @@ function Risks() {
                 data = await risksAPI.getAll();
             }
 
-            setRisks(data);
             setFilteredRisks(data);
             setError(null);
         } catch (err) {
@@ -91,7 +89,6 @@ function Risks() {
             try {
                 await risksAPI.delete(riskId);
                 // Update local state without refetching
-                setRisks(prev => prev.filter(risk => risk.risk_id !== riskId));
                 setFilteredRisks(prev => prev.filter(risk => risk.risk_id !== riskId));
             } catch (err) {
                 alert('Failed to delete risk');
@@ -107,11 +104,11 @@ function Risks() {
             return;
         }
         // Use window.location to force navigation if navigate() doesn't work
-       navigate(`/app/editRisk/${riskId}`);
+        navigate(`/app/editRisk/${riskId}`);
     };
 
     const handleViewRisk = (riskId) => {
-       navigate(`/app/viewRisk/${riskId}`);
+        navigate(`/app/viewRisk/${riskId}`);
     };
 
     const handleAddRisk = () => {
@@ -127,7 +124,6 @@ function Risks() {
     const [ids, setIds] = useState([]);
 
     const currentDate = new Date();
-    const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
 
     // Update fields - simplified to avoid dependency loops
     useEffect(() => {
@@ -145,27 +141,27 @@ function Risks() {
         filteredRisks.forEach((risk) => {
             const actionButtons = [];
             const ownerName = getUserNameById(risk.owner); // Get owner name
-            
+
             if (permissions.isAdmin) {
                 actionButtons.push(
-                    { 
-                        type: "i", 
-                        text: "faPen", 
-                        color: "#26A7F6", 
+                    {
+                        type: "i",
+                        text: "faPen",
+                        color: "#26A7F6",
                         click: () => handleEditRisk(risk.risk_id)
                     },
-                    { 
-                        type: "i", 
-                        text: "faTrash", 
-                        color: "#F44336", 
+                    {
+                        type: "i",
+                        text: "faTrash",
+                        color: "#F44336",
                         click: () => deleteRisk(risk.risk_id)
                     }
                 );
             } else {
                 actionButtons.push(
-                    { 
-                        type: "i", 
-                        text: "faEye", 
+                    {
+                        type: "i",
+                        text: "faEye",
                         color: "#666666",
                         click: () => handleViewRisk(risk.risk_id)
                     }
@@ -180,7 +176,7 @@ function Risks() {
                     type: "b",
                     text: risk.status,
                     color: risk.status === "open" ? "#FFA72699" :
-                           risk.status === "closed" ? "#00ff0099" : "#3b82f699"
+                        risk.status === "closed" ? "#00ff0099" : "#3b82f699"
                 },
                 { type: "t", text: risk.likelihood || "Unknown" },
                 { type: "t", text: risk.impact || "Unknown" },
@@ -188,7 +184,7 @@ function Risks() {
                     type: "b",
                     text: risk.severity,
                     color: risk.severity === "high" || risk.severity === "critical" ? "#ff000099" :
-                           risk.severity === "medium" ? "#ffff0099" : "#00ff0099"
+                        risk.severity === "medium" ? "#ffff0099" : "#00ff0099"
                 },
                 { type: "t", text: risk.last_reviewed ? new Date(risk.last_reviewed).toLocaleDateString() : "Never" },
                 ...actionButtons
@@ -206,14 +202,14 @@ function Risks() {
     // Calculate stats
     const totalRisks = filteredRisks.length;
     const openRisks = filteredRisks.filter(risk => risk.status === "open").length;
-    const highSeverityRisks = filteredRisks.filter(risk => 
+    const highSeverityRisks = filteredRisks.filter(risk =>
         risk.severity === "high" || risk.severity === "critical"
     ).length;
     const reviewedThisMonth = filteredRisks.filter(risk => {
         if (!risk.last_reviewed) return false;
         const reviewDate = new Date(risk.last_reviewed);
-        return reviewDate.getMonth() === currentDate.getMonth() && 
-               reviewDate.getFullYear() === currentDate.getFullYear();
+        return reviewDate.getMonth() === currentDate.getMonth() &&
+            reviewDate.getFullYear() === currentDate.getFullYear();
     }).length;
 
     // Show loading while checking user permissions
@@ -234,7 +230,7 @@ function Risks() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                     You do not have permission to view risks.
                 </p>
-                <button 
+                <button
                     onClick={() => navigate('/app/dashboard')}
                     className="button buttonStyle"
                 >
@@ -267,45 +263,45 @@ function Risks() {
                 </div>
 
                 <div className="h2AndButtonContainer">
-                {permissions.isAdmin ? (
-                    <button 
-                        className="button buttonStyle ml-2"
-                        onClick={handleAddRisk}
-                        title="Add new risk"
-                    >
-                        <FontAwesomeIcon icon={faPlus} className="mr-1" />
-                        Add Risk
-                    </button>
-                ) : (
-                    <div 
-                        className="button buttonStyle mr-2 opacity-30 cursor-not-allowed"
-                        title="Admin access required to add risks"
-                    >
-                        <FontAwesomeIcon icon={faPlus} className="mr-1" />
-                        Add Risk
-                    </div>
-                )}
-            </div>
-
-            {filteredRisks.length === 0 ? (
-                <div className="p-4 text-center">
-                    {globalSearchQuery ? `No risks found matching "${globalSearchQuery}"` : "No risks found"}
+                    {permissions.isAdmin ? (
+                        <button
+                            className="button buttonStyle ml-2"
+                            onClick={handleAddRisk}
+                            title="Add new risk"
+                        >
+                            <FontAwesomeIcon icon={faPlus} className="mr-1" />
+                            Add Risk
+                        </button>
+                    ) : (
+                        <div
+                            className="button buttonStyle mr-2 opacity-30 cursor-not-allowed"
+                            title="Admin access required to add risks"
+                        >
+                            <FontAwesomeIcon icon={faPlus} className="mr-1" />
+                            Add Risk
+                        </div>
+                    )}
                 </div>
-            ) : (
-                <CardSlider
-                caption={{ text: "Risks", icon: "faChartSimple" }}
 
-                    titles={permissions.isAdmin ? 
-                        [ "Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "Edit", "Delete"] :
-                        [ "Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "View"]
-                    }
-                    sizes={permissions.isAdmin ? [ 16, 6, 8, 5, 5, 4, 8, 8, 2, 3] : [16, 6, 8, 5, 5, 4, 8, 8, 2]}
-                    ids={ids}
-                    fields={fields}
-                    colors={colors}
-                    selectedId={id}
-                />
-            )}
+                {filteredRisks.length === 0 ? (
+                    <div className="p-4 text-center">
+                        {globalSearchQuery ? `No risks found matching "${globalSearchQuery}"` : "No risks found"}
+                    </div>
+                ) : (
+                    <CardSlider
+                        caption={{ text: "Risks", icon: "faChartSimple" }}
+
+                        titles={permissions.isAdmin ?
+                            ["Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "Edit", "Delete"] :
+                            ["Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "View"]
+                        }
+                        sizes={permissions.isAdmin ? [16, 6, 8, 5, 5, 4, 8, 8, 2, 3] : [16, 6, 8, 5, 5, 4, 8, 8, 2]}
+                        ids={ids}
+                        fields={fields}
+                        colors={colors}
+                        selectedId={id}
+                    />
+                )}
 
                 <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-500 self-center"></div>
             </>
@@ -359,7 +355,7 @@ function Risks() {
 
             <div className="h2AndButtonContainer">
                 {permissions.isAdmin ? (
-                    <button 
+                    <button
                         className="button buttonStyle ml-2"
                         onClick={handleAddRisk}
                         title="Add new risk"
@@ -368,7 +364,7 @@ function Risks() {
                         Add Risk
                     </button>
                 ) : (
-                    <div 
+                    <div
                         className="button buttonStyle ml-2 opacity-30 cursor-not-allowed"
                         title="Admin access required to add risks"
                     >
@@ -384,13 +380,13 @@ function Risks() {
                 </div>
             ) : (
                 <CardSlider
-                caption={{ text: "Risks", icon: "faChartSimple" }}
+                    caption={{ text: "Risks", icon: "faChartSimple" }}
 
-                    titles={permissions.isAdmin ? 
+                    titles={permissions.isAdmin ?
                         ["Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "Edit", "Delete"] :
-                        [ "Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "View"]
+                        ["Title", "Category", "Owner", "Status", "Likelihood", "Impact", "Severity", "Last Reviewed", "View"]
                     }
-                    sizes={permissions.isAdmin ? [ 16, 6, 8, 5, 5, 4, 8, 8, 2, 3] : [16, 6, 8, 5, 5, 4, 8, 8, 2]}
+                    sizes={permissions.isAdmin ? [16, 6, 8, 5, 5, 4, 8, 8, 2, 3] : [16, 6, 8, 5, 5, 4, 8, 8, 2]}
                     ids={ids}
                     fields={fields}
                     colors={colors}

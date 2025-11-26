@@ -4,7 +4,20 @@ const { logAction } = require("./auditHelper");
 
 async function createGovernanceItem(req, res, next) {
   try {
-    const { governance_name, type, owner, status, effective_date, expiry_date, next_review, last_reviewed, approval_status, approver, latest_change_summary, attachment } = req.body;
+    const {
+      governance_name,
+      type,
+      owner,
+      status,
+      effective_date,
+      expiry_date,
+      next_review,
+      last_reviewed,
+      approval_status,
+      approver,
+      latest_change_summary,
+      attachment,
+    } = req.body;
 
     if (!governance_name || !type) {
       throw new BadRequestError("Governance name and type are required");
@@ -26,11 +39,17 @@ async function createGovernanceItem(req, res, next) {
     });
 
     // Log the action
-    await logAction(req, "CREATE", "governance_item", newGovernanceItem.governance_id, {
-      governance_name,
-      type,
-      status
-    });
+    await logAction(
+      req,
+      "CREATE",
+      "governance_item",
+      newGovernanceItem.governance_id,
+      {
+        governance_name,
+        type,
+        status,
+      }
+    );
 
     res.status(201).json(newGovernanceItem);
   } catch (err) {
@@ -48,7 +67,10 @@ async function updateGovernanceItem(req, res, next) {
     }
 
     const oldGovernanceItem = await db.getGovernanceItemById(parseInt(id));
-    const updatedGovernanceItem = await db.updateGovernanceItem(parseInt(id), fields);
+    const updatedGovernanceItem = await db.updateGovernanceItem(
+      parseInt(id),
+      fields
+    );
 
     if (!updatedGovernanceItem) {
       throw new NotFoundError("Governance item not found");
@@ -56,7 +78,7 @@ async function updateGovernanceItem(req, res, next) {
 
     // Log the action
     await logAction(req, "UPDATE", "governance_item", parseInt(id), {
-      changed_fields: Object.keys(fields)
+      changed_fields: Object.keys(fields),
     });
 
     res.status(200).json(updatedGovernanceItem);
@@ -77,10 +99,15 @@ async function deleteGovernanceItem(req, res, next) {
 
     // Log the action
     await logAction(req, "DELETE", "governance_item", parseInt(id), {
-      governance_name: deletedGovernanceItem.governance_name
+      governance_name: deletedGovernanceItem.governance_name,
     });
 
-    res.status(200).json({ message: "Governance item deleted successfully", governanceItem: deletedGovernanceItem });
+    res
+      .status(200)
+      .json({
+        message: "Governance item deleted successfully",
+        governanceItem: deletedGovernanceItem,
+      });
   } catch (err) {
     next(err);
   }
@@ -118,10 +145,14 @@ async function getGovernanceItemById(req, res, next) {
 async function getGovernanceItemsByOwner(req, res, next) {
   try {
     const { ownerId } = req.params;
-    const governanceItems = await db.getGovernanceItemsByOwner(parseInt(ownerId));
+    const governanceItems = await db.getGovernanceItemsByOwner(
+      parseInt(ownerId)
+    );
 
     if (!governanceItems || governanceItems.length === 0) {
-      return res.status(404).json({ message: "No governance items found for this owner" });
+      return res
+        .status(404)
+        .json({ message: "No governance items found for this owner" });
     }
 
     res.status(200).json(governanceItems);
@@ -159,7 +190,7 @@ async function searchGovernanceItems(req, res, next) {
     if (!q) {
       throw new BadRequestError("Search query is required");
     }
-    
+
     const searchQuery = q.trim();
     if (searchQuery.length === 0) {
       throw new BadRequestError("Search query cannot be empty");
@@ -168,12 +199,14 @@ async function searchGovernanceItems(req, res, next) {
     const governanceItems = await db.searchGovernanceItemsByName(searchQuery);
 
     if (!governanceItems || governanceItems.length === 0) {
-      return res.status(404).json({ message: "No governance items found matching your search" });
+      return res
+        .status(404)
+        .json({ message: "No governance items found matching your search" });
     }
 
     res.status(200).json(governanceItems);
   } catch (err) {
-    console.error('Error in searchGovernanceItems:', err);
+    console.error("Error in searchGovernanceItems:", err);
     next(err);
   }
 }

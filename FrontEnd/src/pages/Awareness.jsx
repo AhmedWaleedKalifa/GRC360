@@ -1,20 +1,8 @@
 // pages/Awareness.jsx - UPDATED VERSION WITH MODULE CREATION
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faPlay, 
-  faCheckCircle, 
-  faClock, 
-  faUsers, 
-  faChartLine,
-  faSearch,
-  faFilter,
-  faPlus,
-  faEye,
-  faCertificate,
-  faTimes
-} from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faCheckCircle, faClock, faUsers, faChartLine, faSearch, faPlus, faCertificate, faTimes } from '@fortawesome/free-solid-svg-icons';
 import Card from '../components/Card';
 import CardSlider from '../components/CardSlider';
 import { useUser } from '../hooks/useUser';
@@ -49,7 +37,7 @@ const CreateModuleModal = ({ isOpen, onClose, onModuleCreated }) => {
       const newModule = await awarenessAPI.createTrainingModule(formData);
       onModuleCreated(newModule);
       onClose();
-      
+
       // Reset form
       setFormData({
         title: '',
@@ -272,7 +260,6 @@ const Awareness = () => {
   // State for backend data
   const [trainingModules, setTrainingModules] = useState([]);
   const [userProgress, setUserProgress] = useState([]);
-  const [campaigns, setCampaigns] = useState([]);
   const [stats, setStats] = useState({
     total_modules: 0,
     completed_modules: 0,
@@ -285,12 +272,12 @@ const Awareness = () => {
   // Load data from backend
   const loadAwarenessData = async () => {
     if (!currentUser?.user_id) return;
-    
+
     try {
       setLoading(true);
       setError(null);
 
-      const [modulesData, progressData, campaignsData, statsData] = await Promise.all([
+      const [modulesData, progressData, statsData] = await Promise.all([
         awarenessAPI.getTrainingModules(),
         awarenessAPI.getUserProgress(currentUser.user_id),
         awarenessAPI.getCampaigns(),
@@ -299,7 +286,6 @@ const Awareness = () => {
 
       setTrainingModules(modulesData || []);
       setUserProgress(progressData || []);
-      setCampaigns(campaignsData || []);
       setStats(statsData || {
         total_modules: 0,
         completed_modules: 0,
@@ -337,7 +323,7 @@ const Awareness = () => {
   const getEnhancedTrainingModules = () => {
     return trainingModules.map(module => {
       const progress = userProgress.find(p => p.module_id === module.module_id) || {};
-      
+
       return {
         id: module.module_id,
         title: module.title,
@@ -358,50 +344,50 @@ const Awareness = () => {
   // Filter training modules based on search and status
   const filteredTraining = getEnhancedTrainingModules().filter(module => {
     const matchesSearch = module.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         module.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         module.category.toLowerCase().includes(searchTerm.toLowerCase());
-    
+      module.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      module.category.toLowerCase().includes(searchTerm.toLowerCase());
+
     const statusMap = {
       'all': () => true,
       'not_started': (status) => status === 'not-started',
       'in_progress': (status) => status === 'in-progress',
       'completed': (status) => status === 'completed'
     };
-    
+
     const matchesStatus = statusMap[filterStatus] ? statusMap[filterStatus](module.status) : true;
-    
+
     return matchesSearch && matchesStatus;
   });
 
   // Prepare data for CardSlider - Training Modules
   const trainingFields = filteredTraining.map((module, index) => {
     const actionButtons = [];
-    
+
     if (module.status === 'not-started' || module.status === 'in-progress') {
       actionButtons.push(
-        { 
-          type: "i", 
-          text: "faPlay", 
-          color: "#10b981", 
+        {
+          type: "i",
+          text: "faPlay",
+          color: "#10b981",
           click: () => handleStartTraining(module.id),
           title: "Start Training"
         }
       );
     } else if (module.status === 'completed') {
       actionButtons.push(
-        { 
-          type: "i", 
-          text: "faCertificate", 
-          color: "#f59e0b", 
+        {
+          type: "i",
+          text: "faCertificate",
+          color: "#f59e0b",
           click: () => handleViewCertificate(module.id),
           title: "View Certificate"
         }
       );
       actionButtons.push(
-        { 
-          type: "i", 
-          text: "faEye", 
-          color: "#3b82f6", 
+        {
+          type: "i",
+          text: "faEye",
+          color: "#3b82f6",
           click: () => handleStartTraining(module.id),
           title: "Review Module"
         }
@@ -411,10 +397,10 @@ const Awareness = () => {
     // Add edit button for admins
     if (permissions.isAdmin) {
       actionButtons.push(
-        { 
-          type: "i", 
-          text: "faEdit", 
-          color: "#6b7280", 
+        {
+          type: "i",
+          text: "faEdit",
+          color: "#6b7280",
           click: () => handleEditModule(module.id),
           title: "Edit Module"
         }
@@ -423,29 +409,29 @@ const Awareness = () => {
 
     return [
       { type: "t", text: index + 1 },
-      { 
-        type: "t", 
+      {
+        type: "t",
         text: module.title,
         title: module.description
       },
       { type: "t", text: module.category },
-      { 
-        type: "b", 
+      {
+        type: "b",
         text: module.status.replace('-', ' '),
-        color: module.status === "completed" 
-          ? "#10b98199" 
+        color: module.status === "completed"
+          ? "#10b98199"
           : module.status === "in-progress"
-          ? "#3b82f699"
-          : "#6b728099"
+            ? "#3b82f699"
+            : "#6b728099"
       },
-      { 
-        type: "t", 
+      {
+        type: "t",
         text: `${module.progress}%`,
         color: module.progress === 100 ? "#10b981" : module.progress > 50 ? "#3b82f6" : "#f59e0b"
       },
       { type: "t", text: module.duration || 'N/A' },
-      { 
-        type: "t", 
+      {
+        type: "t",
         text: new Date(module.dueDate).toLocaleDateString(),
         color: new Date(module.dueDate) < new Date() && module.status !== 'completed' ? "#ef4444" : undefined
       },
@@ -460,7 +446,7 @@ const Awareness = () => {
   const handleViewCertificate = (moduleId) => {
     const module = getEnhancedTrainingModules().find(m => m.id === moduleId);
     const progress = userProgress.find(p => p.module_id === moduleId);
-    
+
     if (progress?.status === 'completed') {
       alert(`Certificate of Completion for ${module?.title}\nScore: ${progress.score}%\nCompleted: ${new Date(progress.completed_at).toLocaleDateString()}`);
     }
@@ -497,7 +483,7 @@ const Awareness = () => {
           <div className="text-red-500 text-xl mb-4">⚠️</div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Error Loading Data</h3>
           <p className="text-gray-600 mb-4">{error}</p>
-          <button 
+          <button
             onClick={loadAwarenessData}
             className="button buttonStyle"
           >
@@ -531,34 +517,34 @@ const Awareness = () => {
 
       {/* Statistics Cards */}
       <div className="cardsContainer">
-        <Card 
-          title="Overall Progress" 
-          value={`${stats.overall_progress || 0}%`} 
-          model={3} 
+        <Card
+          title="Overall Progress"
+          value={`${stats.overall_progress || 0}%`}
+          model={3}
           icon={faChartLine}
           iconColor="#3b82f6"
           subtitle="Training completion rate"
         />
-        <Card 
-          title="Completed" 
-          value={stats.completed_modules || 0} 
-          model={1} 
+        <Card
+          title="Completed"
+          value={stats.completed_modules || 0}
+          model={1}
           icon={faCheckCircle}
           iconColor="#10b981"
           subtitle="Training modules"
         />
-        <Card 
-          title="In Progress" 
-          value={stats.in_progress_modules || 0} 
-          model={2} 
+        <Card
+          title="In Progress"
+          value={stats.in_progress_modules || 0}
+          model={2}
           icon={faClock}
           iconColor="#f59e0b"
           subtitle="Active training"
         />
-        <Card 
-          title="Average Score" 
-          value={`${stats.average_score || 0}%`} 
-          model={3} 
+        <Card
+          title="Average Score"
+          value={`${stats.average_score || 0}%`}
+          model={3}
           icon={faCertificate}
           iconColor="#8b5cf6"
           subtitle="Completed modules"
@@ -568,22 +554,20 @@ const Awareness = () => {
       {/* Tabs */}
       <div className="flex border-b border-gray-300 dark:border-gray-600 mb-6">
         <button
-          className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
-            activeTab === 'training'
+          className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${activeTab === 'training'
               ? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
               : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-          } rounded-t-lg`}
+            } rounded-t-lg`}
           onClick={() => setActiveTab('training')}
         >
           <FontAwesomeIcon icon={faPlay} className="mr-2" />
           Training Modules
         </button>
         <button
-          className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
-            activeTab === 'campaigns'
+          className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${activeTab === 'campaigns'
               ? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
               : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-          } rounded-t-lg`}
+            } rounded-t-lg`}
           onClick={() => setActiveTab('campaigns')}
         >
           <FontAwesomeIcon icon={faUsers} className="mr-2" />
@@ -598,8 +582,8 @@ const Awareness = () => {
           <div className="flex gap-4 mb-6">
             <div className="flex-1 max-w-md">
               <div className="relative">
-                <FontAwesomeIcon 
-                  icon={faSearch} 
+                <FontAwesomeIcon
+                  icon={faSearch}
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <input
@@ -630,12 +614,12 @@ const Awareness = () => {
                 No training modules found
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                {searchTerm || filterStatus !== 'all' 
-                  ? 'Try adjusting your search or filter criteria' 
+                {searchTerm || filterStatus !== 'all'
+                  ? 'Try adjusting your search or filter criteria'
                   : 'No training modules available yet'}
               </p>
               {permissions.isAdmin && (
-                <button 
+                <button
                   className="button buttonStyle mt-4"
                   onClick={handleCreateModule}
                 >

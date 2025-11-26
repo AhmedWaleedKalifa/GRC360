@@ -3,24 +3,26 @@ const auditLogsDB = require("../db/queries/auditLogs");
 async function logAction(req, action, entity, entity_id, details = "") {
   try {
     let userInfo = {};
-    let userName = 'System';
-    
+    let userName = "System";
+
     // Use the user data from the request (extracted from headers)
     if (req.frontendUser && req.frontendUser.user_id) {
       userInfo = {
         user_id: req.frontendUser.user_id,
-        user_name: req.frontendUser.user_name || `User ${req.frontendUser.user_id}`,
-        email: req.frontendUser.email || 'No email',
-        role: req.frontendUser.role || 'user'
+        user_name:
+          req.frontendUser.user_name || `User ${req.frontendUser.user_id}`,
+        email: req.frontendUser.email || "No email",
+        role: req.frontendUser.role || "user",
       };
-      userName = req.frontendUser.user_name || `User ${req.frontendUser.user_id}`;
+      userName =
+        req.frontendUser.user_name || `User ${req.frontendUser.user_id}`;
     }
 
     // Ensure details is an object
     let detailsObj = {};
-    if (typeof details === 'object' && details !== null) {
+    if (typeof details === "object" && details !== null) {
       detailsObj = details;
-    } else if (typeof details === 'string') {
+    } else if (typeof details === "string") {
       try {
         detailsObj = JSON.parse(details);
       } catch {
@@ -32,7 +34,7 @@ async function logAction(req, action, entity, entity_id, details = "") {
       user_name: userName,
       user_info: userInfo,
       timestamp: new Date().toISOString(),
-      ...detailsObj
+      ...detailsObj,
     };
 
     await auditLogsDB.addAuditLog({
@@ -40,11 +42,8 @@ async function logAction(req, action, entity, entity_id, details = "") {
       action,
       entity,
       entity_id,
-      details: JSON.stringify(logDetails)
+      details: JSON.stringify(logDetails),
     });
-
-    console.log(`Audit log created: ${action} on ${entity} by ${userName}`);
-    
   } catch (error) {
     console.error("Failed to log audit action:", error);
     // Don't throw error here as we don't want to break the main operation
@@ -55,10 +54,10 @@ async function logAction(req, action, entity, entity_id, details = "") {
 async function logSystemAction(action, entity, entity_id, details = {}) {
   try {
     const logDetails = {
-      user_name: 'System',
+      user_name: "System",
       system_generated: true,
       timestamp: new Date().toISOString(),
-      ...details
+      ...details,
     };
 
     await auditLogsDB.addAuditLog({
@@ -66,16 +65,14 @@ async function logSystemAction(action, entity, entity_id, details = {}) {
       action,
       entity,
       entity_id,
-      details: JSON.stringify(logDetails)
+      details: JSON.stringify(logDetails),
     });
-
-    console.log(`System audit log created: ${action} on ${entity}`);
   } catch (error) {
     console.error("Failed to log system action:", error);
   }
 }
 
-module.exports = { 
+module.exports = {
   logAction,
-  logSystemAction 
+  logSystemAction,
 };

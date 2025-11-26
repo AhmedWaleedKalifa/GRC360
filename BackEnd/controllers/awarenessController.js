@@ -1,6 +1,10 @@
 // controllers/awarenessController.js
 const db = require("../db/queries/awareness");
-const { ConflictError, BadRequestError, NotFoundError } = require("../errors/errors");
+const {
+  ConflictError,
+  BadRequestError,
+  NotFoundError,
+} = require("../errors/errors");
 const { logAction } = require("./auditHelper");
 
 // Training Modules
@@ -25,14 +29,16 @@ async function getTrainingModuleById(req, res, next) {
     // Get steps with questions and options
     const steps = await db.getStepsByModuleId(parseInt(id));
     for (let step of steps) {
-      if (step.step_type === 'quiz') {
+      if (step.step_type === "quiz") {
         step.questions = await db.getQuestionsByStepId(step.step_id);
         for (let question of step.questions) {
-          question.options = await db.getOptionsByQuestionId(question.question_id);
+          question.options = await db.getOptionsByQuestionId(
+            question.question_id
+          );
         }
       }
     }
-    
+
     module.steps = steps;
     res.status(200).json(module);
   } catch (err) {
@@ -42,7 +48,16 @@ async function getTrainingModuleById(req, res, next) {
 
 async function createTrainingModule(req, res, next) {
   try {
-    const { title, description, duration, category, video_url, importance, status, sort_order } = req.body;
+    const {
+      title,
+      description,
+      duration,
+      category,
+      video_url,
+      importance,
+      status,
+      sort_order,
+    } = req.body;
 
     if (!title || !category) {
       throw new BadRequestError("Title and category are required");
@@ -56,12 +71,12 @@ async function createTrainingModule(req, res, next) {
       video_url,
       importance,
       status,
-      sort_order
+      sort_order,
     });
 
     await logAction(req, "CREATE", "training_module", newModule.module_id, {
       title,
-      category
+      category,
     });
 
     res.status(201).json(newModule);
@@ -86,7 +101,7 @@ async function updateTrainingModule(req, res, next) {
     }
 
     await logAction(req, "UPDATE", "training_module", parseInt(id), {
-      changed_fields: Object.keys(fields)
+      changed_fields: Object.keys(fields),
     });
 
     res.status(200).json(updatedModule);
@@ -105,10 +120,15 @@ async function deleteTrainingModule(req, res, next) {
     }
 
     await logAction(req, "DELETE", "training_module", parseInt(id), {
-      title: deletedModule.title
+      title: deletedModule.title,
     });
 
-    res.status(200).json({ message: "Training module deleted successfully", module: deletedModule });
+    res
+      .status(200)
+      .json({
+        message: "Training module deleted successfully",
+        module: deletedModule,
+      });
   } catch (err) {
     next(err);
   }
@@ -121,7 +141,7 @@ async function searchTrainingModules(req, res, next) {
     if (!q) {
       throw new BadRequestError("Search query is required");
     }
-    
+
     const searchQuery = q.trim();
     if (searchQuery.length === 0) {
       throw new BadRequestError("Search query cannot be empty");
@@ -160,12 +180,12 @@ async function createStep(req, res, next) {
       title,
       content,
       duration,
-      sort_order
+      sort_order,
     });
 
     await logAction(req, "CREATE", "training_step", newStep.step_id, {
       title,
-      step_type
+      step_type,
     });
 
     res.status(201).json(newStep);
@@ -190,7 +210,7 @@ async function updateStep(req, res, next) {
     }
 
     await logAction(req, "UPDATE", "training_step", parseInt(stepId), {
-      changed_fields: Object.keys(fields)
+      changed_fields: Object.keys(fields),
     });
 
     res.status(200).json(updatedStep);
@@ -209,10 +229,12 @@ async function deleteStep(req, res, next) {
     }
 
     await logAction(req, "DELETE", "training_step", parseInt(stepId), {
-      title: deletedStep.title
+      title: deletedStep.title,
     });
 
-    res.status(200).json({ message: "Step deleted successfully", step: deletedStep });
+    res
+      .status(200)
+      .json({ message: "Step deleted successfully", step: deletedStep });
   } catch (err) {
     next(err);
   }
@@ -223,12 +245,12 @@ async function getQuestionsByStepId(req, res, next) {
   try {
     const { stepId } = req.params;
     const questions = await db.getQuestionsByStepId(parseInt(stepId));
-    
+
     // Get options for each question
     for (let question of questions) {
       question.options = await db.getOptionsByQuestionId(question.question_id);
     }
-    
+
     res.status(200).json(questions);
   } catch (err) {
     next(err);
@@ -238,10 +260,19 @@ async function getQuestionsByStepId(req, res, next) {
 async function createQuestion(req, res, next) {
   try {
     const { stepId } = req.params;
-    const { question_text, question_type, correct_answer, explanation, sort_order, options } = req.body;
+    const {
+      question_text,
+      question_type,
+      correct_answer,
+      explanation,
+      sort_order,
+      options,
+    } = req.body;
 
     if (!question_text || correct_answer === undefined) {
-      throw new BadRequestError("Question text and correct answer are required");
+      throw new BadRequestError(
+        "Question text and correct answer are required"
+      );
     }
 
     const newQuestion = await db.addQuestion({
@@ -250,7 +281,7 @@ async function createQuestion(req, res, next) {
       question_type,
       correct_answer,
       explanation,
-      sort_order
+      sort_order,
     });
 
     // Add options if provided
@@ -259,17 +290,19 @@ async function createQuestion(req, res, next) {
         await db.addOption({
           question_id: newQuestion.question_id,
           option_text: option.option_text,
-          option_order: option.option_order
+          option_order: option.option_order,
         });
       }
     }
 
     // Get the complete question with options
     const completeQuestion = await db.getQuestionById(newQuestion.question_id);
-    completeQuestion.options = await db.getOptionsByQuestionId(newQuestion.question_id);
+    completeQuestion.options = await db.getOptionsByQuestionId(
+      newQuestion.question_id
+    );
 
     await logAction(req, "CREATE", "quiz_question", newQuestion.question_id, {
-      step_id: stepId
+      step_id: stepId,
     });
 
     res.status(201).json(completeQuestion);
@@ -287,14 +320,17 @@ async function updateQuestion(req, res, next) {
       throw new BadRequestError("No fields to update");
     }
 
-    const updatedQuestion = await db.updateQuestion(parseInt(questionId), fields);
+    const updatedQuestion = await db.updateQuestion(
+      parseInt(questionId),
+      fields
+    );
 
     if (!updatedQuestion) {
       throw new NotFoundError("Question not found");
     }
 
     await logAction(req, "UPDATE", "quiz_question", parseInt(questionId), {
-      changed_fields: Object.keys(fields)
+      changed_fields: Object.keys(fields),
     });
 
     res.status(200).json(updatedQuestion);
@@ -313,10 +349,15 @@ async function deleteQuestion(req, res, next) {
     }
 
     await logAction(req, "DELETE", "quiz_question", parseInt(questionId), {
-      question_text: deletedQuestion.question_text
+      question_text: deletedQuestion.question_text,
     });
 
-    res.status(200).json({ message: "Question deleted successfully", question: deletedQuestion });
+    res
+      .status(200)
+      .json({
+        message: "Question deleted successfully",
+        question: deletedQuestion,
+      });
   } catch (err) {
     next(err);
   }
@@ -345,11 +386,11 @@ async function createOption(req, res, next) {
     const newOption = await db.addOption({
       question_id: parseInt(questionId),
       option_text,
-      option_order
+      option_order,
     });
 
     await logAction(req, "CREATE", "quiz_option", newOption.option_id, {
-      question_id: questionId
+      question_id: questionId,
     });
 
     res.status(201).json(newOption);
@@ -374,7 +415,7 @@ async function updateOption(req, res, next) {
     }
 
     await logAction(req, "UPDATE", "quiz_option", parseInt(optionId), {
-      changed_fields: Object.keys(fields)
+      changed_fields: Object.keys(fields),
     });
 
     res.status(200).json(updatedOption);
@@ -393,10 +434,12 @@ async function deleteOption(req, res, next) {
     }
 
     await logAction(req, "DELETE", "quiz_option", parseInt(optionId), {
-      option_text: deletedOption.option_text
+      option_text: deletedOption.option_text,
     });
 
-    res.status(200).json({ message: "Option deleted successfully", option: deletedOption });
+    res
+      .status(200)
+      .json({ message: "Option deleted successfully", option: deletedOption });
   } catch (err) {
     next(err);
   }
@@ -424,15 +467,21 @@ async function updateUserProgress(req, res, next) {
       status,
       progress_percentage,
       score,
-      time_spent
+      time_spent,
     });
 
-    await logAction(req, "UPDATE", "user_training_progress", progress.progress_id, {
-      module_id: moduleId,
-      status,
-      progress_percentage,
-      score
-    });
+    await logAction(
+      req,
+      "UPDATE",
+      "user_training_progress",
+      progress.progress_id,
+      {
+        module_id: moduleId,
+        status,
+        progress_percentage,
+        score,
+      }
+    );
 
     res.status(200).json(progress);
   } catch (err) {
@@ -444,7 +493,8 @@ async function updateUserProgress(req, res, next) {
 async function createQuizAttempt(req, res, next) {
   try {
     const { userId, moduleId } = req.params;
-    const { score, time_spent, total_questions, correct_answers, answers } = req.body;
+    const { score, time_spent, total_questions, correct_answers, answers } =
+      req.body;
 
     const attempt = await db.createQuizAttempt({
       user_id: parseInt(userId),
@@ -452,7 +502,7 @@ async function createQuizAttempt(req, res, next) {
       score,
       time_spent,
       total_questions,
-      correct_answers
+      correct_answers,
     });
 
     if (answers && answers.length > 0) {
@@ -460,20 +510,20 @@ async function createQuizAttempt(req, res, next) {
     }
 
     // Update user progress
-    const status = score >= 70 ? 'completed' : 'in_progress';
+    const status = score >= 70 ? "completed" : "in_progress";
     await db.updateUserProgress({
       user_id: parseInt(userId),
       module_id: parseInt(moduleId),
       status,
       progress_percentage: 100,
       score,
-      time_spent
+      time_spent,
     });
 
     await logAction(req, "CREATE", "quiz_attempt", attempt.attempt_id, {
       module_id: moduleId,
       score,
-      passed: attempt.passed
+      passed: attempt.passed,
     });
 
     res.status(201).json(attempt);
@@ -511,7 +561,15 @@ async function getCampaignById(req, res, next) {
 
 async function createCampaign(req, res, next) {
   try {
-    const { title, description, status, start_date, end_date, target_audience, created_by } = req.body;
+    const {
+      title,
+      description,
+      status,
+      start_date,
+      end_date,
+      target_audience,
+      created_by,
+    } = req.body;
 
     if (!title || !start_date || !end_date) {
       throw new BadRequestError("Title, start date, and end date are required");
@@ -524,13 +582,19 @@ async function createCampaign(req, res, next) {
       start_date,
       end_date,
       target_audience,
-      created_by
+      created_by,
     });
 
-    await logAction(req, "CREATE", "awareness_campaign", newCampaign.campaign_id, {
-      title,
-      status
-    });
+    await logAction(
+      req,
+      "CREATE",
+      "awareness_campaign",
+      newCampaign.campaign_id,
+      {
+        title,
+        status,
+      }
+    );
 
     res.status(201).json(newCampaign);
   } catch (err) {
@@ -554,7 +618,7 @@ async function updateCampaign(req, res, next) {
     }
 
     await logAction(req, "UPDATE", "awareness_campaign", parseInt(id), {
-      changed_fields: Object.keys(fields)
+      changed_fields: Object.keys(fields),
     });
 
     res.status(200).json(updatedCampaign);
@@ -573,10 +637,15 @@ async function deleteCampaign(req, res, next) {
     }
 
     await logAction(req, "DELETE", "awareness_campaign", parseInt(id), {
-      title: deletedCampaign.title
+      title: deletedCampaign.title,
     });
 
-    res.status(200).json({ message: "Campaign deleted successfully", campaign: deletedCampaign });
+    res
+      .status(200)
+      .json({
+        message: "Campaign deleted successfully",
+        campaign: deletedCampaign,
+      });
   } catch (err) {
     next(err);
   }
@@ -618,7 +687,7 @@ async function addCampaignModule(req, res, next) {
       module_id,
       sort_order,
       assigned_date,
-      due_date
+      due_date,
     });
 
     res.status(201).json(campaignModule);
@@ -630,13 +699,21 @@ async function addCampaignModule(req, res, next) {
 async function removeCampaignModule(req, res, next) {
   try {
     const { campaignId, moduleId } = req.params;
-    const deletedModule = await db.removeCampaignModule(parseInt(campaignId), parseInt(moduleId));
+    const deletedModule = await db.removeCampaignModule(
+      parseInt(campaignId),
+      parseInt(moduleId)
+    );
 
     if (!deletedModule) {
       throw new NotFoundError("Campaign module not found");
     }
 
-    res.status(200).json({ message: "Campaign module removed successfully", module: deletedModule });
+    res
+      .status(200)
+      .json({
+        message: "Campaign module removed successfully",
+        module: deletedModule,
+      });
   } catch (err) {
     next(err);
   }
@@ -656,16 +733,22 @@ async function getUserCampaignAssignments(req, res, next) {
 async function assignUserToCampaign(req, res, next) {
   try {
     const { userId, campaignId } = req.params;
-    
+
     const assignment = await db.assignUserToCampaign({
       user_id: parseInt(userId),
-      campaign_id: parseInt(campaignId)
+      campaign_id: parseInt(campaignId),
     });
 
-    await logAction(req, "CREATE", "user_campaign_assignment", assignment.assignment_id, {
-      user_id: userId,
-      campaign_id: campaignId
-    });
+    await logAction(
+      req,
+      "CREATE",
+      "user_campaign_assignment",
+      assignment.assignment_id,
+      {
+        user_id: userId,
+        campaign_id: campaignId,
+      }
+    );
 
     res.status(201).json(assignment);
   } catch (err) {
@@ -682,15 +765,24 @@ async function updateUserCampaignAssignment(req, res, next) {
       throw new BadRequestError("No fields to update");
     }
 
-    const updatedAssignment = await db.updateUserCampaignAssignment(parseInt(assignmentId), fields);
+    const updatedAssignment = await db.updateUserCampaignAssignment(
+      parseInt(assignmentId),
+      fields
+    );
 
     if (!updatedAssignment) {
       throw new NotFoundError("Assignment not found");
     }
 
-    await logAction(req, "UPDATE", "user_campaign_assignment", parseInt(assignmentId), {
-      changed_fields: Object.keys(fields)
-    });
+    await logAction(
+      req,
+      "UPDATE",
+      "user_campaign_assignment",
+      parseInt(assignmentId),
+      {
+        changed_fields: Object.keys(fields),
+      }
+    );
 
     res.status(200).json(updatedAssignment);
   } catch (err) {
@@ -727,32 +819,32 @@ module.exports = {
   updateTrainingModule,
   deleteTrainingModule,
   searchTrainingModules,
-  
+
   // Steps
   getModuleSteps,
   createStep,
   updateStep,
   deleteStep,
-  
+
   // Questions
   getQuestionsByStepId,
   createQuestion,
   updateQuestion,
   deleteQuestion,
-  
+
   // Options
   getOptionsByQuestionId,
   createOption,
   updateOption,
   deleteOption,
-  
+
   // User Progress
   getUserProgress,
   updateUserProgress,
-  
+
   // Quiz Attempts
   createQuizAttempt,
-  
+
   // Campaigns
   getCampaigns,
   getCampaignById,
@@ -760,18 +852,18 @@ module.exports = {
   updateCampaign,
   deleteCampaign,
   searchCampaigns,
-  
+
   // Campaign Modules
   getCampaignModules,
   addCampaignModule,
   removeCampaignModule,
-  
+
   // User Campaign Assignments
   getUserCampaignAssignments,
   assignUserToCampaign,
   updateUserCampaignAssignment,
-  
+
   // Statistics
   getUserTrainingStats,
-  getCampaignStats
+  getCampaignStats,
 };

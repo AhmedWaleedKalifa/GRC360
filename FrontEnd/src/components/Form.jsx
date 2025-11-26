@@ -1,18 +1,17 @@
-import React from 'react'
 import Input from './Input';
 
-const Form = ({ 
+const Form = ({
   fstyle = { form: "form", title: "formTitle", button: "formButton" },
   title = "",
-  button = "", 
+  button = "",
   inputarray = [],
   onSubmit
 }) => {
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     const formData = new FormData(e.target);
     const values = Object.fromEntries(formData.entries());
-    
+
     if (onSubmit) {
       onSubmit(values);
     }

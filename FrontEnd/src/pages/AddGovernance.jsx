@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Form from '../components/Form'
 import { useNavigate } from 'react-router-dom';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -97,107 +97,107 @@ function AddGovernance() {
             <div className="editConfig">
                 <div className="flex items-center justify-center mb-6">
                     <h1 className="editConfigTitle">Add Governance</h1>
-                   
+
                 </div>
                 <div className='flex flex-row w-full justify-center relative bottom-6'>
-                <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full dark:text-blue-400 dark:bg-blue-900/30">
-  Adding as: {getCurrentUserName()}
-</div>
-       </div>
-            <button className='templateBackLink' onClick={() => navigate(-1)}>
-                <FontAwesomeIcon icon={faArrowLeft} className='text-2xl' />
-                Back
-            </button>
+                    <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full dark:text-blue-400 dark:bg-blue-900/30">
+                        Adding as: {getCurrentUserName()}
+                    </div>
+                </div>
+                <button className='templateBackLink' onClick={() => navigate(-1)}>
+                    <FontAwesomeIcon icon={faArrowLeft} className='text-2xl' />
+                    Back
+                </button>
 
 
 
-            <Form
-                fstyle={{ form: "profileForm", button: "button buttonStyle col-span-2 mt-4" }}
-                onSubmit={handleSubmit}
-                inputarray={[
-                    {
-                        id: "name",
-                        type: "text",
-                        isInput: true,
-                        label: "Name:",
-                        required: true,
-                        Class: { container: "editInputContainer", label: "label", input: "profileFormInput" }
-                    },
-                    {
-                        id: "type",
-                        type: "select",
-                        isInput: true,
-                        label: "Type:",
-                        selectList: allowedTypes,
-                        required: true,
-                        Class: { container: "editInputContainer", label: "label", input: "select" }
-                    },
-                    {
-                        id: "ownerDisplay",
-                        type: "text",
-                        isInput: true,
-                        label: "Owner:",
-                        initialValue: getCurrentUserName(),
-                        disabled: true,
-                        Class: { container: "editInputContainer", label: "label", input: "profileFormInput bg-gray-100" }
-                    },
-                    {
-                        id: "status",
-                        type: "select",
-                        isInput: true,
-                        label: "Status:",
-                        selectList: allowedStatuses,
-                        initialValue: "draft",
-                        Class: { container: "editInputContainer", label: "label", input: "select" }
-                    },
-                    {
-                        id: "lastReviewed",
-                        type: "date",
-                        isInput: true,
-                        label: "Last Reviewed:",
-                        Class: { container: "editInputContainer", label: "label", input: "select" }
-                    },
-                    {
-                        id: "effectiveDate",
-                        type: "date",
-                        isInput: true,
-                        label: "Effective Date:",
-                        Class: { container: "editInputContainer", label: "label", input: "select" }
-                    },
-                    {
-                        id: "expiryDate",
-                        type: "date",
-                        isInput: true,
-                        label: "Expiry Date:",
-                        Class: { container: "editInputContainer", label: "label", input: "select" }
-                    },
-                    {
-                        id: "nextReview",
-                        type: "date",
-                        isInput: true,
-                        label: "Next Review:",
-                        Class: { container: "editInputContainer", label: "label", input: "select" }
-                    },
-                    {
-                        id: "changeSummary",
-                        type: "textarea",
-                        isInput: true,
-                        label: "Change Summary:",
-                        Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput h-24" }
-                    },
-                    {
-                        id: "approverState",
-                        type: "select",
-                        isInput: true,
-                        label: "Approval Status:",
-                        selectList: allowedApprovalStatuses,
-                        initialValue: "pending",
-                        Class: { container: "editInputContainer", label: "label", input: "select" }
-                    },
-                ]}
-                button={loading ? "Adding..." : "Add Governance Item"}
-            />
-        </div>
+                <Form
+                    fstyle={{ form: "profileForm", button: "button buttonStyle col-span-2 mt-4" }}
+                    onSubmit={handleSubmit}
+                    inputarray={[
+                        {
+                            id: "name",
+                            type: "text",
+                            isInput: true,
+                            label: "Name:",
+                            required: true,
+                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput" }
+                        },
+                        {
+                            id: "type",
+                            type: "select",
+                            isInput: true,
+                            label: "Type:",
+                            selectList: allowedTypes,
+                            required: true,
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
+                        },
+                        {
+                            id: "ownerDisplay",
+                            type: "text",
+                            isInput: true,
+                            label: "Owner:",
+                            initialValue: getCurrentUserName(),
+                            disabled: true,
+                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput bg-gray-100" }
+                        },
+                        {
+                            id: "status",
+                            type: "select",
+                            isInput: true,
+                            label: "Status:",
+                            selectList: allowedStatuses,
+                            initialValue: "draft",
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
+                        },
+                        {
+                            id: "lastReviewed",
+                            type: "date",
+                            isInput: true,
+                            label: "Last Reviewed:",
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
+                        },
+                        {
+                            id: "effectiveDate",
+                            type: "date",
+                            isInput: true,
+                            label: "Effective Date:",
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
+                        },
+                        {
+                            id: "expiryDate",
+                            type: "date",
+                            isInput: true,
+                            label: "Expiry Date:",
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
+                        },
+                        {
+                            id: "nextReview",
+                            type: "date",
+                            isInput: true,
+                            label: "Next Review:",
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
+                        },
+                        {
+                            id: "changeSummary",
+                            type: "textarea",
+                            isInput: true,
+                            label: "Change Summary:",
+                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput h-24" }
+                        },
+                        {
+                            id: "approverState",
+                            type: "select",
+                            isInput: true,
+                            label: "Approval Status:",
+                            selectList: allowedApprovalStatuses,
+                            initialValue: "pending",
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
+                        },
+                    ]}
+                    button={loading ? "Adding..." : "Add Governance Item"}
+                />
+            </div>
         </div >
     )
 }

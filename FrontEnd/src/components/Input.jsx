@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 const Input = ({ id = '', label = '', type = "text", selectList = [], isInput, changeable = true, initialValue = "", placeholder, Class = { container: "inputContainer", label: "label", input: "input" } }) => {
   const [value, setValue] = useState(initialValue);
@@ -22,24 +22,24 @@ const Input = ({ id = '', label = '', type = "text", selectList = [], isInput, c
             <input type={type} id={id} name={id} value={value} placeholder={placeholder} onChange={changeable ? handleChange : () => { }} className={Class.input} />
           ) : type == "select" ? (
             <select
-            name={id}
-            id={id}
-            className={changeable?Class.input:(Class.input+" opacity-60")}
-            value={value}
-            onChange={changeable ? handleChange : () => {}}
-          >
-            {selectList.map((e, idx) => (
-              <option key={idx} value={e}>{e}</option>
-            ))}
-          </select>
-          
+              name={id}
+              id={id}
+              className={changeable ? Class.input : (Class.input + " opacity-60")}
+              value={value}
+              onChange={changeable ? handleChange : () => { }}
+            >
+              {selectList.map((e, idx) => (
+                <option key={idx} value={e}>{e}</option>
+              ))}
+            </select>
+
           ) : isInput ? (
             <input
               type={type}
               id={id}
               name={id}
               value={value}
-              className={changeable?Class.input:(Class.input+" opacity-60")}
+              className={changeable ? Class.input : (Class.input + " opacity-60")}
               onChange={changeable ? handleChange : () => { }}
               placeholder={placeholder}
             />
@@ -49,7 +49,7 @@ const Input = ({ id = '', label = '', type = "text", selectList = [], isInput, c
               value={value}
               name={id}
               onChange={changeable ? handleChange : () => { }}
-              className={changeable?Class.input:(Class.input+" opacity-60")}
+              className={changeable ? Class.input : (Class.input + " opacity-60")}
               placeholder={placeholder}
 
             ></textarea>

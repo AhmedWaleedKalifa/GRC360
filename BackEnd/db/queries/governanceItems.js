@@ -1,17 +1,25 @@
 const pool = require("../pool");
 
 async function getAllGovernanceItems() {
-  const { rows } = await pool.query("SELECT * FROM governance_items ORDER BY created_at DESC");
+  const { rows } = await pool.query(
+    "SELECT * FROM governance_items ORDER BY created_at DESC"
+  );
   return rows;
 }
 
 async function getGovernanceItemById(governance_id) {
-  const { rows } = await pool.query("SELECT * FROM governance_items WHERE governance_id = $1", [governance_id]);
+  const { rows } = await pool.query(
+    "SELECT * FROM governance_items WHERE governance_id = $1",
+    [governance_id]
+  );
   return rows[0] || null;
 }
 
 async function getGovernanceItemsByOwner(owner_id) {
-  const { rows } = await pool.query("SELECT * FROM governance_items WHERE owner = $1 ORDER BY created_at DESC", [owner_id]);
+  const { rows } = await pool.query(
+    "SELECT * FROM governance_items WHERE owner = $1 ORDER BY created_at DESC",
+    [owner_id]
+  );
   return rows;
 }
 
@@ -23,12 +31,38 @@ async function searchGovernanceItemsByName(substring) {
   return rows;
 }
 
-async function addGovernanceItem({ governance_name, type, owner, status, effective_date, expiry_date, next_review, last_reviewed, approval_status, approver, latest_change_summary, attachment }) {
+async function addGovernanceItem({
+  governance_name,
+  type,
+  owner,
+  status,
+  effective_date,
+  expiry_date,
+  next_review,
+  last_reviewed,
+  approval_status,
+  approver,
+  latest_change_summary,
+  attachment,
+}) {
   const { rows } = await pool.query(
     `INSERT INTO governance_items (governance_name, type, owner, status, effective_date, expiry_date, next_review, last_reviewed, approval_status, approver, latest_change_summary, attachment)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
      RETURNING *;`,
-    [governance_name, type, owner, status, effective_date, expiry_date, next_review, last_reviewed, approval_status, approver, latest_change_summary, attachment]
+    [
+      governance_name,
+      type,
+      owner,
+      status,
+      effective_date,
+      expiry_date,
+      next_review,
+      last_reviewed,
+      approval_status,
+      approver,
+      latest_change_summary,
+      attachment,
+    ]
   );
   return rows[0];
 }

@@ -4,7 +4,17 @@ const { logAction } = require("./auditHelper");
 
 async function createIncident(req, res, next) {
   try {
-    const { title, category, status, severity, priority, reported_at, detected_at, owner, description } = req.body;
+    const {
+      title,
+      category,
+      status,
+      severity,
+      priority,
+      reported_at,
+      detected_at,
+      owner,
+      description,
+    } = req.body;
 
     if (!title || !category || !severity) {
       throw new BadRequestError("Title, category, and severity are required");
@@ -27,7 +37,7 @@ async function createIncident(req, res, next) {
       title,
       category,
       severity,
-      status: status || 'reported'
+      status: status || "reported",
     });
 
     res.status(201).json(newIncident);
@@ -71,7 +81,9 @@ async function getIncidentsByOwner(req, res, next) {
     const incidents = await db.getIncidentsByOwner(parseInt(ownerId));
 
     if (!incidents || incidents.length === 0) {
-      return res.status(404).json({ message: "No incidents found for this owner" });
+      return res
+        .status(404)
+        .json({ message: "No incidents found for this owner" });
     }
 
     res.status(200).json(incidents);
@@ -100,7 +112,7 @@ async function updateIncident(req, res, next) {
     await logAction(req, "UPDATE", "incident", parseInt(id), {
       changed_fields: Object.keys(fields),
       old_status: oldIncident.status,
-      new_status: updatedIncident.status
+      new_status: updatedIncident.status,
     });
 
     res.status(200).json(updatedIncident);
@@ -122,10 +134,15 @@ async function deleteIncident(req, res, next) {
     // Log the action
     await logAction(req, "DELETE", "incident", parseInt(id), {
       title: deletedIncident.title,
-      category: deletedIncident.category
+      category: deletedIncident.category,
     });
 
-    res.status(200).json({ message: "Incident deleted successfully", incident: deletedIncident });
+    res
+      .status(200)
+      .json({
+        message: "Incident deleted successfully",
+        incident: deletedIncident,
+      });
   } catch (err) {
     next(err);
   }
@@ -138,7 +155,7 @@ async function searchIncidents(req, res, next) {
     if (!q) {
       throw new BadRequestError("Search query is required");
     }
-    
+
     const searchQuery = q.trim();
     if (searchQuery.length === 0) {
       throw new BadRequestError("Search query cannot be empty");
@@ -147,12 +164,14 @@ async function searchIncidents(req, res, next) {
     const incidents = await db.searchIncidentsByTitle(searchQuery);
 
     if (!incidents || incidents.length === 0) {
-      return res.status(404).json({ message: "No incidents found matching your search" });
+      return res
+        .status(404)
+        .json({ message: "No incidents found matching your search" });
     }
 
     res.status(200).json(incidents);
   } catch (err) {
-    console.error('Error in searchIncidents:', err);
+    console.error("Error in searchIncidents:", err);
     next(err);
   }
 }

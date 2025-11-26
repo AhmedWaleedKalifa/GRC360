@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 const useApi = (apiCall, initialData = null, dependencies = []) => {
   const [data, setData] = useState(initialData);
@@ -12,8 +12,8 @@ const useApi = (apiCall, initialData = null, dependencies = []) => {
       const response = await apiCall();
       setData(response.data);
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'An error occurred');
-      console.error('API Error:', err);
+      setError(err.response?.data?.error || err.message || "An error occurred");
+      console.error("API Error:", err);
     } finally {
       setLoading(false);
     }

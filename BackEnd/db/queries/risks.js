@@ -1,28 +1,59 @@
 const pool = require("../pool");
 
 async function getAllRisks() {
-  const { rows } = await pool.query("SELECT * FROM risks ORDER BY created_at DESC");
+  const { rows } = await pool.query(
+    "SELECT * FROM risks ORDER BY created_at DESC"
+  );
   return rows;
 }
 
 async function getRiskById(risk_id) {
-  const { rows } = await pool.query("SELECT * FROM risks WHERE risk_id = $1", [risk_id]);
+  const { rows } = await pool.query("SELECT * FROM risks WHERE risk_id = $1", [
+    risk_id,
+  ]);
   return rows[0] || null;
 }
 
 async function getRisksByOwner(owner_id) {
-  const { rows } = await pool.query("SELECT * FROM risks WHERE owner = $1 ORDER BY created_at DESC", [owner_id]);
+  const { rows } = await pool.query(
+    "SELECT * FROM risks WHERE owner = $1 ORDER BY created_at DESC",
+    [owner_id]
+  );
   return rows;
 }
 
-
-
-async function addRisk({ title, description, category, type, status, severity, impact, likelihood, owner, last_reviewed, due_date, notes }) {
+async function addRisk({
+  title,
+  description,
+  category,
+  type,
+  status,
+  severity,
+  impact,
+  likelihood,
+  owner,
+  last_reviewed,
+  due_date,
+  notes,
+}) {
   const { rows } = await pool.query(
     `INSERT INTO risks (title, description, category, type, status, severity, impact, likelihood, owner, last_reviewed, due_date, notes)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
      RETURNING *;`,
-    [title, description, category, type, status, severity, impact, likelihood, owner, last_reviewed, due_date, notes]
+    [
+      title,
+      description,
+      category,
+      type,
+      status,
+      severity,
+      impact,
+      likelihood,
+      owner,
+      last_reviewed,
+      due_date,
+      notes,
+    ]
   );
   return rows[0];
 }
@@ -49,10 +80,10 @@ async function removeRisk(risk_id) {
 }
 async function searchRisksByTitle(substring) {
   // Validate input
-  if (!substring || typeof substring !== 'string') {
-    throw new Error('Invalid search parameter');
+  if (!substring || typeof substring !== "string") {
+    throw new Error("Invalid search parameter");
   }
-  
+
   const { rows } = await pool.query(
     "SELECT * FROM risks WHERE title ILIKE $1 ORDER BY created_at DESC",
     [`%${substring}%`]

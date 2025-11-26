@@ -1,19 +1,28 @@
+// components/SideBar.jsx
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHouse, faShield, faTriangleExclamation, faCircleExclamation, faGavel, faGear, faChartSimple, faFileLines, faRightFromBracket, faChevronRight, faChevronLeft, faLightbulb } from '@fortawesome/free-solid-svg-icons'
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useEffect } from 'react';
-import { useUser } from '../hooks/useUser';
+import { authAPI } from '../services/api';
 
 const SideBar = ({ open, setOpen, setActive, active }) => {
   const location = useLocation();
-  
-  // Get current user and permissions
-  const { currentUser, permissions, loading: userLoading } = useUser();
+  const navigate = useNavigate();
+  const currentUser = authAPI.getCurrentUser();
 
   function handleClick() {
     setOpen(!open);
     localStorage.setItem("open", open);
   }
+
+  const handleLogout = async () => {
+    try {
+      await authAPI.logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   useEffect(() => {
     if (location.pathname.startsWith("/app/risks")) {
@@ -52,36 +61,9 @@ const SideBar = ({ open, setOpen, setActive, active }) => {
     }
   }, [open]);
 
-  // Show loading state while checking permissions
-  if (userLoading) {
-    return (
-      <aside>
-        <div className={!open == true ? "sidebarOpenedContainer" : "sidebarClosedContainer"}>
-          <header>
-            <div className='sidebarLogoContainer'>
-              {!open == true ? (
-                <img src="/logoL.png" alt="logo" className="bigLogo " />
-              ) : (
-                <img src="/logoM.png" alt="logo" className="smallLogo" title="المستشار الرقميGRC360 " />
-              )}
-            </div>
-          </header>
-
-          <div className='sidebarCloseMark'>
-            <FontAwesomeIcon
-              onClick={handleClick}
-              icon={!open ? faChevronLeft : faChevronRight}
-              className="sidebarCloseMarkIcon"
-            />
-          </div>
-
-          <div className="flex justify-center items-center h-32">
-            <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-200 border-t-blue-500"></div>
-          </div>
-        </div>
-      </aside>
-    );
-  }
+  // Check if user has admin permissions
+  const isAdmin = currentUser?.role === 'admin';
+  const isModerator = currentUser?.role === 'moderator' || isAdmin;
 
   return (
     <aside>
@@ -91,7 +73,7 @@ const SideBar = ({ open, setOpen, setActive, active }) => {
             {!open == true ? (
               <img src="/logoL.png" alt="logo" className="bigLogo " />
             ) : (
-              <img src="/logoM.png" alt="logo" className="smallLogo" title="المستشار الرقميGRC360 " />
+              <img src="/logoM.png" alt="logo" className="smallLogo" title="GRC360 Digital Advisor" />
             )}
           </div>
         </header>
@@ -112,12 +94,12 @@ const SideBar = ({ open, setOpen, setActive, active }) => {
             style={
               active == "Main"
                 ? {
-                    backgroundImage: `linear-gradient(
+                  backgroundImage: `linear-gradient(
                       to right,
                         #26A7F680, 
                        #00000000
                     )`,
-                  }
+                }
                 : {}
             }
           >
@@ -126,19 +108,20 @@ const SideBar = ({ open, setOpen, setActive, active }) => {
               {!open == true ? <span>Dashboard</span> : <span></span>}
             </li>
           </Link>
-          <Link 
+          
+          <Link
             to="/app/awareness"
             title='Awareness'
             className="link"
             style={
               active == "Awareness"
                 ? {
-                    backgroundImage: `linear-gradient(
+                  backgroundImage: `linear-gradient(
                       to right,
                         #26A7F680, 
                        #00000000
                     )`,
-                  }
+                }
                 : {}
             }
           >
@@ -147,19 +130,20 @@ const SideBar = ({ open, setOpen, setActive, active }) => {
               {!open == true ? <span>Awareness</span> : <span></span>}
             </li>
           </Link>
-          <Link 
+          
+          <Link
             to="/app/governance"
             title='Governance'
             className="link"
             style={
               active == "Governance"
                 ? {
-                    backgroundImage: `linear-gradient(
+                  backgroundImage: `linear-gradient(
                       to right,
                         #26A7F680, 
                        #00000000
                     )`,
-                  }
+                }
                 : {}
             }
           >
@@ -168,20 +152,20 @@ const SideBar = ({ open, setOpen, setActive, active }) => {
               {!open == true ? <span>Governance</span> : <span></span>}
             </li>
           </Link>
-          
-          <Link 
+
+          <Link
             to="/app/risks"
             title='Risks'
             className="link"
             style={
               active == "Risks"
                 ? {
-                    backgroundImage: `linear-gradient(
+                  backgroundImage: `linear-gradient(
                       to right,
                         #26A7F680, 
                        #00000000
                     )`,
-                  }
+                }
                 : {}
             }
           >
@@ -190,20 +174,20 @@ const SideBar = ({ open, setOpen, setActive, active }) => {
               {!open == true ? <span>Risks</span> : <span></span>}
             </li>
           </Link>
-          
-          <Link 
+
+          <Link
             to="/app/compliance"
             title='Compliance'
             className="link"
             style={
               active == "Compliance"
                 ? {
-                    backgroundImage: `linear-gradient(
+                  backgroundImage: `linear-gradient(
                       to right,
                         #26A7F680, 
                        #00000000
                     )`,
-                  }
+                }
                 : {}
             }
           >
@@ -212,20 +196,20 @@ const SideBar = ({ open, setOpen, setActive, active }) => {
               {!open == true ? <span>Compliance</span> : <span></span>}
             </li>
           </Link>
-          
-          <Link 
+
+          <Link
             to="/app/incidents"
             title='Incidents'
             className="link"
             style={
               active == "Incidents"
                 ? {
-                    backgroundImage: `linear-gradient(
+                  backgroundImage: `linear-gradient(
                       to right,
                         #26A7F680, 
                        #00000000
                     )`,
-                  }
+                }
                 : {}
             }
           >
@@ -234,20 +218,20 @@ const SideBar = ({ open, setOpen, setActive, active }) => {
               {!open == true ? <span>Incidents</span> : <span></span>}
             </li>
           </Link>
-          
-          <Link 
+
+          <Link
             to="/app/threats"
             title='Threats'
             className="link"
             style={
               active == "Threats"
                 ? {
-                    backgroundImage: `linear-gradient(
+                  backgroundImage: `linear-gradient(
                       to right,
                         #26A7F680, 
                        #00000000
                     )`,
-                  }
+                }
                 : {}
             }
           >
@@ -257,23 +241,21 @@ const SideBar = ({ open, setOpen, setActive, active }) => {
             </li>
           </Link>
 
-         
-          
-          {/* Show Logs tab only for admin users */}
-          {permissions.isAdmin && (
-            <Link 
+          {/* Show Logs tab only for admin and moderator users */}
+          {(isAdmin ) && (
+            <Link
               to="/app/logs"
               title='Logs'
               className="link"
               style={
                 active == "Logs"
                   ? {
-                      backgroundImage: `linear-gradient(
+                    backgroundImage: `linear-gradient(
                         to right,
                           #26A7F680, 
                          #00000000
                       )`,
-                    }
+                  }
                   : {}
               }
             >
@@ -283,41 +265,44 @@ const SideBar = ({ open, setOpen, setActive, active }) => {
               </li>
             </Link>
           )}
-          
-          <Link 
-            to="/app/configurations"
-            title="Configurations"
-            className="link"
-            style={
-              active == "Configurations"
-                ? {
+
+          {/* Show Configurations tab only for admin and moderator users */}
+          {(isAdmin || isModerator) && (
+            <Link
+              to="/app/configurations"
+              title="Configurations"
+              className="link"
+              style={
+                active == "Configurations"
+                  ? {
                     backgroundImage: `linear-gradient(
-                      to right,
-                        #26A7F680, 
-                       #00000000
-                    )`,
+                        to right,
+                          #26A7F680, 
+                         #00000000
+                      )`,
                   }
-                : {}
-            }
-          >
-            <li className="sidebarLi">
-              <FontAwesomeIcon icon={faGear} className="sidebarClosedListItem sidebarLi" />
-              {!open == true ? <span>Configurations</span> : <span></span>}
-            </li>
-          </Link>
+                  : {}
+              }
+            >
+              <li className="sidebarLi">
+                <FontAwesomeIcon icon={faGear} className="sidebarClosedListItem sidebarLi" />
+                {!open == true ? <span>Configurations</span> : <span></span>}
+              </li>
+            </Link>
+          )}
         </ul>
 
         <footer className={!open == true ? 'sidebarClosedFooter' : "sidebarOpenedFooter"}>
-          <Link 
-            to="/"
-            className="link logout"
+          <button
+            onClick={handleLogout}
+            className="link logout w-full text-left"
             title='Logout'
           >
             <li className="sidebarLi">
               <FontAwesomeIcon icon={faRightFromBracket} className="sidebarClosedListItem sidebarLi" />
               {!open == true ? <span>Logout</span> : <span></span>}
             </li>
-          </Link>
+          </button>
         </footer>
       </div>
     </aside>

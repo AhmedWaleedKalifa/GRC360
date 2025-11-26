@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useOutletContext, useNavigate } from 'react-router-dom';
 import CardSlider from '../components/CardSlider';
 import { configurationsAPI } from '../services/api';
 import { useUser } from '../hooks/useUser';
 
 function Configurations() {
-  const [configurations, setConfigurations] = useState([]);
   const [filteredConfigurations, setFilteredConfigurations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   // Get current user and permissions
-  const { currentUser, permissions, loading: userLoading } = useUser();
+  const { permissions, loading: userLoading } = useUser();
 
   // Get search context from outlet
   const outletContext = useOutletContext();
@@ -28,16 +27,15 @@ function Configurations() {
   const fetchConfigurations = async () => {
     try {
       setLoading(true);
-      
+
       let data;
-      
+
       if (globalSearchQuery) {
         data = await configurationsAPI.search(globalSearchQuery);
       } else {
         data = await configurationsAPI.getAll();
       }
-      
-      setConfigurations(data);
+
       setFilteredConfigurations(data);
       setError(null);
     } catch (err) {
@@ -70,24 +68,24 @@ function Configurations() {
       alert('You do not have permission to edit configurations. Admin access required.');
       return;
     }
-   navigate(`/app/editConfigurations/${configId}`);
+    navigate(`/app/editConfigurations/${configId}`);
   };
 
   useEffect(() => {
     const newFields = [];
     const newIds = [];
     const newColors = [];
-    
+
     filteredConfigurations.forEach((config) => {
       const actionButtons = [];
-      
+
       if (permissions.isAdmin) {
         actionButtons.push(
-          { 
-            type: "i", 
-            text: "faPen", 
-            color: "#26A7F6", 
-            click: () => handleEditConfiguration(config.config_id) 
+          {
+            type: "i",
+            text: "faPen",
+            color: "#26A7F6",
+            click: () => handleEditConfiguration(config.config_id)
           }
         );
       }
@@ -97,13 +95,13 @@ function Configurations() {
         { type: "t", text: config.value },
         ...actionButtons
       ]);
-      
+
       if (String(config.config_id) === id) {
         newColors.push("#26A7F680");
       } else {
         newColors.push("");
       }
-      
+
       newIds.push(config.config_id);
     });
 
@@ -130,7 +128,7 @@ function Configurations() {
         <p className="text-gray-600 dark:text-gray-400 mb-4">
           You do not have permission to view configurations.
         </p>
-        <button 
+        <button
           onClick={() => navigate('/app/dashboard')}
           className="button buttonStyle"
         >

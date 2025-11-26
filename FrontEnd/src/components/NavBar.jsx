@@ -4,22 +4,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import SearchBar from "./SearchBar"
 import { Link } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
-import { useUser } from '../hooks/useUser'
+import { authAPI } from '../services/api'
 
 function NavBar({ active, open, onSearch }) {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadCount] = useState(0);
 
-  const { 
-    currentUser, 
-    users, 
-    loading, 
-    error, 
-    permissions, 
-    changeCurrentUser, 
-    refreshUsers 
-  } = useUser();
+  const currentUser = authAPI.getCurrentUser();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -33,207 +26,172 @@ function NavBar({ active, open, onSearch }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleUserChange = (user) => {
-    changeCurrentUser(user);
-    setShowUserDropdown(false);
-    window.location.reload();
-  }
-
-  const handleRefreshUsers = async () => {
-    await refreshUsers();
-  };
-
-  // Group users by role for display
-  const usersByRole = {
-    admin: users.filter(user => user.role === 'admin'),
-    moderator: users.filter(user => user.role === 'moderator'),
-    user: users.filter(user => user.role === 'user'),
-    guest: users.filter(user => user.role === 'guest')
+  const handleLogout = async () => {
+    try {
+      await authAPI.logout();
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   // Role display configuration with your color scheme
   const roleConfig = {
-    admin: { 
-      label: 'Administrators', 
-      color: 'blue', 
+    admin: {
+      label: 'Administrator',
+      color: 'blue',
       badge: 'Admin',
-      bgLight: 'bg-blue-100',
-      textLight: 'text-blue-800',
-      bgDark: 'dark:bg-blue-900',
-      textDark: 'dark:text-blue-200',
-      gradientFrom: 'from-blue-400',
-      gradientTo: 'to-blue-600'
+      bgLight: 'bg-blue-500/20',
+      textLight: 'text-blue-700',
+      bgDark: 'dark:bg-blue-900/30',
+      textDark: 'dark:text-blue-300',
+      borderLight: 'border-blue-200',
+      borderDark: 'dark:border-blue-700'
     },
-    moderator: { 
-      label: 'Moderators', 
-      color: 'purple', 
+    moderator: {
+      label: 'Moderator',
+      color: 'purple',
       badge: 'Moderator',
-      bgLight: 'bg-purple-100',
-      textLight: 'text-purple-800',
-      bgDark: 'dark:bg-purple-900',
-      textDark: 'dark:text-purple-200',
-      gradientFrom: 'from-purple-400',
-      gradientTo: 'to-purple-600'
+      bgLight: 'bg-purple-500/20',
+      textLight: 'text-purple-700',
+      bgDark: 'dark:bg-purple-900/30',
+      textDark: 'dark:text-purple-300',
+      borderLight: 'border-purple-200',
+      borderDark: 'dark:border-purple-700'
     },
-    user: { 
-      label: 'Users', 
-      color: 'green', 
+    user: {
+      label: 'User',
+      color: 'green',
       badge: 'User',
-      bgLight: 'bg-green-100',
-      textLight: 'text-green-800',
-      bgDark: 'dark:bg-green-900',
-      textDark: 'dark:text-green-200',
-      gradientFrom: 'from-green-400',
-      gradientTo: 'to-green-600'
+      bgLight: 'bg-green-500/20',
+      textLight: 'text-green-700',
+      bgDark: 'dark:bg-green-900/30',
+      textDark: 'dark:text-green-300',
+      borderLight: 'border-green-200',
+      borderDark: 'dark:border-green-700'
     },
-    guest: { 
-      label: 'Guests', 
-      color: 'gray', 
+    guest: {
+      label: 'Guest',
+      color: 'gray',
       badge: 'Guest',
-      bgLight: 'bg-gray-100',
-      textLight: 'text-gray-800',
-      bgDark: 'dark:bg-gray-700',
-      textDark: 'dark:text-gray-200',
-      gradientFrom: 'from-gray-400',
-      gradientTo: 'to-gray-600'
+      bgLight: 'bg-gray-500/20',
+      textLight: 'text-gray-700',
+      bgDark: 'dark:bg-gray-700/30',
+      textDark: 'dark:text-gray-300',
+      borderLight: 'border-gray-200',
+      borderDark: 'dark:border-gray-600'
     }
   };
 
+  const userConfig = currentUser ? roleConfig[currentUser.role] : roleConfig.user;
+
   return (
-    <nav 
-      style={{ paddingLeft: `${!open ? "272px" : "96px" }` }} 
-      className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700 transition-colors duration-200"
+    <nav
+      style={{ paddingLeft: `${!open ? "272px" : "96px"}` }}
+      className="bg-gray-200 dark:bg-gray-800 shadow-sm border-b border-gray-300/40 dark:border-gray-700/40 transition-all duration-300"
     >
       <div className="flex flex-row w-full h-full items-center justify-between p-4">
         {/* Left side - Search Bar */}
         <div className="flex-1 max-w-md">
           <SearchBar active={active} onSearch={onSearch} />
         </div>
-        
+
         {/* Right side - User info and dropdown */}
         <div className="flex items-center space-x-4">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 hidden md:block">
-            Hello, {currentUser?.name}!
-            <span className={`ml-2 px-2 py-1 text-xs rounded-full ${
-              currentUser?.role === 'admin' 
-                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
-                : currentUser?.role === 'moderator'
-                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
-                : currentUser?.role === 'user'
-                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
-            }`}>
-              {currentUser?.role}
+            Hello, {currentUser?.user_name || currentUser?.name}!
+            <span className={`ml-2 px-2 py-1 text-xs rounded-full ${userConfig.bgLight} ${userConfig.textLight} ${userConfig.bgDark} ${userConfig.textDark} border ${userConfig.borderLight} ${userConfig.borderDark}`}>
+              {userConfig.badge}
             </span>
           </h2>
-          
-          {/* User Selector Dropdown */}
+
+          {/* User Dropdown */}
           <div ref={dropdownRef} className="relative">
-            <button 
+            <button
               onClick={() => setShowUserDropdown(!showUserDropdown)}
-              className="flex items-center space-x-3 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 shadow-sm"
+              className="flex items-center space-x-3 px-4 py-2 bg-gray-200 dark:bg-gray-700 border border-gray-300/40 dark:border-gray-600/40 rounded-lg hover:bg-gray-300/80 dark:hover:bg-gray-600/80 transition-all duration-200 shadow-sm"
               disabled={loading}
             >
               <div className="flex items-center space-x-2">
-                <div className={`w-2 h-2 rounded-full ${
-                  currentUser?.is_active === false ? 'bg-red-500' : 'bg-green-500'
-                }`}></div>
+                <div className={`w-2 h-2 rounded-full bg-green-500`}></div>
                 <span className="font-medium text-gray-700 dark:text-gray-200 text-sm">
-                  {loading ? 'Loading...' : currentUser?.name}
+                  {currentUser?.user_name || currentUser?.name}
                 </span>
               </div>
-              <FontAwesomeIcon 
-                icon={loading ? faSync : faChevronDown} 
-                className={`text-gray-500 dark:text-gray-400 transition-all duration-200 ${
-                  showUserDropdown ? 'rotate-180' : ''
-                } ${loading ? 'animate-spin' : ''}`}
+              <FontAwesomeIcon
+                icon={faChevronDown}
+                className={`text-gray-500 dark:text-gray-400 transition-all duration-200 ${showUserDropdown ? 'rotate-180' : ''}`}
                 size="xs"
               />
             </button>
-            
+
             {showUserDropdown && (
-              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50 transform opacity-100 scale-100 transition-all duration-200">
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="absolute right-0 mt-2 w-80 bg-gray-200 dark:bg-gray-800 border border-gray-300/40 dark:border-gray-700/40 rounded-lg shadow-xl z-50 transform opacity-100 scale-100 transition-all duration-200 cardStyle1">
+                <div className="p-4 border-b border-gray-300/40 dark:border-gray-700/40">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Switch User Account</h3>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Current: {currentUser?.name}</p>
+                      <h3 className="font-semibold text-gray-800 dark:text-white text-sm">User Profile</h3>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Signed in as {currentUser?.user_name}</p>
                     </div>
-                    <button 
-                      onClick={handleRefreshUsers}
-                      className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                      title="Refresh users"
-                    >
-                      <FontAwesomeIcon 
-                        icon={faSync} 
-                        className={`text-gray-500 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} 
-                      />
-                    </button>
+                    <div className={`px-2 py-1 text-xs rounded-full ${userConfig.bgLight} ${userConfig.textLight} ${userConfig.bgDark} ${userConfig.textDark} border ${userConfig.borderLight} ${userConfig.borderDark}`}>
+                      {userConfig.badge}
+                    </div>
                   </div>
                 </div>
-                
-                <div className="max-h-96 overflow-y-auto">
-                  {Object.entries(roleConfig).map(([role, config]) => (
-                    usersByRole[role]?.length > 0 && (
-                      <div key={role} className="p-3 border-t border-gray-100 dark:border-gray-700 first:border-t-0">
-                        <div className="flex items-center space-x-2 mb-3">
-                          <div className={`w-2 h-2 rounded-full bg-${config.color}-500`}></div>
-                          <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                            {config.label}
-                          </h4>
-                        </div>
-                        <div className="space-y-2">
-                          {usersByRole[role].map(user => (
-                            <button
-                              key={user.id}
-                              onClick={() => handleUserChange(user)}
-                              disabled={user.is_active === false}
-                              className={`w-full flex items-center justify-between p-3 text-left rounded-md transition-all duration-150 border ${
-                                currentUser?.id === user.id 
-                                  ? `${config.bgLight} ${config.textLight} ${config.bgDark} ${config.textDark} border-${config.color}-200 dark:border-${config.color}-700` 
-                                  : 'hover:bg-gray-50 dark:hover:bg-gray-700 border-transparent'
-                              } ${user.is_active === false ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            >
-                              <div className="flex items-center space-x-3">
-                                <div className="flex-shrink-0">
-                                  <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${config.gradientFrom} ${config.gradientTo} flex items-center justify-center text-white font-bold shadow-sm`}>
-                                    {user.name.split(' ').map(n => n[0]).join('')}
-                                  </div>
-                                </div>
-                                <div className="text-left">
-                                  <div className="font-medium text-gray-900 dark:text-white text-sm">
-                                    {user.name}
-                                    {user.is_active === false && (
-                                      <span className="ml-2 text-xs text-red-500">(Inactive)</span>
-                                    )}
-                                  </div>
-                                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                                    {user.email}
-                                  </div>
-                                  {user.job_title && (
-                                    <div className="text-xs text-gray-400 dark:text-gray-500">
-                                      {user.job_title}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              <span className={`px-2 py-1 text-xs rounded-full ${config.bgLight} ${config.textLight} ${config.bgDark} ${config.textDark} font-medium shadow-sm`}>
-                                {config.badge}
-                              </span>
-                            </button>
-                          ))}
-                        </div>
+
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex-shrink-0">
+                      <div className={`w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold shadow-sm`}>
+                        {(currentUser?.user_name || currentUser?.name)?.split(' ').map(n => n[0]).join('')}
                       </div>
-                    )
-                  ))}
+                    </div>
+                    <div className="text-left">
+                      <div className="font-medium text-gray-800 dark:text-white text-sm">
+                        {currentUser?.user_name || currentUser?.name}
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        {currentUser?.email}
+                      </div>
+                      {currentUser?.job_title && (
+                        <div className="text-xs text-gray-500 dark:text-gray-500">
+                          {currentUser?.job_title}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="text-gray-600 dark:text-gray-400">User ID:</div>
+                    <div className="text-gray-800 dark:text-gray-200 font-mono">{currentUser?.user_id}</div>
+                    
+                    <div className="text-gray-600 dark:text-gray-400">Last Login:</div>
+                    <div className="text-gray-800 dark:text-gray-200">
+                      {currentUser?.last_login ? new Date(currentUser.last_login).toLocaleDateString() : 'Never'}
+                    </div>
+                    
+                    <div className="text-gray-600 dark:text-gray-400">Status:</div>
+                    <div className="text-green-600 dark:text-green-400">Active</div>
+                  </div>
                 </div>
-                
-                <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 rounded-b-lg">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                    {permissions.isAdmin ? 'Full administrative access' : 
-                     permissions.isModerator ? 'Moderator access' : 
-                     'Limited access permissions'}
-                  </p>
+
+                <div className="p-3 border-t border-gray-300/40 dark:border-gray-700/40 bg-gray-300/50 dark:bg-gray-700/50 rounded-b-lg space-y-2">
+                  <Link
+                    to="/pages/profile"
+                    className="w-full flex items-center justify-center py-2 px-4 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-md transition-colors duration-200 text-sm text-gray-700 dark:text-gray-300"
+                    onClick={() => setShowUserDropdown(false)}
+                  >
+                    <FontAwesomeIcon icon={faCircleUser} className="mr-2" />
+                    View Profile
+                  </Link>
+                  
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center py-2 px-4 bg-red-900/20 hover:bg-red-900/30 dark:bg-red-900/30 dark:hover:bg-red-900/40 rounded-md transition-colors duration-200 text-sm text-red-900 dark:text-red-100 border border-red-900/30 dark:border-red-900/50"
+                  >
+                    <FontAwesomeIcon icon={faSync} className="mr-2 transform rotate-180" />
+                    Sign Out
+                  </button>
                 </div>
               </div>
             )}
@@ -241,27 +199,27 @@ function NavBar({ active, open, onSearch }) {
 
           {/* Notification and Profile Icons */}
           <div className="flex items-center space-x-3">
-            <Link 
-              to="/pages/notifications" 
-              title="Notifications" 
-              className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+            <Link
+              to="/pages/notifications"
+              title="Notifications"
+              className="relative p-2 rounded-lg hover:bg-gray-300/80 dark:hover:bg-gray-700/80 transition-colors duration-200"
             >
-              <FontAwesomeIcon 
-                icon={faBell} 
-                className="text-gray-600 dark:text-gray-300 text-lg" 
+              <FontAwesomeIcon
+                icon={faBell}
+                className="text-gray-600 dark:text-gray-300 text-lg"
               />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-800"></span>
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-gray-200 dark:border-gray-800"></span>
               )}
             </Link>
-            <Link 
-              to="/pages/profile" 
-              title="Profile" 
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+            <Link
+              to="/pages/profile"
+              title="Profile"
+              className="p-2 rounded-lg hover:bg-gray-300/80 dark:hover:bg-gray-700/80 transition-colors duration-200"
             >
-              <FontAwesomeIcon 
-                icon={faCircleUser} 
-                className="text-gray-600 dark:text-gray-300 text-xl" 
+              <FontAwesomeIcon
+                icon={faCircleUser}
+                className="text-gray-600 dark:text-gray-300 text-xl"
               />
             </Link>
           </div>

@@ -1,7 +1,7 @@
 // components/AIChatBot.jsx
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRobot, faTimes, faMessage } from '@fortawesome/free-solid-svg-icons';
+import { faRobot, faTimes } from '@fortawesome/free-solid-svg-icons';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const AIChatBot = () => {
@@ -26,58 +26,68 @@ const AIChatBot = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSendMessage = async (text) => {
-    if (isLoading || !text.trim()) return;
+ // In your AIChatBot.jsx - Update the handleSendMessage function
+const handleSendMessage = async (text) => {
+  if (isLoading || !text.trim()) return;
 
-    setIsLoading(true);
-    const userMessage = { id: `user-${Date.now()}`, role: 'user', text };
-    const modelPlaceholder = { id: `model-${Date.now()}`, role: 'model', text: '' };
+  setIsLoading(true);
+  const userMessage = { id: `user-${Date.now()}`, role: 'user', text };
+  const modelPlaceholder = { id: `model-${Date.now()}`, role: 'model', text: '' };
 
-    const messagesWithUser = [...messages, userMessage];
-    setMessages([...messagesWithUser, modelPlaceholder]);
-    setInputText('');
+  const messagesWithUser = [...messages, userMessage];
+  setMessages([...messagesWithUser, modelPlaceholder]);
+  setInputText('');
 
-    try {
-      // Now using the same backend as your GRC app - FIXED URL
-      const response = await fetch(API_BASE_URL+'/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ history: messagesWithUser }),
-      });
+  try {
+    const response = await fetch(API_BASE_URL + '/api/ai/chat', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Important for CORS with credentials
+      body: JSON.stringify({ history: messagesWithUser }),
+    });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let fullResponse = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        const chunk = decoder.decode(value, { stream: true });
-        fullResponse += chunk;
-
-        setMessages(prev => prev.map(msg => 
-          msg.id === modelPlaceholder.id ? { ...msg, text: fullResponse } : msg
-        ));
-      }
-
-    } catch (error) {
-      console.error('Chat error:', error);
-      setMessages(prev => prev.map(msg => 
-        msg.id === modelPlaceholder.id ? { 
-          ...msg, 
-          text: `I'm having trouble connecting: ${error.message}` 
-        } : msg
-      ));
-    } finally {
-      setIsLoading(false);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  };
 
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let fullResponse = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      fullResponse += chunk;
+
+      setMessages(prev => prev.map(msg =>
+        msg.id === modelPlaceholder.id ? { ...msg, text: fullResponse } : msg
+      ));
+    }
+
+  } catch (error) {
+    console.error('Chat error:', error);
+    
+    let errorMessage = "I'm having trouble connecting to the AI service. ";
+    
+    if (error.message.includes('Failed to fetch')) {
+      errorMessage += "Please check your internet connection and ensure the backend server is running.";
+    } else if (error.message.includes('HTTP error')) {
+      errorMessage += `Server returned an error: ${error.message}`;
+    } else {
+      errorMessage += `Error: ${error.message}`;
+    }
+
+    setMessages(prev => prev.map(msg =>
+      msg.id === modelPlaceholder.id ? { ...msg, text: errorMessage } : msg
+    ));
+  } finally {
+    setIsLoading(false);
+  }
+};
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!inputText.trim()) return;
@@ -127,11 +137,10 @@ const AIChatBot = () => {
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                    message.role === 'user'
+                  className={`max-w-[80%] rounded-lg px-4 py-2 ${message.role === 'user'
                       ? 'bg-blue-500 text-white rounded-br-none shadow-xl'
                       : 'bg-gray-300/80 dark:bg-gray-700/80 text-gray-800 dark:text-gray-200 rounded-bl-none shadow-xl'
-                  }`}
+                    }`}
                 >
                   <p className="text-sm whitespace-pre-wrap break-words">{message.text}</p>
                 </div>

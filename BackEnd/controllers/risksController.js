@@ -5,7 +5,19 @@ const { logAction, logSystemAction } = require("./auditHelper");
 
 async function createRisk(req, res, next) {
   try {
-    const { title, description, category, type, status, impact, likelihood, owner, last_reviewed, due_date, notes } = req.body;
+    const {
+      title,
+      description,
+      category,
+      type,
+      status,
+      impact,
+      likelihood,
+      owner,
+      last_reviewed,
+      due_date,
+      notes,
+    } = req.body;
 
     if (!title) {
       throw new BadRequestError("Title is required");
@@ -23,7 +35,7 @@ async function createRisk(req, res, next) {
 
     // Calculate severity automatically (now returns lowercase)
     const riskCalculation = RiskCalculator.calculateRisk(impact, likelihood);
-    
+
     const newRisk = await db.addRisk({
       title,
       description,
@@ -36,23 +48,23 @@ async function createRisk(req, res, next) {
       owner,
       last_reviewed,
       due_date,
-      notes
+      notes,
     });
 
     // Log the action with calculated values
     await logAction(req, "CREATE", "risk", newRisk.risk_id, {
       title,
-      category: category || 'Other',
+      category: category || "Other",
       impact,
       likelihood,
       calculated_severity: riskCalculation.severity,
-      risk_score: riskCalculation.riskScore
+      risk_score: riskCalculation.riskScore,
     });
 
     res.status(201).json({
       ...newRisk,
       risk_score: riskCalculation.riskScore,
-      calculated_severity: riskCalculation.severity
+      calculated_severity: riskCalculation.severity,
     });
   } catch (err) {
     next(err);
@@ -76,17 +88,27 @@ async function updateRisk(req, res, next) {
         throw new NotFoundError("Risk not found");
       }
 
-      const newImpact = fields.impact !== undefined ? fields.impact : currentRisk.impact;
-      const newLikelihood = fields.likelihood !== undefined ? fields.likelihood : currentRisk.likelihood;
+      const newImpact =
+        fields.impact !== undefined ? fields.impact : currentRisk.impact;
+      const newLikelihood =
+        fields.likelihood !== undefined
+          ? fields.likelihood
+          : currentRisk.likelihood;
 
       // Validate new values
-      const validation = RiskCalculator.validateRiskValues(newImpact, newLikelihood);
+      const validation = RiskCalculator.validateRiskValues(
+        newImpact,
+        newLikelihood
+      );
       if (!validation.isValid) {
         throw new BadRequestError(validation.error);
       }
 
       // Calculate new severity (now returns lowercase)
-      const riskCalculation = RiskCalculator.calculateRisk(newImpact, newLikelihood);
+      const riskCalculation = RiskCalculator.calculateRisk(
+        newImpact,
+        newLikelihood
+      );
       fields.severity = riskCalculation.severity;
     }
 
@@ -98,11 +120,14 @@ async function updateRisk(req, res, next) {
     }
 
     // Calculate current risk score for response
-    const currentCalculation = RiskCalculator.calculateRisk(updatedRisk.impact, updatedRisk.likelihood);
+    const currentCalculation = RiskCalculator.calculateRisk(
+      updatedRisk.impact,
+      updatedRisk.likelihood
+    );
 
     // Log the action
     const logData = {
-      changed_fields: Object.keys(fields)
+      changed_fields: Object.keys(fields),
     };
 
     if (fields.impact !== undefined || fields.likelihood !== undefined) {
@@ -119,7 +144,7 @@ async function updateRisk(req, res, next) {
     res.status(200).json({
       ...updatedRisk,
       risk_score: currentCalculation.riskScore,
-      calculated_severity: currentCalculation.severity
+      calculated_severity: currentCalculation.severity,
     });
   } catch (err) {
     next(err);
@@ -135,24 +160,30 @@ async function getRisks(req, res, next) {
     }
 
     // Add calculated risk score to each risk for frontend display
-    const risksWithCalculation = risks.map(risk => {
+    const risksWithCalculation = risks.map((risk) => {
       try {
-        const riskCalculation = RiskCalculator.calculateRisk(risk.impact, risk.likelihood);
+        const riskCalculation = RiskCalculator.calculateRisk(
+          risk.impact,
+          risk.likelihood
+        );
         return {
           ...risk,
           risk_score: riskCalculation.riskScore,
           calculated_severity: riskCalculation.severity,
-          calculation_valid: riskCalculation.isValid
+          calculation_valid: riskCalculation.isValid,
         };
       } catch (error) {
         // Handle individual risk calculation errors gracefully
-        console.warn(`Error calculating risk for risk_id ${risk.risk_id}:`, error.message);
+        console.warn(
+          `Error calculating risk for risk_id ${risk.risk_id}:`,
+          error.message
+        );
         return {
           ...risk,
           risk_score: 1,
-          calculated_severity: 'low',
+          calculated_severity: "low",
           calculation_valid: false,
-          calculation_error: error.message
+          calculation_error: error.message,
         };
       }
     });
@@ -166,7 +197,7 @@ async function getRisks(req, res, next) {
 async function getRiskById(req, res, next) {
   try {
     const { id } = req.params;
-    
+
     const riskId = parseInt(id);
     if (isNaN(riskId)) {
       throw new BadRequestError("Invalid risk ID");
@@ -179,12 +210,15 @@ async function getRiskById(req, res, next) {
     }
 
     // Add calculated risk score for frontend display
-    const riskCalculation = RiskCalculator.calculateRisk(risk.impact, risk.likelihood);
+    const riskCalculation = RiskCalculator.calculateRisk(
+      risk.impact,
+      risk.likelihood
+    );
     const riskWithCalculation = {
       ...risk,
       risk_score: riskCalculation.riskScore,
       calculated_severity: riskCalculation.severity,
-      calculation_valid: riskCalculation.isValid
+      calculation_valid: riskCalculation.isValid,
     };
 
     res.status(200).json(riskWithCalculation);
@@ -203,13 +237,16 @@ async function getRisksByOwner(req, res, next) {
     }
 
     // Add calculated risk score to each risk
-    const risksWithCalculation = risks.map(risk => {
-      const riskCalculation = RiskCalculator.calculateRisk(risk.impact, risk.likelihood);
+    const risksWithCalculation = risks.map((risk) => {
+      const riskCalculation = RiskCalculator.calculateRisk(
+        risk.impact,
+        risk.likelihood
+      );
       return {
         ...risk,
         risk_score: riskCalculation.riskScore,
         calculated_severity: riskCalculation.severity,
-        calculation_valid: riskCalculation.isValid
+        calculation_valid: riskCalculation.isValid,
       };
     });
 
@@ -226,7 +263,7 @@ async function searchRisks(req, res, next) {
     if (!q) {
       throw new BadRequestError("Search query is required");
     }
-    
+
     const searchQuery = q.trim();
     if (searchQuery.length === 0) {
       throw new BadRequestError("Search query cannot be empty");
@@ -235,17 +272,22 @@ async function searchRisks(req, res, next) {
     const risks = await db.searchRisksByTitle(searchQuery);
 
     if (!risks || risks.length === 0) {
-      return res.status(404).json({ message: "No risks found matching your search" });
+      return res
+        .status(404)
+        .json({ message: "No risks found matching your search" });
     }
 
     // Add calculated risk score to each risk
-    const risksWithCalculation = risks.map(risk => {
-      const riskCalculation = RiskCalculator.calculateRisk(risk.impact, risk.likelihood);
+    const risksWithCalculation = risks.map((risk) => {
+      const riskCalculation = RiskCalculator.calculateRisk(
+        risk.impact,
+        risk.likelihood
+      );
       return {
         ...risk,
         risk_score: riskCalculation.riskScore,
         calculated_severity: riskCalculation.severity,
-        calculation_valid: riskCalculation.isValid
+        calculation_valid: riskCalculation.isValid,
       };
     });
 
@@ -259,14 +301,14 @@ async function getRiskMatrix(req, res, next) {
   try {
     const matrix = {
       levels: [
-        { score: '16-25', level: 'Critical', color: 'red' },
-        { score: '11-15', level: 'High', color: 'orange' },
-        { score: '6-10', level: 'Medium', color: 'yellow' },
-        { score: '1-5', level: 'Low', color: 'green' }
+        { score: "16-25", level: "Critical", color: "red" },
+        { score: "11-15", level: "High", color: "orange" },
+        { score: "6-10", level: "Medium", color: "yellow" },
+        { score: "1-5", level: "Low", color: "green" },
       ],
-      formula: 'Risk Score = Impact × Likelihood',
-      impactScale: '1-5 (1=Low, 5=High)',
-      likelihoodScale: '1-5 (1=Rare, 5=Almost Certain)'
+      formula: "Risk Score = Impact × Likelihood",
+      impactScale: "1-5 (1=Low, 5=High)",
+      likelihoodScale: "1-5 (1=Rare, 5=Almost Certain)",
     };
 
     res.status(200).json(matrix);
@@ -278,27 +320,34 @@ async function getRiskMatrix(req, res, next) {
 async function fixInvalidRisks(req, res, next) {
   try {
     const risks = await db.getAllRisks();
-    
+
     let fixedCount = 0;
     const fixResults = [];
 
     for (const risk of risks) {
-      const validation = RiskCalculator.validateRiskValues(risk.impact, risk.likelihood);
-      
+      const validation = RiskCalculator.validateRiskValues(
+        risk.impact,
+        risk.likelihood
+      );
+
       if (!validation.isValid) {
         // Fix invalid values
         const fixedImpact = validation.suggestedImpact || risk.impact;
-        const fixedLikelihood = validation.suggestedLikelihood || risk.likelihood;
-        
-        const riskCalculation = RiskCalculator.calculateRisk(fixedImpact, fixedLikelihood);
-        
+        const fixedLikelihood =
+          validation.suggestedLikelihood || risk.likelihood;
+
+        const riskCalculation = RiskCalculator.calculateRisk(
+          fixedImpact,
+          fixedLikelihood
+        );
+
         // Update the risk in database
         const updatedRisk = await db.updateRisk(risk.risk_id, {
           impact: fixedImpact,
           likelihood: fixedLikelihood,
-          severity: riskCalculation.severity
+          severity: riskCalculation.severity,
         });
-        
+
         fixedCount++;
         fixResults.push({
           risk_id: risk.risk_id,
@@ -307,21 +356,21 @@ async function fixInvalidRisks(req, res, next) {
           old_likelihood: risk.likelihood,
           new_impact: fixedImpact,
           new_likelihood: fixedLikelihood,
-          new_severity: riskCalculation.severity
+          new_severity: riskCalculation.severity,
         });
       }
     }
 
     await logSystemAction("SYSTEM", "risk_fix", null, {
       fixed_count: fixedCount,
-      total_risks: risks.length
+      total_risks: risks.length,
     });
 
     res.status(200).json({
       message: `Fixed ${fixedCount} risks with invalid values`,
       total_risks: risks.length,
       fixed_count: fixedCount,
-      details: fixResults
+      details: fixResults,
     });
   } catch (err) {
     next(err);
@@ -340,10 +389,12 @@ async function deleteRisk(req, res, next) {
 
     await logAction(req, "DELETE", "risk", parseInt(id), {
       title: deletedRisk.title,
-      severity: deletedRisk.severity
+      severity: deletedRisk.severity,
     });
 
-    res.status(200).json({ message: "Risk deleted successfully", risk: deletedRisk });
+    res
+      .status(200)
+      .json({ message: "Risk deleted successfully", risk: deletedRisk });
   } catch (err) {
     next(err);
   }
@@ -358,5 +409,5 @@ module.exports = {
   updateRisk,
   deleteRisk,
   getRiskMatrix,
-  fixInvalidRisks
+  fixInvalidRisks,
 };

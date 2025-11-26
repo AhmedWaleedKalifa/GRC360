@@ -12,7 +12,7 @@ const EditConfigurations = () => {
   const [error, setError] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
-  const { currentUser, permissions, loading: userLoading } = useUser();
+  const { currentUser } = useUser();
 
   const getCurrentUserName = () => {
     return currentUser?.user_name || currentUser?.name || 'Current User';
@@ -90,9 +90,9 @@ const EditConfigurations = () => {
       <div className="editConfig">
         <h1 className="editConfigTitle">Edit {item?.key} </h1>
         <div className='flex flex-row w-full justify-center relative '>
-        <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full dark:text-blue-400 dark:bg-blue-900/30">
-  Editing as: {getCurrentUserName()}
-</div>
+          <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full dark:text-blue-400 dark:bg-blue-900/30">
+            Editing as: {getCurrentUserName()}
+          </div>
         </div>
         <button className='templateBackLink' onClick={() => navigate("/app/configurations")}>
           <FontAwesomeIcon icon={faArrowLeft} className='text-2xl' />

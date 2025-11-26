@@ -1,18 +1,8 @@
-import React from 'react';
 import { faPlus, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Card from './Card';
 import CardSlider from './CardSlider';
-import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ResponsiveContainer
-} from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const IncidentsOverview = ({ incidents, allIncidentsIds, allIncidentsFields, onAddIncident, permissions }) => {
     // Calculate incident statistics
@@ -93,7 +83,7 @@ const IncidentsOverview = ({ incidents, allIncidentsIds, allIncidentsFields, onA
                 </div>
                 <div className='flex'>
                     {permissions.isAdmin ? (
-                        <button 
+                        <button
                             className='button buttonStyle my-2'
                             onClick={onAddIncident}
                             title="Add new incident"
@@ -102,7 +92,7 @@ const IncidentsOverview = ({ incidents, allIncidentsIds, allIncidentsFields, onA
                             Add Incident
                         </button>
                     ) : (
-                        <div 
+                        <div
                             className='button buttonStyle my-2 opacity-30 cursor-not-allowed'
                             title="Admin access required to add incidents"
                         >
@@ -148,8 +138,8 @@ const IncidentsOverview = ({ incidents, allIncidentsIds, allIncidentsFields, onA
 
                     <CardSlider
                         caption={{ text: "All Incidents", icon: "faFolder" }}
-                        sizes={[14,6,7,5,5,6,6]}
-                        titles={[ "Title", "Category", "Status", "Severity", "Created At", "Owner", "Next Review"]}
+                        sizes={[14, 6, 7, 5, 5, 6, 6]}
+                        titles={["Title", "Category", "Status", "Severity", "Created At", "Owner", "Next Review"]}
                         ids={allIncidentsIds}
                         fields={allIncidentsFields}
                         height={"500"}

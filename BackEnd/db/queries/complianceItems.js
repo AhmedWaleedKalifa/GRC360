@@ -2,12 +2,17 @@ const pool = require("../pool");
 
 // Frameworks
 async function getAllFrameworks() {
-  const { rows } = await pool.query("SELECT * FROM compliance_frameworks ORDER BY created_at DESC");
+  const { rows } = await pool.query(
+    "SELECT * FROM compliance_frameworks ORDER BY created_at DESC"
+  );
   return rows;
 }
 
 async function getFrameworkById(framework_id) {
-  const { rows } = await pool.query("SELECT * FROM compliance_frameworks WHERE framework_id = $1", [framework_id]);
+  const { rows } = await pool.query(
+    "SELECT * FROM compliance_frameworks WHERE framework_id = $1",
+    [framework_id]
+  );
   return rows[0] || null;
 }
 
@@ -52,11 +57,19 @@ async function getRequirementsByFramework(framework_id) {
 }
 
 async function getRequirementById(requirement_id) {
-  const { rows } = await pool.query("SELECT * FROM compliance_requirements WHERE requirement_id = $1", [requirement_id]);
+  const { rows } = await pool.query(
+    "SELECT * FROM compliance_requirements WHERE requirement_id = $1",
+    [requirement_id]
+  );
   return rows[0] || null;
 }
 
-async function addRequirement({ requirement_id, framework_id, requirement_name, reference }) {
+async function addRequirement({
+  requirement_id,
+  framework_id,
+  requirement_name,
+  reference,
+}) {
   const { rows } = await pool.query(
     `INSERT INTO compliance_requirements (requirement_id, framework_id, requirement_name, reference)
      VALUES ($1, $2, $3, $4)
@@ -105,7 +118,10 @@ async function getControlsByOwner(owner_id) {
 }
 
 async function getControlById(control_id) {
-  const { rows } = await pool.query("SELECT * FROM compliance_controls WHERE control_id = $1", [control_id]);
+  const { rows } = await pool.query(
+    "SELECT * FROM compliance_controls WHERE control_id = $1",
+    [control_id]
+  );
   return rows[0] || null;
 }
 
@@ -117,12 +133,34 @@ async function searchControlsByName(substring) {
   return rows;
 }
 
-async function addControl({ control_id, requirement_id, control_name, status, owner, last_reviewed, reference, notes, description, attachment }) {
+async function addControl({
+  control_id,
+  requirement_id,
+  control_name,
+  status,
+  owner,
+  last_reviewed,
+  reference,
+  notes,
+  description,
+  attachment,
+}) {
   const { rows } = await pool.query(
     `INSERT INTO compliance_controls (control_id, requirement_id, control_name, status, owner, last_reviewed, reference, notes, description, attachment)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
      RETURNING *;`,
-    [control_id, requirement_id, control_name, status, owner, last_reviewed, reference, notes, description, attachment]
+    [
+      control_id,
+      requirement_id,
+      control_name,
+      status,
+      owner,
+      last_reviewed,
+      reference,
+      notes,
+      description,
+      attachment,
+    ]
   );
   return rows[0];
 }
@@ -164,14 +202,14 @@ module.exports = {
   updateFramework,
   removeFramework,
   searchFrameworksByName, // Add this
-  
+
   // Requirements
   getRequirementsByFramework,
   getRequirementById,
   addRequirement,
   updateRequirement,
   removeRequirement,
-  
+
   // Controls
   getControlsByRequirement,
   getControlsByOwner,

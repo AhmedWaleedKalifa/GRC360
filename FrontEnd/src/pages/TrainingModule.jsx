@@ -1,20 +1,8 @@
-// pages/TrainingModule.jsx - COMPLETE UPDATED VERSION
-import React, { useState, useEffect, useRef } from 'react';
+// pages/TrainingModule.jsx 
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faPlay, 
-  faCheckCircle, 
-  faArrowLeft, 
-  faForward, 
-  faVideo, 
-  faExclamationTriangle,
-  faClock,
-  faFlag,
-  faHourglassHalf,
-  faPause,
-  faPlayCircle
-} from '@fortawesome/free-solid-svg-icons';
+import {faPlay,faCheckCircle,faArrowLeft,faForward,faVideo,faExclamationTriangle,faClock,faFlag} from '@fortawesome/free-solid-svg-icons';
 import Progress from '../components/Progress';
 import { awarenessAPI } from '../services/api';
 import { useUser } from '../hooks/useUser';
@@ -22,15 +10,15 @@ import { useUser } from '../hooks/useUser';
 // Quiz Timer Component
 const QuizTimer = ({ timeLimit, onTimeUp, isActive }) => {
   const [timeLeft, setTimeLeft] = useState(timeLimit);
-  
+
   useEffect(() => {
     if (!isActive) return;
-    
+
     if (timeLeft <= 0) {
       onTimeUp();
       return;
     }
-    
+
     const timerId = setInterval(() => {
       setTimeLeft(time => {
         if (time <= 1) {
@@ -41,26 +29,26 @@ const QuizTimer = ({ timeLimit, onTimeUp, isActive }) => {
         return time - 1;
       });
     }, 1000);
-    
+
     return () => clearInterval(timerId);
   }, [timeLeft, isActive, onTimeUp]);
-  
+
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
   };
-  
+
   const progress = (timeLeft / timeLimit) * 100;
   const isWarning = timeLeft < 60; // Less than 1 minute
-  
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center">
-          <FontAwesomeIcon 
-            icon={isWarning ? faExclamationTriangle : faClock} 
-            className={`mr-2 ${isWarning ? 'text-red-500' : 'text-blue-500'}`} 
+          <FontAwesomeIcon
+            icon={isWarning ? faExclamationTriangle : faClock}
+            className={`mr-2 ${isWarning ? 'text-red-500' : 'text-blue-500'}`}
           />
           <span className="font-semibold text-gray-700 dark:text-gray-300">
             Time Remaining: {formatTime(timeLeft)}
@@ -71,10 +59,9 @@ const QuizTimer = ({ timeLimit, onTimeUp, isActive }) => {
         </div>
       </div>
       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-        <div 
-          className={`h-2 rounded-full transition-all duration-1000 ${
-            isWarning ? 'bg-red-500' : 'bg-blue-500'
-          }`}
+        <div
+          className={`h-2 rounded-full transition-all duration-1000 ${isWarning ? 'bg-red-500' : 'bg-blue-500'
+            }`}
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -86,7 +73,7 @@ const TrainingModule = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { currentUser } = useUser();
-  
+
   const [module, setModule] = useState(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
@@ -97,7 +84,6 @@ const TrainingModule = () => {
   const [quizStarted, setQuizStarted] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [timeUp, setTimeUp] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -121,21 +107,21 @@ const TrainingModule = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const moduleData = await awarenessAPI.getTrainingModuleById(id);
-      
+
       if (!moduleData) {
         throw new Error('Module not found');
       }
-      
+
       setModule(moduleData);
-      
+
       // Update user progress to 'in_progress' if not started
       if (currentUser?.user_id) {
         try {
           const userProgress = await awarenessAPI.getUserProgress(currentUser.user_id);
           const currentModuleProgress = userProgress.find(p => p.module_id === parseInt(id));
-          
+
           if (!currentModuleProgress || currentModuleProgress.status === 'not_started') {
             await awarenessAPI.updateUserProgress(currentUser.user_id, id, {
               status: 'in_progress',
@@ -147,7 +133,7 @@ const TrainingModule = () => {
           console.error('Failed to update user progress:', progressError);
         }
       }
-      
+
     } catch (err) {
       console.error('Failed to load module:', err);
       setError('Failed to load training module. Please try again.');
@@ -157,7 +143,6 @@ const TrainingModule = () => {
   };
 
   const handleTimeUp = () => {
-    setTimeUp(true);
     setQuizCompleted(true);
     const finalScore = calculateScore();
     setScore(finalScore);
@@ -168,7 +153,6 @@ const TrainingModule = () => {
     setQuizStarted(true);
     setQuizCompleted(false);
     setShowResults(false);
-    setTimeUp(false);
     setUserAnswers({});
   };
 
@@ -183,7 +167,7 @@ const TrainingModule = () => {
 
   const calculateScore = () => {
     if (currentStepData?.step_type !== 'quiz') return 0;
-    
+
     let correct = 0;
     currentStepData.questions.forEach(question => {
       if (userAnswers[question.question_id] === question.correct_answer) {
@@ -217,7 +201,7 @@ const TrainingModule = () => {
         }));
 
         const correctAnswers = answers.filter(a => a.is_correct).length;
-        
+
         await awarenessAPI.createQuizAttempt(currentUser.user_id, module.module_id, {
           score: finalScore,
           time_spent: 0, // You might want to track actual time
@@ -254,7 +238,7 @@ const TrainingModule = () => {
 
     if (currentStepData.step_type === 'quiz') {
       const finalScore = calculateScore();
-      
+
       if (finalScore < 70) {
         alert(`You need at least 70% to proceed. Your score: ${finalScore}%. Please review the material and try again.`);
         return;
@@ -268,7 +252,6 @@ const TrainingModule = () => {
       setQuizStarted(false);
       setQuizCompleted(false);
       setShowResults(false);
-      setTimeUp(false);
       setUserAnswers({});
     } else {
       setModuleCompleted(true);
@@ -291,7 +274,7 @@ const TrainingModule = () => {
             <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg">
               {currentStepData.content}
             </p>
-            
+
             <div className="mb-6">
               {videoError ? (
                 <div className="w-full h-64 bg-gray-200 dark:bg-gray-700 rounded-lg flex flex-col items-center justify-center">
@@ -324,7 +307,7 @@ const TrainingModule = () => {
                 </div>
               )}
             </div>
-            
+
             <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
               <span>Duration: {currentStepData.duration}</span>
               <div className="flex items-center gap-4">
@@ -351,14 +334,13 @@ const TrainingModule = () => {
         );
 
       case 'quiz':
-        const allQuestionsAnswered = Object.keys(userAnswers).length === currentStepData.questions.length;
-        
+
         return (
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
             {/* Timer Section */}
             {quizStarted && !quizCompleted && (
               <div className="mb-6">
-                <QuizTimer 
+                <QuizTimer
                   timeLimit={QUIZ_TIME_LIMITS[module.module_id] || 600}
                   onTimeUp={handleTimeUp}
                   isActive={quizStarted && !quizCompleted}
@@ -375,7 +357,7 @@ const TrainingModule = () => {
                   {quizCompleted ? 'Quiz completed!' : 'Test your knowledge from the video.'}
                 </p>
               </div>
-              
+
               {quizStarted && !quizCompleted && (
                 <button
                   onClick={handleFinishQuiz}
@@ -399,11 +381,10 @@ const TrainingModule = () => {
                       {question.options.map((option, optionIndex) => (
                         <label
                           key={option.option_id}
-                          className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 ${
-                            userAnswers[question.question_id] === optionIndex
+                          className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 ${userAnswers[question.question_id] === optionIndex
                               ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-sm'
                               : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                          } ${quizCompleted ? 'cursor-not-allowed opacity-80' : ''}`}
+                            } ${quizCompleted ? 'cursor-not-allowed opacity-80' : ''}`}
                         >
                           <input
                             type="radio"
@@ -431,15 +412,14 @@ const TrainingModule = () => {
                     {score >= 70 ? '🎉 Congratulations!' : '📚 Keep Learning!'}
                   </h4>
                   <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    {score >= 70 
-                      ? `You passed with a score of ${score}%!` 
+                    {score >= 70
+                      ? `You passed with a score of ${score}%!`
                       : `Your score is ${score}%. You need 70% to pass.`}
                   </p>
                   <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-4">
-                    <div 
-                      className={`h-4 rounded-full ${
-                        score >= 70 ? 'bg-green-500' : 'bg-red-500'
-                      }`}
+                    <div
+                      className={`h-4 rounded-full ${score >= 70 ? 'bg-green-500' : 'bg-red-500'
+                        }`}
                       style={{ width: `${score}%` }}
                     />
                   </div>
@@ -450,15 +430,13 @@ const TrainingModule = () => {
                   {currentStepData.questions.map((question, index) => {
                     const userAnswer = userAnswers[question.question_id];
                     const isCorrect = userAnswer === question.correct_answer;
-                    
+
                     return (
-                      <div key={question.question_id} className={`p-4 border rounded-lg ${
-                        isCorrect ? 'border-green-200 bg-green-50 dark:bg-green-900/20' : 'border-red-200 bg-red-50 dark:bg-red-900/20'
-                      }`}>
+                      <div key={question.question_id} className={`p-4 border rounded-lg ${isCorrect ? 'border-green-200 bg-green-50 dark:bg-green-900/20' : 'border-red-200 bg-red-50 dark:bg-red-900/20'
+                        }`}>
                         <div className="flex items-start mb-2">
-                          <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold mr-2 ${
-                            isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                          }`}>
+                          <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold mr-2 ${isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                            }`}>
                             {index + 1}
                           </span>
                           <span className="font-medium">{question.question_text}</span>
@@ -489,7 +467,7 @@ const TrainingModule = () => {
                   >
                     Retry Quiz
                   </button>
-                  
+
                   <button
                     onClick={handleNextStep}
                     className="button buttonStyle"
@@ -527,7 +505,7 @@ const TrainingModule = () => {
             </h3>
             <div className="prose dark:prose-invert max-w-none">
               {currentStepData.content && (
-                <div 
+                <div
                   className="text-gray-600 dark:text-gray-400"
                   dangerouslySetInnerHTML={{ __html: currentStepData.content }}
                 />
@@ -567,7 +545,7 @@ const TrainingModule = () => {
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             The requested training module doesn't exist or has been moved.
           </p>
-          <button 
+          <button
             onClick={() => navigate('/app/awareness')}
             className="button buttonStyle"
           >
@@ -612,7 +590,6 @@ const TrainingModule = () => {
                 setQuizStarted(false);
                 setQuizCompleted(false);
                 setShowResults(false);
-                setTimeUp(false);
                 setUserAnswers({});
               }}
               className="button bg-gray-500 text-white hover:bg-gray-600"
@@ -625,7 +602,6 @@ const TrainingModule = () => {
     );
   }
 
-  const progress = ((currentStep + 1) / (module.steps.length + 1)) * 100;
 
   return (
     <div className="container">
@@ -653,9 +629,9 @@ const TrainingModule = () => {
 
       {/* Progress Bar */}
       <div className="mb-8">
-        <Progress 
-          title={`${module.title} Progress`} 
-          footer="completed" 
+        <Progress
+          title={`${module.title} Progress`}
+          footer="completed"
           num={currentStep + 1}
           all={module.steps.length + 1}
         />

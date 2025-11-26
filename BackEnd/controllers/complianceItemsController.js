@@ -1,5 +1,9 @@
 const db = require("../db/queries/complianceItems");
-const { BadRequestError, NotFoundError, ConflictError } = require("../errors/errors");
+const {
+  BadRequestError,
+  NotFoundError,
+  ConflictError,
+} = require("../errors/errors");
 const { logAction } = require("./auditHelper");
 
 // Frameworks
@@ -25,7 +29,7 @@ async function createFramework(req, res, next) {
     // Log the action
     await logAction(req, "CREATE", "compliance_framework", framework_id, {
       framework_name,
-      description
+      description,
     });
 
     res.status(201).json(newFramework);
@@ -57,7 +61,7 @@ async function updateFramework(req, res, next) {
     await logAction(req, "UPDATE", "compliance_framework", id, {
       old_data: oldFramework,
       new_data: updatedFramework,
-      changed_fields: Object.keys(fields)
+      changed_fields: Object.keys(fields),
     });
 
     res.status(200).json(updatedFramework);
@@ -78,10 +82,15 @@ async function deleteFramework(req, res, next) {
 
     // Log the action
     await logAction(req, "DELETE", "compliance_framework", id, {
-      framework_name: deletedFramework.framework_name
+      framework_name: deletedFramework.framework_name,
     });
 
-    res.status(200).json({ message: "Framework deleted successfully", framework: deletedFramework });
+    res
+      .status(200)
+      .json({
+        message: "Framework deleted successfully",
+        framework: deletedFramework,
+      });
   } catch (err) {
     next(err);
   }
@@ -119,10 +128,13 @@ async function getFrameworkById(req, res, next) {
 // Requirements
 async function createRequirement(req, res, next) {
   try {
-    const { requirement_id, framework_id, requirement_name, reference } = req.body;
+    const { requirement_id, framework_id, requirement_name, reference } =
+      req.body;
 
     if (!requirement_id || !framework_id || !requirement_name) {
-      throw new BadRequestError("Requirement ID, framework ID, and name are required");
+      throw new BadRequestError(
+        "Requirement ID, framework ID, and name are required"
+      );
     }
 
     const existing = await db.getRequirementById(requirement_id);
@@ -141,13 +153,15 @@ async function createRequirement(req, res, next) {
     await logAction(req, "CREATE", "compliance_requirement", requirement_id, {
       requirement_name,
       framework_id,
-      reference
+      reference,
     });
 
     res.status(201).json(newRequirement);
   } catch (err) {
     if (err.code === "23505") {
-      return next(new ConflictError("Requirement ID already exists (DB check)"));
+      return next(
+        new ConflictError("Requirement ID already exists (DB check)")
+      );
     }
     next(err);
   }
@@ -159,7 +173,9 @@ async function getRequirementsByFramework(req, res, next) {
     const requirements = await db.getRequirementsByFramework(frameworkId);
 
     if (!requirements || requirements.length === 0) {
-      return res.status(404).json({ message: "No requirements found for this framework" });
+      return res
+        .status(404)
+        .json({ message: "No requirements found for this framework" });
     }
 
     res.status(200).json(requirements);
@@ -201,7 +217,7 @@ async function updateRequirement(req, res, next) {
 
     // Log the action
     await logAction(req, "UPDATE", "compliance_requirement", id, {
-      changed_fields: Object.keys(fields)
+      changed_fields: Object.keys(fields),
     });
 
     res.status(200).json(updatedRequirement);
@@ -222,10 +238,15 @@ async function deleteRequirement(req, res, next) {
 
     // Log the action
     await logAction(req, "DELETE", "compliance_requirement", id, {
-      requirement_name: deletedRequirement.requirement_name
+      requirement_name: deletedRequirement.requirement_name,
     });
 
-    res.status(200).json({ message: "Requirement deleted successfully", requirement: deletedRequirement });
+    res
+      .status(200)
+      .json({
+        message: "Requirement deleted successfully",
+        requirement: deletedRequirement,
+      });
   } catch (err) {
     next(err);
   }
@@ -234,10 +255,23 @@ async function deleteRequirement(req, res, next) {
 // Controls
 async function createControl(req, res, next) {
   try {
-    const { control_id, requirement_id, control_name, status, owner, last_reviewed, reference, notes, description, attachment } = req.body;
+    const {
+      control_id,
+      requirement_id,
+      control_name,
+      status,
+      owner,
+      last_reviewed,
+      reference,
+      notes,
+      description,
+      attachment,
+    } = req.body;
 
     if (!control_id || !requirement_id || !control_name) {
-      throw new BadRequestError("Control ID, requirement ID, and name are required");
+      throw new BadRequestError(
+        "Control ID, requirement ID, and name are required"
+      );
     }
 
     const existing = await db.getControlById(control_id);
@@ -262,7 +296,7 @@ async function createControl(req, res, next) {
     await logAction(req, "CREATE", "compliance_control", control_id, {
       control_name,
       requirement_id,
-      status
+      status,
     });
 
     res.status(201).json(newControl);
@@ -280,7 +314,9 @@ async function getControlsByRequirement(req, res, next) {
     const controls = await db.getControlsByRequirement(requirementId);
 
     if (!controls || controls.length === 0) {
-      return res.status(404).json({ message: "No controls found for this requirement" });
+      return res
+        .status(404)
+        .json({ message: "No controls found for this requirement" });
     }
 
     res.status(200).json(controls);
@@ -295,7 +331,9 @@ async function getControlsByOwner(req, res, next) {
     const controls = await db.getControlsByOwner(parseInt(ownerId));
 
     if (!controls || controls.length === 0) {
-      return res.status(404).json({ message: "No controls found for this owner" });
+      return res
+        .status(404)
+        .json({ message: "No controls found for this owner" });
     }
 
     res.status(200).json(controls);
@@ -337,7 +375,7 @@ async function updateControl(req, res, next) {
 
     // Log the action
     await logAction(req, "UPDATE", "compliance_control", id, {
-      changed_fields: Object.keys(fields)
+      changed_fields: Object.keys(fields),
     });
 
     res.status(200).json(updatedControl);
@@ -358,10 +396,15 @@ async function deleteControl(req, res, next) {
 
     // Log the action
     await logAction(req, "DELETE", "compliance_control", id, {
-      control_name: deletedControl.control_name
+      control_name: deletedControl.control_name,
     });
 
-    res.status(200).json({ message: "Control deleted successfully", control: deletedControl });
+    res
+      .status(200)
+      .json({
+        message: "Control deleted successfully",
+        control: deletedControl,
+      });
   } catch (err) {
     next(err);
   }
@@ -374,7 +417,7 @@ async function searchControls(req, res, next) {
     if (!q) {
       throw new BadRequestError("Search query is required");
     }
-    
+
     const searchQuery = q.trim();
     if (searchQuery.length === 0) {
       throw new BadRequestError("Search query cannot be empty");
@@ -383,12 +426,14 @@ async function searchControls(req, res, next) {
     const controls = await db.searchControlsByName(searchQuery);
 
     if (!controls || controls.length === 0) {
-      return res.status(404).json({ message: "No controls found matching your search" });
+      return res
+        .status(404)
+        .json({ message: "No controls found matching your search" });
     }
 
     res.status(200).json(controls);
   } catch (err) {
-    console.error('Error in searchControls:', err);
+    console.error("Error in searchControls:", err);
     next(err);
   }
 }
@@ -400,7 +445,7 @@ async function searchFrameworks(req, res, next) {
     if (!q) {
       throw new BadRequestError("Search query is required");
     }
-    
+
     const searchQuery = q.trim();
     if (searchQuery.length === 0) {
       throw new BadRequestError("Search query cannot be empty");
@@ -409,12 +454,14 @@ async function searchFrameworks(req, res, next) {
     const frameworks = await db.searchFrameworksByName(searchQuery);
 
     if (!frameworks || frameworks.length === 0) {
-      return res.status(404).json({ message: "No frameworks found matching your search" });
+      return res
+        .status(404)
+        .json({ message: "No frameworks found matching your search" });
     }
 
     res.status(200).json(frameworks);
   } catch (err) {
-    console.error('Error in searchFrameworks:', err);
+    console.error("Error in searchFrameworks:", err);
     next(err);
   }
 }
@@ -427,14 +474,14 @@ module.exports = {
   updateFramework,
   deleteFramework,
   searchFrameworks,
-  
+
   // Requirements
   createRequirement,
   getRequirementsByFramework,
   getRequirementById,
   updateRequirement,
   deleteRequirement,
-  
+
   // Controls
   createControl,
   getControlsByRequirement,

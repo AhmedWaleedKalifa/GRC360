@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Form from '../components/Form';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -40,18 +40,18 @@ function EditRisk() {
     // Calculate severity based on impact and likelihood
     const calculateSeverity = (impact, likelihood) => {
         if (!impact || !likelihood) return { score: 0, severity: '' };
-        
+
         const impactValue = parseInt(impact);
         const likelihoodValue = parseInt(likelihood);
-        
+
         const score = impactValue * likelihoodValue;
         let severity = '';
-        
+
         if (score >= 16 && score <= 25) severity = 'critical';
         else if (score >= 11 && score <= 15) severity = 'high';
         else if (score >= 6 && score <= 10) severity = 'medium';
         else if (score >= 1 && score <= 5) severity = 'low';
-        
+
         return { score, severity };
     };
 
@@ -69,18 +69,18 @@ function EditRisk() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                
+
                 // Fetch risk data
                 const riskData = await risksAPI.getById(id);
                 setItem(riskData);
-                
+
                 // Calculate initial severity
                 if (riskData.impact && riskData.likelihood) {
                     const calculation = calculateSeverity(riskData.impact, riskData.likelihood);
                     setRiskScore(calculation.score);
                     setCalculatedSeverity(calculation.severity);
                 }
-                
+
                 setError(null);
             } catch (err) {
                 setError('Failed to fetch data');
@@ -97,7 +97,7 @@ function EditRisk() {
                 setLoading(false);
                 return;
             }
-            
+
             fetchData();
         }
     }, [id, userLoading, permissions.isAdmin]);
@@ -111,7 +111,7 @@ function EditRisk() {
 
         try {
             setLoading(true);
-            
+
             // Prepare risk data with current user as owner
             const riskData = {
                 title: formData.title,
@@ -125,12 +125,12 @@ function EditRisk() {
                 last_reviewed: formData.lastReviewed || null,
                 notes: formData.notes || ''
             };
-            
+
             await risksAPI.update(id, riskData);
-            
+
             // Show success message
             alert('Risk updated successfully!');
-            
+
             navigate(-1);
         } catch (err) {
             console.error('Error updating risk:', err);
@@ -158,7 +158,7 @@ function EditRisk() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                     You do not have permission to edit risks. Admin access required.
                 </p>
-                <button 
+                <button
                     onClick={() => navigate('/app/risks')}
                     className="button buttonStyle"
                 >
@@ -183,7 +183,7 @@ function EditRisk() {
                 <div className="editConfig">
                     <h1 className="editConfigTitle">Edit Risk</h1>
                     <div className="text-red-500 p-4 bg-red-50 rounded-lg">Error: {error}</div>
-                    <button 
+                    <button
                         onClick={() => navigate('/app/risks')}
                         className="button buttonStyle mt-4"
                     >
@@ -200,7 +200,7 @@ function EditRisk() {
                 <div className="editConfig">
                     <h1 className="editConfigTitle">Edit Risk</h1>
                     <div className="p-4 bg-yellow-50 rounded-lg">Risk not found</div>
-                    <button 
+                    <button
                         onClick={() => navigate('/app/risks')}
                         className="button buttonStyle mt-4"
                     >
@@ -216,20 +216,20 @@ function EditRisk() {
             <div className="editConfig">
                 <div className="flex items-center justify-center mb-6">
                     <h1 className="editConfigTitle">Edit Risk</h1>
-                   
+
                 </div>
                 <div className='flex flex-row w-full justify-center relative bottom-6'>
-                <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full dark:text-blue-400 dark:bg-blue-900/30">
-  Editing as: {getCurrentUserName()}
-</div>
-       </div>
+                    <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full dark:text-blue-400 dark:bg-blue-900/30">
+                        Editing as: {getCurrentUserName()}
+                    </div>
+                </div>
                 <button className='templateBackLink' onClick={() => navigate(-1)}>
                     <FontAwesomeIcon icon={faArrowLeft} className='text-2xl mr-2' />
                     Back
                 </button>
 
-             
-                
+
+
                 {/* Display calculated severity */}
                 {(calculatedSeverity || riskScore > 0) && (
                     <div className="mb-4 p-3 border rounded bg-gray-50  flex flex-row  items-center justify-center gap-2">
@@ -240,83 +240,83 @@ function EditRisk() {
                         </small>
                     </div>
                 )}
-                
-                <Form 
+
+                <Form
                     fstyle={{ form: "profileForm", button: "button buttonStyle col-span-2 mt-4" }}
                     onSubmit={handleSubmit}
                     onFormChange={handleFormChange}
                     inputarray={[
-                        { 
-                            id: "title", 
-                            type: "text", 
-                            isInput: true, 
-                            label: "Title:", 
-                            initialValue: item.title, 
+                        {
+                            id: "title",
+                            type: "text",
+                            isInput: true,
+                            label: "Title:",
+                            initialValue: item.title,
                             required: true,
-                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
+                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput" }
                         },
-                        { 
-                            id: "category", 
-                            type: "select", 
-                            isInput: true, 
-                            label: "Category:", 
-                            selectList: allowedCategories, 
-                            initialValue: item.category || "Other", 
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        {
+                            id: "category",
+                            type: "select",
+                            isInput: true,
+                            label: "Category:",
+                            selectList: allowedCategories,
+                            initialValue: item.category || "Other",
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
                         },
-                        { 
-                            id: "description", 
-                            type: "textarea", 
-                            isInput: true, 
-                            label: "Description:", 
-                            initialValue: item.description || "", 
-                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput h-24" } 
+                        {
+                            id: "description",
+                            type: "textarea",
+                            isInput: true,
+                            label: "Description:",
+                            initialValue: item.description || "",
+                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput h-24" }
                         },
-                        { 
-                            changeable:false,
+                        {
+                            changeable: false,
 
-                            id: "ownerDisplay", 
-                            type: "text", 
-                            isInput: true, 
-                            label: "Owner:", 
+                            id: "ownerDisplay",
+                            type: "text",
+                            isInput: true,
+                            label: "Owner:",
                             initialValue: getCurrentUserName(),
                             disabled: true,
-                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput bg-gray-100" } 
+                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput bg-gray-100" }
                         },
-                        { 
-                            id: "status", 
-                            type: "select", 
-                            isInput: true, 
-                            label: "Status:", 
-                            selectList: allowedStatuses, 
-                            initialValue: item.status, 
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        {
+                            id: "status",
+                            type: "select",
+                            isInput: true,
+                            label: "Status:",
+                            selectList: allowedStatuses,
+                            initialValue: item.status,
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
                         },
-                        { 
-                            id: "impact", 
-                            type: "select", 
-                            isInput: true, 
-                            label: "Impact (1-5):", 
+                        {
+                            id: "impact",
+                            type: "select",
+                            isInput: true,
+                            label: "Impact (1-5):",
                             selectList: impactOptions,
-                            initialValue: item.impact?.toString() || "3", 
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                            initialValue: item.impact?.toString() || "3",
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
                         },
-                        { 
-                            id: "likelihood", 
-                            type: "select", 
-                            isInput: true, 
-                            label: "Likelihood (1-5):", 
+                        {
+                            id: "likelihood",
+                            type: "select",
+                            isInput: true,
+                            label: "Likelihood (1-5):",
                             selectList: likelihoodOptions,
-                            initialValue: item.likelihood?.toString() || "3", 
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                            initialValue: item.likelihood?.toString() || "3",
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
                         },
-                        { 
-                            id: "lastReviewed", 
-                            type: "date", 
-                            isInput: true, 
-                            label: "Last Reviewed:", 
-                            initialValue: item.last_reviewed ? item.last_reviewed.split('T')[0] : "", 
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        {
+                            id: "lastReviewed",
+                            type: "date",
+                            isInput: true,
+                            label: "Last Reviewed:",
+                            initialValue: item.last_reviewed ? item.last_reviewed.split('T')[0] : "",
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
                         },
                     ]}
                     button={loading ? "Saving..." : "Save Changes"}

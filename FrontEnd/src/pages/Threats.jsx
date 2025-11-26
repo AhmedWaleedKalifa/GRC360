@@ -8,11 +8,10 @@ function Threats() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { id } = useParams(); // Get the ID from URL params
-  
   const [fields, setFields] = useState([]);
   const [colors, setColors] = useState([]);
   const [ids, setIds] = useState([]);
-
+  
   useEffect(() => {
     fetchThreats();
   }, []);
@@ -22,13 +21,13 @@ function Threats() {
     const newFields = [];
     const newIds = [];
     const newColors = [];
-    
+
     threats.forEach((threat) => {
       // Format the date for better readability
-      const formattedDate = threat.created_at 
-        ? new Date(threat.created_at).toLocaleDateString() 
+      const formattedDate = threat.created_at
+        ? new Date(threat.created_at).toLocaleDateString()
         : 'Unknown';
-      
+
       // Create severity badge with colors
       const severityBadge = {
         type: "b",
@@ -41,14 +40,14 @@ function Threats() {
         severityBadge, // Use the colored badge instead of plain text
         { type: "t", text: formattedDate },
       ]);
-      
+
       // Highlight the row if it matches the ID from params
       if (String(threat.threat_id) === id) {
         newColors.push("#26A7F680"); // Highlight color
       } else {
         newColors.push(""); // Default color
       }
-      
+
       newIds.push(threat.id);
     });
 
@@ -60,9 +59,9 @@ function Threats() {
   // Function to get color based on severity
   const getSeverityColor = (severity) => {
     if (!severity) return "#3b82f699"; // Default blue
-    
+
     const severityLower = severity.toLowerCase();
-    
+
     switch (severityLower) {
       case 'critical':
       case 'high':
@@ -104,8 +103,8 @@ function Threats() {
     return (
       <div className="p-4 text-red-500 text-center">
         Error: {error}
-        <button 
-          onClick={fetchThreats} 
+        <button
+          onClick={fetchThreats}
           className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Retry

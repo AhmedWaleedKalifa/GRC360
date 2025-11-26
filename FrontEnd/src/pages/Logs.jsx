@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import  { useState, useEffect } from 'react'
 import { auditLogsAPI, usersAPI } from '../services/api'
 import CardSlider from '../components/CardSlider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRotateRight, faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import {  faTrash, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '../hooks/useUser';
 
@@ -17,36 +17,8 @@ function Logs() {
   const navigate = useNavigate();
   
   // Get current user and permissions
-  const { currentUser, permissions, loading: userLoading } = useUser();
+  const {  permissions, loading: userLoading } = useUser();
 
-  // Function to get user name from log details
-  const getUserNameFromLog = (log) => {
-    if (!log.details) return 'System';
-    
-    try {
-      const details = JSON.parse(log.details);
-      
-      // First, try to get user_name from the details (new format)
-      if (details.user_name && details.user_name !== 'System') {
-        return details.user_name;
-      }
-      
-      // If no user_name in details, fall back to user ID lookup
-      if (log.user_id) {
-        const user = users.find(u => u.user_id === log.user_id || u.id === log.user_id);
-        return user ? user.user_name || user.name || `User ${log.user_id}` : `User ${log.user_id}`;
-      }
-      
-      return 'System';
-    } catch (err) {
-      // If JSON parsing fails, fall back to user ID lookup
-      if (log.user_id) {
-        const user = users.find(u => u.user_id === log.user_id || u.id === log.user_id);
-        return user ? user.user_name || user.name || `User ${log.user_id}` : `User ${log.user_id}`;
-      }
-      return 'System';
-    }
-  };
 
   // Enhanced function to get user info with role
   const getUserInfoFromLog = (log) => {
@@ -84,7 +56,7 @@ function Logs() {
       }
       
       return { name: 'System', role: 'system' };
-    } catch (err) {
+    } catch  {
       // If JSON parsing fails, fall back to user ID lookup
       if (log.user_id) {
         const user = users.find(u => u.user_id === log.user_id || u.id === log.user_id);
@@ -166,7 +138,7 @@ function Logs() {
       
       if (typeof parsedDetails === 'object') {
         // Remove user info from details display since we're showing it separately
-        const { user_name, user_info, timestamp, ...actionDetails } = parsedDetails;
+        const {  ...actionDetails } = parsedDetails;
         
         if (Object.keys(actionDetails).length === 0) {
           return 'No additional details';

@@ -1,17 +1,25 @@
 const pool = require("../pool");
 
 async function getAllIncidents() {
-  const { rows } = await pool.query("SELECT * FROM incidents ORDER BY created_at DESC");
+  const { rows } = await pool.query(
+    "SELECT * FROM incidents ORDER BY created_at DESC"
+  );
   return rows;
 }
 
 async function getIncidentById(incident_id) {
-  const { rows } = await pool.query("SELECT * FROM incidents WHERE incident_id = $1", [incident_id]);
+  const { rows } = await pool.query(
+    "SELECT * FROM incidents WHERE incident_id = $1",
+    [incident_id]
+  );
   return rows[0] || null;
 }
 
 async function getIncidentsByOwner(owner_id) {
-  const { rows } = await pool.query("SELECT * FROM incidents WHERE owner = $1 ORDER BY created_at DESC", [owner_id]);
+  const { rows } = await pool.query(
+    "SELECT * FROM incidents WHERE owner = $1 ORDER BY created_at DESC",
+    [owner_id]
+  );
   return rows;
 }
 
@@ -23,13 +31,33 @@ async function searchIncidentsByTitle(substring) {
   return rows;
 }
 
-async function addIncident({ title, category, status, severity, priority, reported_at, detected_at, owner, description }) {
+async function addIncident({
+  title,
+  category,
+  status,
+  severity,
+  priority,
+  reported_at,
+  detected_at,
+  owner,
+  description,
+}) {
   // Use COALESCE to handle null values and fall back to NOW() for reported_at
   const { rows } = await pool.query(
     `INSERT INTO incidents (title, category, status, severity, priority, reported_at, detected_at, owner, description)
      VALUES ($1, $2, $3, $4, $5, COALESCE($6, NOW()), $7, $8, $9)
      RETURNING *;`,
-    [title, category, status, severity, priority, reported_at, detected_at, owner, description]
+    [
+      title,
+      category,
+      status,
+      severity,
+      priority,
+      reported_at,
+      detected_at,
+      owner,
+      description,
+    ]
   );
   return rows[0];
 }

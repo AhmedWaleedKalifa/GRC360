@@ -13,10 +13,10 @@ import Threats from "./pages/Threats";
 import Notifications from "./pages/Notifications";
 import PageTemplate from "./pages/PageTemplate";
 import Login from "./pages/Login";
+import Register from "./pages/Register"; // Add this import
 import EditConfigurations from "./pages/EditConfigurations";
 import AddIncident from "./pages/AddIncident";
 import EditIncident from "./pages/EditIncident";
-import ViewFrameworks from "./pages/ViewFrameworks";
 import EditRisk from "./pages/EditRisk";
 import AddRisk from "./pages/AddRisk";
 import AddGovernance from "./pages/AddGovernance";
@@ -25,7 +25,7 @@ import Requirements from "./pages/Requirements";
 import Controls from "./pages/Controls";
 import EditControl from "./pages/EditControl";
 import Awareness from "./pages/Awareness";
-import TrainingModule from "./pages/TrainingModule"; // NEW
+import TrainingModule from "./pages/TrainingModule";
 
 const routes = [
   {
@@ -33,33 +33,44 @@ const routes = [
     element: <Login />,
     errorElement: <ErrorPage />,
   },
- 
+  {
+    path: "/register", // Add register route
+    element: <Register />,
+    errorElement: <ErrorPage />,
+  },
   {
     path: "app",
     element: <Dashboard />,
     children: [
-      { path:"dashboard", element: <Main /> },
+      { path: "dashboard", element: <Main /> },
+
+      { path: "awareness/:id?", element: <Awareness /> },
+      { path: "training/:id", element: <TrainingModule /> },
+
+      { path: "governance/:id?", element: <Governance /> },
+      { path: "addGovernance", element: <AddGovernance /> },
+      { path: "editGovernance/:id?", element: <EditGovernance /> },
+
+      { path: "risks/:id?", element: <Risks /> },
+      { path: "addRisk", element: <AddRisk /> },
+      { path: "editRisk/:id?", element: <EditRisk /> },
+
       { path: "compliance/:id?", element: <Compliance /> },
       { path: "requirements/:id?", element: <Requirements /> },
       { path: "controls/:id?", element: <Controls /> },
       { path: "editControl/:id?", element: <EditControl /> },
-      { path: "awareness/:id?", element: <Awareness /> },
-      { path: "training/:id", element: <TrainingModule /> }, // NEW TRAINING ROUTE
-      
-      { path: "configurations/:id?", element: <Configurations /> },
-      { path: "governance/:id?", element: <Governance /> },
+
       { path: "incidents/:id?", element: <Incidents /> },
-      { path: "logs/:id?", element: <Logs /> },
-      { path: "risks/:id?", element: <Risks  /> },
-      { path: "editConfigurations/:id?", element: <EditConfigurations  /> },
-      {path:"viewFrameWorks/:id?",element:<ViewFrameworks/>},
-      {path:"editIncident/:id?",element:<EditIncident/>},
-      {path:"editRisk/:id?",element:<EditRisk/>},
-      {path:"addRisk",element:<AddRisk/>},
-      {path:"addGovernance",element:<AddGovernance/>},
-      {path:"editGovernance/:id?",element:<EditGovernance/>},
-      {path:"addIncident",element:<AddIncident/>},
+      { path: "addIncident", element: <AddIncident /> },
+      { path: "editIncident/:id?", element: <EditIncident /> },
+
       { path: "threats/:id?", element: <Threats /> },
+
+      { path: "logs/:id?", element: <Logs /> },
+
+      { path: "configurations/:id?", element: <Configurations /> },
+      { path: "editConfigurations/:id?", element: <EditConfigurations /> },
+
       { path: "*", element: <ErrorPage /> }
     ],
   },
@@ -73,7 +84,6 @@ const routes = [
       { path: "*", element: <ErrorPage /> },
     ],
   },
-  
 ];
 
 export default routes;

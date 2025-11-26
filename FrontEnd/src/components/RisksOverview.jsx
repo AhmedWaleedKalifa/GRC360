@@ -1,18 +1,8 @@
-import React from 'react';
 import { faChartSimple, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Card from './Card';
 import CardSlider from './CardSlider';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer
-} from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const RisksOverview = ({ risks, allRisksFields, onAddRisk, permissions }) => {
   // Calculate risk statistics
@@ -64,7 +54,7 @@ const RisksOverview = ({ risks, allRisksFields, onAddRisk, permissions }) => {
 
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-2xl  shadow-xl overflow-clip mx-2">
-       <div className='p-6 flex flex-col bg-gray-200 dark:bg-gray-800  w-full capitalize font-bold text-3xl gap-6'>
+      <div className='p-6 flex flex-col bg-gray-200 dark:bg-gray-800  w-full capitalize font-bold text-3xl gap-6'>
         <div className="flex items-center">
           <FontAwesomeIcon icon={faChartSimple} className='h1Icon mr-3 text-[#FFA72699]' />
           <span className="text-gray-900 dark:text-gray-100">Risks Overview</span>
@@ -78,7 +68,7 @@ const RisksOverview = ({ risks, allRisksFields, onAddRisk, permissions }) => {
         </div>
         <div className='flex'>
           {permissions.isAdmin ? (
-            <button 
+            <button
               className='button buttonStyle my-2'
               onClick={onAddRisk}
               title="Add new risk"
@@ -87,7 +77,7 @@ const RisksOverview = ({ risks, allRisksFields, onAddRisk, permissions }) => {
               Add Risks
             </button>
           ) : (
-            <div 
+            <div
               className='button buttonStyle my-2 opacity-30 cursor-not-allowed'
               title="Admin access required to add risks"
             >
@@ -106,13 +96,13 @@ const RisksOverview = ({ risks, allRisksFields, onAddRisk, permissions }) => {
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={lineChartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" strokeOpacity={0.5} />
-                <XAxis 
-                  dataKey="month" 
+                <XAxis
+                  dataKey="month"
                   stroke="#6b7280"
                   fontSize={12}
                   tick={{ fill: '#6b7280' }}
                 />
-                <YAxis 
+                <YAxis
                   stroke="#6b7280"
                   fontSize={12}
                   tick={{ fill: '#6b7280' }}
@@ -127,13 +117,13 @@ const RisksOverview = ({ risks, allRisksFields, onAddRisk, permissions }) => {
             </ResponsiveContainer>
           </div>
         </div>
-        
+
         <div className='w-full lg:w-6/10'>
-        <h3 className=" mb-4   font-bold text-xl text-transparent"><span>.</span></h3>
+          <h3 className=" mb-4   font-bold text-xl text-transparent"><span>.</span></h3>
           <CardSlider
             caption={{ text: "All Risks", icon: "faChartSimple" }}
-            sizes={[20,6,7,6,7,7,7]}
-            titles={[ "Title", "Category", "Status", "Severity", "Created At", "Owner", "Next Review"]}
+            sizes={[20, 6, 7, 6, 7, 7, 7]}
+            titles={["Title", "Category", "Status", "Severity", "Created At", "Owner", "Next Review"]}
             ids={[]}
             fields={allRisksFields}
           />

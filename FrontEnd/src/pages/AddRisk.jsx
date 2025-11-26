@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Form from '../components/Form'
 import { useNavigate } from 'react-router-dom';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -38,18 +38,18 @@ function AddRisk() {
     // Calculate severity based on impact and likelihood
     const calculateSeverity = (impact, likelihood) => {
         if (!impact || !likelihood) return { score: 0, severity: '' };
-        
+
         const impactValue = parseInt(impact);
         const likelihoodValue = parseInt(likelihood);
-        
+
         const score = impactValue * likelihoodValue;
         let severity = '';
-        
+
         if (score >= 16 && score <= 25) severity = 'critical';
         else if (score >= 11 && score <= 15) severity = 'high';
         else if (score >= 6 && score <= 10) severity = 'medium';
         else if (score >= 1 && score <= 5) severity = 'low';
-        
+
         return { score, severity };
     };
 
@@ -71,7 +71,7 @@ function AddRisk() {
 
         try {
             setLoading(true);
-            
+
             // Prepare risk data with current user as owner
             const riskData = {
                 title: formData.title,
@@ -87,7 +87,7 @@ function AddRisk() {
                 notes: formData.notes || '',
                 due_date: null // Add required field
             };
-            
+
             await risksAPI.create(riskData);
             navigate(-1);
         } catch (err) {
@@ -116,7 +116,7 @@ function AddRisk() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                     You do not have permission to add risks. Admin access required.
                 </p>
-                <button 
+                <button
                     onClick={() => navigate('/app/risks')}
                     className="button buttonStyle"
                 >
@@ -131,21 +131,21 @@ function AddRisk() {
             <div className="editConfig">
                 <div className="flex items-center justify-center mb-6">
                     <h1 className="editConfigTitle">Add Risk</h1>
-                    
+
                 </div>
                 <div className='flex flex-row w-full justify-center relative bottom-6'>
-                <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full dark:text-blue-400 dark:bg-blue-900/30">
-  Adding as: {getCurrentUserName()}
-</div>
-       </div>
+                    <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full dark:text-blue-400 dark:bg-blue-900/30">
+                        Adding as: {getCurrentUserName()}
+                    </div>
+                </div>
                 <button className='templateBackLink' onClick={() => navigate(-1)}>
                     <FontAwesomeIcon icon={faArrowLeft} className='text-2xl mr-2' />
                     Back
                 </button>
 
                 {/* Current user info */}
-                
-                
+
+
                 {/* Display calculated severity */}
                 {(calculatedSeverity || riskScore > 0) && (
                     <div className="mb-4 p-3 border rounded bg-gray-50 dark:bg-gray-800">
@@ -156,78 +156,78 @@ function AddRisk() {
                         </small>
                     </div>
                 )}
-                
-                <Form 
+
+                <Form
                     fstyle={{ form: "profileForm", button: "button buttonStyle col-span-2 my-4" }}
                     onSubmit={handleSubmit}
                     onFormChange={handleFormChange}
                     inputarray={[
-                        { 
-                            id: "title", 
-                            type: "text", 
-                            isInput: true, 
-                            label: "Title:", 
+                        {
+                            id: "title",
+                            type: "text",
+                            isInput: true,
+                            label: "Title:",
                             required: true,
-                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput" } 
+                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput" }
                         },
-                        { 
-                            id: "category", 
-                            type: "select", 
-                            isInput: true, 
-                            label: "Category:", 
-                            selectList: allowedCategories, 
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        {
+                            id: "category",
+                            type: "select",
+                            isInput: true,
+                            label: "Category:",
+                            selectList: allowedCategories,
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
                         },
-                        { 
-                            id: "description", 
-                            type: "textarea", 
-                            isInput: true, 
-                            label: "Description:", 
-                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput h-24" } 
+                        {
+                            id: "description",
+                            type: "textarea",
+                            isInput: true,
+                            label: "Description:",
+                            Class: { container: "editInputContainer col-span-2", label: "label", input: "profileFormInput h-24" }
                         },
-                        { 
-                            changeable:false,
-                            id: "ownerDisplay", 
-                            type: "text", 
-                            isInput: true, 
-                            label: "Owner:", 
+                        {
+                            changeable: false,
+                            id: "ownerDisplay",
+                            type: "text",
+                            isInput: true,
+                            label: "Owner:",
                             initialValue: getCurrentUserName(),
                             disabled: true,
-                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput bg-gray-100" } 
+                            Class: { container: "editInputContainer", label: "label", input: "profileFormInput bg-gray-100" }
                         },
-                        { 
-                            id: "status", 
-                            type: "select", 
-                            isInput: true, 
-                            label: "Status:", 
-                            selectList: allowedStatuses, 
+                        {
+                            id: "status",
+                            type: "select",
+                            isInput: true,
+                            label: "Status:",
+                            selectList: allowedStatuses,
                             initialValue: "open",
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
                         },
-                        { 
-                            id: "impact", 
-                            type: "select", 
-                            isInput: true, 
-                            label: "Impact (1-5):", 
+                        {
+                            id: "impact",
+                            type: "select",
+                            isInput: true,
+                            label: "Impact (1-5):",
                             selectList: impactOptions,
                             initialValue: "3",
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
                         },
-                        { 
-                            id: "likelihood", 
-                            type: "select", 
-                            isInput: true, 
-                            label: "Likelihood (1-5):", 
+                        {
+                            id: "likelihood",
+                            type: "select",
+                            isInput: true,
+                            label: "Likelihood (1-5):",
                             selectList: likelihoodOptions,
                             initialValue: "3",
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
                         },
-                        { 
-                            id: "lastReviewed", 
-                            type: "date", 
-                            isInput: true, 
-                            label: "Last Reviewed:", 
-                            Class: { container: "editInputContainer", label: "label", input: "select" } 
+                        {
+                            id: "lastReviewed",
+                            type: "date",
+                            isInput: true,
+                            label: "Last Reviewed:",
+                            Class: { container: "editInputContainer", label: "label", input: "select" }
                         },
                     ]}
                     button={loading ? "Adding..." : "Add Risk"}

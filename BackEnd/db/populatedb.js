@@ -81,7 +81,7 @@ require("dotenv").config();
 
 //     CREATE TABLE IF NOT EXISTS governance_risks (
 //         governance_id INT NOT NULL REFERENCES governance_items(governance_id) ON DELETE CASCADE,
-//         risk_id       INT NOT NULL, 
+//         risk_id       INT NOT NULL,
 //         PRIMARY KEY (governance_id, risk_id)
 //     );
 
@@ -268,14 +268,14 @@ require("dotenv").config();
 //     CREATE INDEX IF NOT EXISTS idx_risks_owner ON risks(owner);
 //     CREATE INDEX IF NOT EXISTS idx_incidents_owner ON incidents(owner);
 //     CREATE INDEX IF NOT EXISTS idx_threats_detected_at ON threats(detected_at);
-    
+
 //     CREATE INDEX IF NOT EXISTS idx_user_progress_user ON user_training_progress(user_id);
 //     CREATE INDEX IF NOT EXISTS idx_user_progress_module ON user_training_progress(module_id);
 //     CREATE INDEX IF NOT EXISTS idx_quiz_attempts_user ON user_quiz_attempts(user_id);
 //     CREATE INDEX IF NOT EXISTS idx_campaign_modules_campaign ON campaign_modules(campaign_id);
 //     CREATE INDEX IF NOT EXISTS idx_user_assignments_user ON user_campaign_assignments(user_id);
 // `;
-const SQL=`
+const SQL = `
 CREATE TABLE IF NOT EXISTS training_modules (
     module_id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -388,19 +388,21 @@ CREATE TABLE IF NOT EXISTS user_campaign_assignments (
     CREATE INDEX IF NOT EXISTS idx_quiz_attempts_user ON user_quiz_attempts(user_id);
     CREATE INDEX IF NOT EXISTS idx_campaign_modules_campaign ON campaign_modules(campaign_id);
     CREATE INDEX IF NOT EXISTS idx_user_assignments_user ON user_campaign_assignments(user_id);
-`
+`;
 let ssl = false;
 if (process.env.DB_SSL_CERT_B64) {
-  const sslCert = Buffer.from(process.env.DB_SSL_CERT_B64, "base64").toString("utf-8");
+  const sslCert = Buffer.from(process.env.DB_SSL_CERT_B64, "base64").toString(
+    "utf-8"
+  );
   ssl = { ca: sslCert, rejectUnauthorized: true };
 }
-
 
 async function main() {
   console.log("🚀 Starting database seed...");
 
   const client = new Client({
-    connectionString: process.env.DEPLOYED_CONNECTION_STRING || process.env.CONNECTION_STRING,
+    connectionString:
+      process.env.DEPLOYED_CONNECTION_STRING || process.env.CONNECTION_STRING,
     ssl,
   });
 

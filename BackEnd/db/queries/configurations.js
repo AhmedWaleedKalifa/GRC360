@@ -1,17 +1,25 @@
 const pool = require("../pool");
 
 async function getAllConfigurations() {
-  const { rows } = await pool.query("SELECT * FROM configurations ORDER BY config_id");
+  const { rows } = await pool.query(
+    "SELECT * FROM configurations ORDER BY config_id"
+  );
   return rows;
 }
 
 async function getConfigurationById(config_id) {
-  const { rows } = await pool.query("SELECT * FROM configurations WHERE config_id = $1", [config_id]);
+  const { rows } = await pool.query(
+    "SELECT * FROM configurations WHERE config_id = $1",
+    [config_id]
+  );
   return rows[0] || null;
 }
 
 async function getConfigurationByKey(key) {
-  const { rows } = await pool.query("SELECT * FROM configurations WHERE key = $1", [key]);
+  const { rows } = await pool.query(
+    "SELECT * FROM configurations WHERE key = $1",
+    [key]
+  );
   return rows[0] || null;
 }
 
@@ -64,5 +72,5 @@ module.exports = {
   addConfiguration,
   updateConfiguration,
   removeConfiguration,
-  searchConfigurationsByKey
+  searchConfigurationsByKey,
 };

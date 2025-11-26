@@ -1,7 +1,12 @@
+// routes/configurationsRouter.js
 const express = require("express");
 const configurationController = require("../controllers/configurationsController");
+const { authenticate, authorize } = require("../middleware/auth");
 const configurationRouter = express.Router();
 
+// All configuration routes require authentication and admin privileges
+configurationRouter.use(authenticate);
+configurationRouter.use(authorize('admin'));
 
 configurationRouter.get("/", configurationController.getConfigurations);
 configurationRouter.get("/search", configurationController.searchConfigurations);

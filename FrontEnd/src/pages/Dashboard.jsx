@@ -13,7 +13,7 @@ export default function Dashboard() {
   const [showRefreshNotification, setShowRefreshNotification] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
-  
+
   const location = useLocation(); // Get current route location
 
   const [active, setActive] = useState(() => {
@@ -70,7 +70,7 @@ export default function Dashboard() {
     localStorage.setItem("lastRefreshed", now);
     setLastRefreshed(now);
     setShowRefreshNotification(true);
-    
+
     // Show notification briefly (500ms) then refresh immediately
     setTimeout(() => {
       setShowRefreshNotification(false);
@@ -89,7 +89,7 @@ export default function Dashboard() {
     <>
       <NavBar active={active} open={open} onSearch={handleSearch} />
       <SideBar open={open} setOpen={setOpen} setActive={setActive} active={active} />
-      
+
       <main>
         {!open ? (
           <div className="dashboardOpenedSidebar"></div>
@@ -99,13 +99,13 @@ export default function Dashboard() {
         <div className="container">
           {/* Show search results overlay when searching */}
           {showSearchResults && (
-            <SearchResults 
-              activeModule={active} 
-              searchQuery={searchQuery} 
-              onClose={handleCloseSearchResults} 
+            <SearchResults
+              activeModule={active}
+              searchQuery={searchQuery}
+              onClose={handleCloseSearchResults}
             />
           )}
-          
+
           {/* Show normal content - search results will disappear when navigating */}
           <Outlet />
         </div>
@@ -113,15 +113,15 @@ export default function Dashboard() {
       <AIChatBot />
 
       <div className="control ">
-        <FontAwesomeIcon 
-          icon={faArrowUp} 
-          className="controlIcons" 
-          onClick={scrollToTop} 
+        <FontAwesomeIcon
+          icon={faArrowUp}
+          className="controlIcons"
+          onClick={scrollToTop}
         />
-        <FontAwesomeIcon 
-          icon={faArrowRotateRight} 
-          className="controlIcons" 
-          onClick={handleRefresh} 
+        <FontAwesomeIcon
+          icon={faArrowRotateRight}
+          className="controlIcons"
+          onClick={handleRefresh}
         />
         {showRefreshNotification && (
           <div className="refreshLabel text-white text-center">

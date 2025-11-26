@@ -1,49 +1,28 @@
-import React from 'react';
 import { faCheckCircle, faShield, faTimesCircle, faClock, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Card from './Card';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer
-} from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import Progress from './Progress';
 
-const ComplianceOverview = ({ frameworks, requirements, controls, onViewCompliance, permissions }) => {
+const ComplianceOverview = ({ controls, onViewCompliance }) => {
   // Calculate compliance statistics from real data
-  const totalFrameworks = frameworks?.length || 0;
-  const totalRequirements = requirements?.length || 0;
+
   const totalControls = controls?.length || 0;
 
   // Filter controls by new compliance status values
-  const compliantControls = controls?.filter(control => 
+  const compliantControls = controls?.filter(control =>
     control.status === "compliant"
   ) || [];
-  
-  const partiallyCompliantControls = controls?.filter(control => 
+
+  const partiallyCompliantControls = controls?.filter(control =>
     control.status === "partially compliant"
   ) || [];
-  
-  const notCompliantControls = controls?.filter(control => 
+
+  const notCompliantControls = controls?.filter(control =>
     control.status === "not compliant"
   ) || [];
 
-  // Calculate compliance rate based on compliant controls only
-  const complianceRate = totalControls > 0 ? Math.round((compliantControls.length / totalControls) * 100) : 0;
 
-  // Calculate overall compliance score (weighted)
-  const overallComplianceScore = totalControls > 0 
-    ? Math.round(
-        (compliantControls.length * 1 + 
-         partiallyCompliantControls.length * 0.5 + 
-         notCompliantControls.length * 0) / totalControls * 100
-      )
-    : 0;
 
   // Prepare comprehensive chart data showing new compliance statuses
   const complianceTrendData = (() => {
@@ -52,7 +31,7 @@ const ComplianceOverview = ({ frameworks, requirements, controls, onViewComplian
     }
 
     const grouped = {};
-    
+
     controls.forEach(control => {
       // Use last_reviewed date or fallback to created_at
       const reviewDate = control.last_reviewed || control.created_at;
@@ -60,7 +39,7 @@ const ComplianceOverview = ({ frameworks, requirements, controls, onViewComplian
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 
       if (!grouped[monthKey]) {
-        grouped[monthKey] = { 
+        grouped[monthKey] = {
           month: `${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`,
           // New compliance statuses
           Compliant: 0,
@@ -128,52 +107,52 @@ const ComplianceOverview = ({ frameworks, requirements, controls, onViewComplian
       {/* Header and Stats */}
       <div className='p-6 flex flex-col bg-gray-200 dark:bg-gray-800 w-full capitalize font-bold text-3xl gap-6'>
         {/* Header and Progress in same line */}
-          <div className="flex items-center">
-            <FontAwesomeIcon icon={faShield} className='h1Icon mr-3 text-[#ED56F1]' />
-            <span className="text-gray-900 dark:text-gray-100">Compliance Overview</span>
-          </div>
-          
-          {/* Progress bar taking majority of width */}
-           
-        
+        <div className="flex items-center">
+          <FontAwesomeIcon icon={faShield} className='h1Icon mr-3 text-[#ED56F1]' />
+          <span className="text-gray-900 dark:text-gray-100">Compliance Overview</span>
+        </div>
+
+        {/* Progress bar taking majority of width */}
+
+
         {/* New Compliance Status Cards */}
         <div className="cardsContainer">
-          <Card 
-          maxSize="33%"
-            title="Compliant" 
-            value={compliantControls.length} 
-            model={1} 
+          <Card
+            maxSize="33%"
+            title="Compliant"
+            value={compliantControls.length}
+            model={1}
             icon={faCheckCircle}
             iconColor="#10b981"
             subtitle="Fully compliant"
           />
-          <Card 
-                    maxSize="33%"
+          <Card
+            maxSize="33%"
 
-            title="Partially Compliant" 
-            value={partiallyCompliantControls.length} 
-            model={2} 
+            title="Partially Compliant"
+            value={partiallyCompliantControls.length}
+            model={2}
             icon={faExclamationTriangle}
             iconColor="#f59e0b"
             subtitle="Needs improvement"
           />
-          <Card 
-                    maxSize="33%"
+          <Card
+            maxSize="33%"
 
-            title="Not Compliant" 
-            value={notCompliantControls.length} 
-            model={2} 
+            title="Not Compliant"
+            value={notCompliantControls.length}
+            model={2}
             icon={faTimesCircle}
             iconColor="#ef4444"
             subtitle="Requires attention"
           />
         </div>
-        <Progress 
-              title="Compliance Rate" 
-              footer="controls compliant" 
-              num={compliantControls.length} 
-              all={totalControls} 
-            />
+        <Progress
+          title="Compliance Rate"
+          footer="controls compliant"
+          num={compliantControls.length}
+          all={totalControls}
+        />
         <div className='flex'>
           <button className='button buttonStyle my-2' onClick={onViewCompliance}>
             <FontAwesomeIcon icon={faCheckCircle} className='mr-2' />
@@ -192,44 +171,44 @@ const ComplianceOverview = ({ frameworks, requirements, controls, onViewComplian
             <ResponsiveContainer width="100%" height={400}>
               <LineChart data={complianceTrendData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" strokeOpacity={0.5} />
-                <XAxis 
-                  dataKey="month" 
+                <XAxis
+                  dataKey="month"
                   stroke="#6b7280"
                   fontSize={12}
                   tick={{ fill: '#6b7280' }}
                 />
-                <YAxis 
+                <YAxis
                   stroke="#6b7280"
                   fontSize={12}
                   tick={{ fill: '#6b7280' }}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
-                
+
                 {/* Compliance Status Lines */}
-                <Line 
-                  type="monotone" 
-                  dataKey="Compliant" 
-                  stroke="#10b981" 
-                  name="Compliant" 
-                  strokeWidth={3} 
-                  dot={{ fill: '#10b981', r: 4 }} 
+                <Line
+                  type="monotone"
+                  dataKey="Compliant"
+                  stroke="#10b981"
+                  name="Compliant"
+                  strokeWidth={3}
+                  dot={{ fill: '#10b981', r: 4 }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="Partially Compliant" 
-                  stroke="#f59e0b" 
-                  name="Partially Compliant" 
-                  strokeWidth={3} 
-                  dot={{ fill: '#f59e0b', r: 4 }} 
+                <Line
+                  type="monotone"
+                  dataKey="Partially Compliant"
+                  stroke="#f59e0b"
+                  name="Partially Compliant"
+                  strokeWidth={3}
+                  dot={{ fill: '#f59e0b', r: 4 }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="Not Compliant" 
-                  stroke="#ef4444" 
-                  name="Not Compliant" 
-                  strokeWidth={3} 
-                  dot={{ fill: '#ef4444', r: 4 }} 
+                <Line
+                  type="monotone"
+                  dataKey="Not Compliant"
+                  stroke="#ef4444"
+                  name="Not Compliant"
+                  strokeWidth={3}
+                  dot={{ fill: '#ef4444', r: 4 }}
                 />
               </LineChart>
             </ResponsiveContainer>

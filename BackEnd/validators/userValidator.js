@@ -4,7 +4,9 @@ const validateUser = [
   body("user_name")
     .trim()
     .matches(/^[a-zA-Z0-9_ ]+$/)
-    .withMessage("Username must be alphanumeric with spaces or underscores only")
+    .withMessage(
+      "Username must be alphanumeric with spaces or underscores only"
+    )
     .isLength({ min: 1, max: 100 })
     .withMessage("Username must be between 1 and 100 characters"),
 

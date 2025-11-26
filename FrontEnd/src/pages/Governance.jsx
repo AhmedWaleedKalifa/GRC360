@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { faGavel, faPlus, faChevronDown, faChevronUp, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Card from "../components/Card"
@@ -15,7 +15,7 @@ const GovernanceMissionCard = () => {
     if (!isVisible) {
         return (
             <div className="flex justify-center mb-6">
-                <button 
+                <button
                     onClick={() => setIsVisible(true)}
                     className="button buttonStyle flex items-center"
                 >
@@ -34,14 +34,14 @@ const GovernanceMissionCard = () => {
                     <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Governance Mission & Values</h3>
                 </div>
                 <div className="flex gap-2">
-                    <button 
+                    <button
                         onClick={() => setShowDetails(!showDetails)}
                         className="button buttonStyle text-sm"
                     >
                         <FontAwesomeIcon icon={showDetails ? faChevronUp : faChevronDown} className="mr-1" />
                         {showDetails ? 'Less' : 'More'} Details
                     </button>
-                    <button 
+                    <button
                         onClick={() => setIsVisible(false)}
                         className="button buttonStyle text-sm"
                     >
@@ -50,12 +50,12 @@ const GovernanceMissionCard = () => {
                     </button>
                 </div>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border-2 border-blue-200 dark:border-blue-800">
                     <h4 className="font-bold text-lg mb-3 text-gray-900 dark:text-gray-100">🎯 Mission</h4>
                     <p className="text-gray-700 dark:text-gray-300">
-                        To empower organizations with a unified, intelligent platform that simplifies governance, 
+                        To empower organizations with a unified, intelligent platform that simplifies governance,
                         strengthens compliance, and transforms risk into a driver of trust and resilience.
                     </p>
                 </div>
@@ -63,8 +63,8 @@ const GovernanceMissionCard = () => {
                 <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border-2 border-green-200 dark:border-green-800">
                     <h4 className="font-bold text-lg mb-3 text-gray-900 dark:text-gray-100">👁️ Vision</h4>
                     <p className="text-gray-700 dark:text-gray-300">
-                        To be the leading digital advisor that redefines GRC by bridging global standards, 
-                        automation, and actionable insights—making security and compliance an enabler of 
+                        To be the leading digital advisor that redefines GRC by bridging global standards,
+                        automation, and actionable insights—making security and compliance an enabler of
                         sustainable growth for every business.
                     </p>
                 </div>
@@ -146,7 +146,7 @@ function Governance() {
     const navigate = useNavigate();
 
     // Get current user and permissions
-    const { currentUser, permissions, loading: userLoading } = useUser();
+    const { permissions, loading: userLoading } = useUser();
 
     // Function to get user name by ID
     const getUserNameById = (userId) => {
@@ -210,7 +210,7 @@ function Governance() {
             alert('You do not have permission to add governance items. Admin access required.');
             return;
         }
-       navigate('/app/addGovernance');
+        navigate('/app/addGovernance');
     };
 
     const handleEditGovernance = (governanceId) => {
@@ -218,7 +218,7 @@ function Governance() {
             alert('You do not have permission to edit governance items. Admin access required.');
             return;
         }
-       navigate(`/app/editGovernance/${governanceId}`);
+        navigate(`/app/editGovernance/${governanceId}`);
     };
 
     // Calculate stats when data changes
@@ -245,20 +245,20 @@ function Governance() {
     const fields = governanceItems.map((item, index) => {
         const actionButtons = [];
         const ownerName = getUserNameById(item.owner); // Get owner name
-        
+
         if (permissions.isAdmin) {
             actionButtons.push(
-                { 
-                    type: "i", 
-                    text: "faPen", 
-                    color: "#26A7F6", 
-                    click: () => handleEditGovernance(item.governance_id) 
+                {
+                    type: "i",
+                    text: "faPen",
+                    color: "#26A7F6",
+                    click: () => handleEditGovernance(item.governance_id)
                 },
-                { 
-                    type: "i", 
-                    text: "faTrash", 
-                    color: "#F44336", 
-                    click: () => deleteGovernance(item.governance_id) 
+                {
+                    type: "i",
+                    text: "faTrash",
+                    color: "#F44336",
+                    click: () => deleteGovernance(item.governance_id)
                 }
             );
         }
@@ -292,7 +292,7 @@ function Governance() {
                         ? "#FFA72699"
                         : "#ff000099"
             },
-           
+
             { type: "t", text: item.attachment ? "Has attachment" : "No file" },
             ...actionButtons
         ];
@@ -337,7 +337,7 @@ function Governance() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                     You do not have permission to view governance items.
                 </p>
-                <button 
+                <button
                     onClick={() => navigate('/app/dashboard')}
                     className="button buttonStyle"
                 >
@@ -369,11 +369,11 @@ function Governance() {
                     </div>
                 </div>
                 <CardSlider
-                     titles={permissions.isAdmin ? 
-                        ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status",  "Attachment", "Edit", "Delete"] :
+                    titles={permissions.isAdmin ?
+                        ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Attachment", "Edit", "Delete"] :
                         ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Attachment"]
                     }
-                    sizes={permissions.isAdmin ? [1, 16, 5, 11, 9, 7, 7, 7, 6, 4, 9, 7, 4, 3,4] : [1, 16, 5, 9, 8, 7, 7, 7, 6, 4, 9, 7, 4]}
+                    sizes={permissions.isAdmin ? [1, 16, 5, 11, 9, 7, 7, 7, 6, 4, 9, 7, 4, 3, 4] : [1, 16, 5, 9, 8, 7, 7, 7, 6, 4, 9, 7, 4]}
                     fields={[]}
                     ids={[]}
                 />
@@ -399,17 +399,17 @@ function Governance() {
                     <GovernanceMissionCard />
                 </div>
             </div>
-            
+
             <div className='cardsContainer'>
                 <Card title="Total Documents" value={governanceItems.length} model={1} />
                 <Card title="Active" value={active} model={2} />
                 <Card title="Expiring Soon" value={expiringSoon} model={1} />
                 <Card title="Pending Approval" value={notApproved} model={2} />
             </div>
-            
+
             <div className='h2AndButtonContainer '>
                 {permissions.isAdmin ? (
-                    <button 
+                    <button
                         className="button buttonStyle ml-2"
                         onClick={handleAddGovernance}
                         title="Add new governance item"
@@ -418,7 +418,7 @@ function Governance() {
                         Add Item
                     </button>
                 ) : (
-                    <div 
+                    <div
                         className="button buttonStyle ml-2 opacity-30 cursor-not-allowed"
                         title="Admin access required to add governance items"
                     >
@@ -427,15 +427,15 @@ function Governance() {
                     </div>
                 )}
             </div>
-            
-            <CardSlider
-                            caption={{ text: "Governance Items", icon: "faGavel" }}
 
-                titles={permissions.isAdmin ? 
-                    ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status",  "Attachment", "Edit", "Delete"] :
+            <CardSlider
+                caption={{ text: "Governance Items", icon: "faGavel" }}
+
+                titles={permissions.isAdmin ?
+                    ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Attachment", "Edit", "Delete"] :
                     ["#", "Name", "Type", "Owner", "Status", "Last Reviewed", "Effective Date", "Expiry Date", "Next Review", "Version", "Change Summary", "Approval Status", "Attachment"]
                 }
-                sizes={permissions.isAdmin ? [1, 16, 5, 11, 9, 7, 7, 7, 6, 4, 9, 7, 4, 3,4] : [1, 16, 5, 9, 8, 7, 7, 7, 6, 4, 9, 7, 4]}
+                sizes={permissions.isAdmin ? [1, 16, 5, 11, 9, 7, 7, 7, 6, 4, 9, 7, 4, 3, 4] : [1, 16, 5, 9, 8, 7, 7, 7, 6, 4, 9, 7, 4]}
                 colors={colors}
                 fields={fields}
                 ids={ids}

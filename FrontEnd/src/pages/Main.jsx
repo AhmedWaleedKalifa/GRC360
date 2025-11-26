@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import CardSlider from "../components/CardSlider"
 import { risksAPI, governanceItemsAPI, incidentsAPI, complianceAPI, usersAPI } from "../services/api"
 import { useNavigate } from 'react-router-dom'
@@ -15,19 +15,18 @@ function Main() {
   const [requirements, setRequirements] = useState([]);
   const [controls, setControls] = useState([]);
   const [users, setUsers] = useState([]);
-  const [userMap, setUserMap] = useState({});
   const [controlFrameworkMap, setControlFrameworkMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   // Get current user and permissions
-  const { currentUser, permissions, loading: userLoading } = useUser();
+  const { permissions, loading: userLoading } = useUser();
 
   // Function to calculate due date by adding months to a given date
   const calculateDueDate = (baseDate, monthsToAdd) => {
     if (!baseDate) return null;
-    
+
     const date = new Date(baseDate);
     date.setMonth(date.getMonth() + monthsToAdd);
     return date;
@@ -36,10 +35,10 @@ function Main() {
   // Function to format date as "M/D/YYYY" (e.g., "1/15/2024")
   const formatDateToMonthNumber = (dateString) => {
     if (!dateString) return "No date";
-    
+
     const date = new Date(dateString);
     if (isNaN(date)) return "Invalid date";
-    
+
     return date.toLocaleDateString('en-US', {
       month: 'numeric',
       day: 'numeric',
@@ -55,11 +54,11 @@ function Main() {
   };
 
   // Function to get status color based on status and type
-  const getStatusColor = (status, type = '') => {
+  const getStatusColor = (status) => {
     if (!status) return "#3b82f699"; // Default blue
-    
+
     const statusLower = status.toLowerCase();
-    
+
     switch (statusLower) {
       case 'open':
       case 'draft':
@@ -90,7 +89,7 @@ function Main() {
     const fetchAllData = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch data from all APIs in parallel
         const [risksData, governanceData, incidentsData, frameworksData, usersData] = await Promise.all([
           risksAPI.getAll().catch(err => { console.error('Error fetching risks:', err); return []; }),
@@ -111,31 +110,30 @@ function Main() {
         usersData.forEach(user => {
           userMapping[user.user_id || user.id] = user.user_name || user.name;
         });
-        setUserMap(userMapping);
 
         // Fetch requirements and controls for each framework
         let allRequirements = [];
         let allControls = [];
         let frameworkMap = {};
-        
+
         for (const framework of frameworksData) {
           try {
             const requirementsData = await complianceAPI.getRequirementsByFramework(framework.framework_id);
-            
+
             requirementsData.forEach(req => {
               frameworkMap[req.requirement_id] = framework.framework_id;
             });
-            
+
             allRequirements = [...allRequirements, ...requirementsData];
-            
+
             for (const requirement of requirementsData) {
               try {
                 const controlsData = await complianceAPI.getControlsByRequirement(requirement.requirement_id);
-                
+
                 controlsData.forEach(control => {
                   frameworkMap[control.control_id] = frameworkMap[requirement.requirement_id];
                 });
-                
+
                 allControls = [...allControls, ...controlsData];
               } catch (err) {
                 console.error(`Error fetching controls for requirement ${requirement.requirement_id}:`, err);
@@ -145,7 +143,7 @@ function Main() {
             console.error(`Error fetching requirements for framework ${framework.framework_id}:`, err);
           }
         }
-        
+
         setRequirements(allRequirements);
         setControls(allControls);
         setControlFrameworkMap(frameworkMap);
@@ -185,7 +183,7 @@ function Main() {
       const dueDate = calculateDueDate(risk.last_reviewed, 2);
       const date = dueDate || new Date(0);
       const ownerName = getUserNameById(risk.owner);
-      
+
       // For upcoming slider
       allItems.push({
         type: "risk",
@@ -195,8 +193,8 @@ function Main() {
           { type: "t", text: risk.title },
           { type: "t", text: ownerName },
           { type: "t", text: dueDate ? formatDateToMonthNumber(dueDate) : "No date" },
-          { 
-            type: "b", 
+          {
+            type: "b",
             text: risk.status,
             color: getStatusColor(risk.status, 'risk')
           }
@@ -211,17 +209,17 @@ function Main() {
       risksData.fields.push([
         { type: "t", text: risk.title },
         { type: "t", text: risk.category || "N/A" },
-        { 
-          type: "b", 
+        {
+          type: "b",
           text: risk.status,
           color: getStatusColor(risk.status, 'risk')
         },
-        { 
-          type: "b", 
+        {
+          type: "b",
           text: risk.severity,
           color: risk.severity === "high" || risk.severity === "critical"
-              ? "#ff000099"
-              : risk.severity === "medium"
+            ? "#ff000099"
+            : risk.severity === "medium"
               ? "#ffff0099"
               : "#00ff0099"
         },
@@ -235,7 +233,7 @@ function Main() {
     governanceItems.forEach((item) => {
       const date = item.next_review ? new Date(item.next_review) : new Date(0);
       const ownerName = getUserNameById(item.owner);
-      
+
       allItems.push({
         type: "governance",
         field: [
@@ -244,8 +242,8 @@ function Main() {
           { type: "t", text: item.governance_name },
           { type: "t", text: ownerName },
           { type: "t", text: item.next_review ? formatDateToMonthNumber(item.next_review) : "No date" },
-          { 
-            type: "b", 
+          {
+            type: "b",
             text: item.status,
             color: getStatusColor(item.status, 'governance')
           }
@@ -261,7 +259,7 @@ function Main() {
       const dueDate = calculateDueDate(incident.reported_at, 9);
       const date = dueDate || new Date(0);
       const ownerName = getUserNameById(incident.owner);
-      
+
       // For upcoming slider
       allItems.push({
         type: "incident",
@@ -271,8 +269,8 @@ function Main() {
           { type: "t", text: incident.title },
           { type: "t", text: ownerName },
           { type: "t", text: dueDate ? formatDateToMonthNumber(dueDate) : "No date" },
-          { 
-            type: "b", 
+          {
+            type: "b",
             text: incident.status,
             color: getStatusColor(incident.status, 'incident')
           }
@@ -287,17 +285,17 @@ function Main() {
       incidentsData.fields.push([
         { type: "t", text: incident.title },
         { type: "t", text: incident.category || "N/A" },
-        { 
-          type: "b", 
+        {
+          type: "b",
           text: incident.status,
           color: getStatusColor(incident.status, 'incident')
         },
-        { 
-          type: "b", 
+        {
+          type: "b",
           text: incident.severity,
           color: incident.severity === "high" || incident.severity === "critical"
-              ? "#ff000099"
-              : incident.severity === "medium"
+            ? "#ff000099"
+            : incident.severity === "medium"
               ? "#ffff0099"
               : "#00ff0099"
         },
@@ -313,7 +311,7 @@ function Main() {
       const date = dueDate || new Date(0);
       const frameworkId = controlFrameworkMap[control.control_id] || control.control_id;
       const ownerName = getUserNameById(control.owner);
-      
+
       // For upcoming slider
       allItems.push({
         type: "control",
@@ -323,8 +321,8 @@ function Main() {
           { type: "t", text: control.control_name },
           { type: "t", text: ownerName },
           { type: "t", text: dueDate ? formatDateToMonthNumber(dueDate) : "No date" },
-          { 
-            type: "b", 
+          {
+            type: "b",
             text: control.status,
             color: getStatusColor(control.status, 'control')
           }
@@ -341,8 +339,8 @@ function Main() {
         { type: "t", text: control.control_name },
         { type: "t", text: control.description || "No description" },
         { type: "t", text: ownerName },
-        { 
-          type: "b", 
+        {
+          type: "b",
           text: control.status,
           color: getStatusColor(control.status, 'control')
         },
@@ -413,7 +411,7 @@ function Main() {
         <p className="text-gray-600 dark:text-gray-400 mb-4">
           You do not have permission to view the dashboard.
         </p>
-        <button 
+        <button
           onClick={() => navigate('/app/dashboard')}
           className="button buttonStyle"
         >
@@ -439,27 +437,27 @@ function Main() {
           />
           <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-500 self-center"></div>
         </div>
-        
+
         {/* Risks Overview */}
-        <RisksOverview 
+        <RisksOverview
           risks={risks}
           allRisksIds={overviewData.risks.ids}
           allRisksFields={overviewData.risks.fields}
           onAddRisk={handleAddRisk}
           permissions={permissions}
         />
-        
+
         {/* Incidents Overview */}
-        <IncidentsOverview 
+        <IncidentsOverview
           incidents={incidents}
           allIncidentsIds={overviewData.incidents.ids}
           allIncidentsFields={overviewData.incidents.fields}
           onAddIncident={handleAddIncident}
           permissions={permissions}
         />
-        
+
         {/* Compliance Overview */}
-        <ComplianceOverview 
+        <ComplianceOverview
           frameworks={frameworks}
           requirements={requirements}
           controls={controls}
@@ -490,27 +488,27 @@ function Main() {
         ids={overviewData.upcoming.ids}
         fields={overviewData.upcoming.fields}
       />
-      
+
       {/* Risks Overview */}
-      <RisksOverview 
+      <RisksOverview
         risks={risks}
         allRisksIds={overviewData.risks.ids}
         allRisksFields={overviewData.risks.fields}
         onAddRisk={handleAddRisk}
         permissions={permissions}
       />
-      
+
       {/* Incidents Overview */}
-      <IncidentsOverview 
+      <IncidentsOverview
         incidents={incidents}
         allIncidentsIds={overviewData.incidents.ids}
         allIncidentsFields={overviewData.incidents.fields}
         onAddIncident={handleAddIncident}
         permissions={permissions}
       />
-      
+
       {/* Compliance Overview */}
-      <ComplianceOverview 
+      <ComplianceOverview
         frameworks={frameworks}
         requirements={requirements}
         controls={controls}

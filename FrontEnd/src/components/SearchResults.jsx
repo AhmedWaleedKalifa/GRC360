@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { risksAPI, governanceItemsAPI, incidentsAPI, threatsAPI, complianceAPI, configurationsAPI, auditLogsAPI, globalSearchAPI, usersAPI } from '../services/api';
-import Field from './Field';
 import CardSlider from './CardSlider';
 
 // Helper functions moved outside the component
@@ -62,15 +61,15 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
   const performSearch = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       let searchResults = [];
-      
+
       if (activeModule === 'Main') {
         // Global search across multiple modules
         setSearchType('global');
         const globalResults = await globalSearchAPI.searchAll(searchQuery);
-        
+
         // Combine all results into a single array with type indicators
         searchResults = [
           ...globalResults.risks.map(item => ({ ...item, _type: 'risk', _module: 'Risks' })),
@@ -107,7 +106,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
             searchResults = await risksAPI.search(searchQuery);
         }
       }
-      
+
       setResults(searchResults);
     } catch (err) {
       setError('Failed to perform search. Please try again.');
@@ -137,7 +136,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
           return '/app/dashboard';
       }
     }
-    
+
     switch (activeModule) {
       case 'Risks':
         return '/app/risks';
@@ -178,7 +177,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
           return item.id || item._id;
       }
     }
-    
+
     switch (activeModule) {
       case 'Risks':
         return item.risk_id;
@@ -216,7 +215,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
       }
       return item.title || item.name || item.user_name || item.governance_name || item.control_name || 'Unknown Item';
     }
-    
+
     switch (activeModule) {
       case 'Risks':
         return item.title;
@@ -247,57 +246,57 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
         { type: "b", text: "View", color: "#3b82f6" }
       ]);
     }
-    
+
     return results.map((item, index) => {
-      
+
       switch (activeModule) {
         case 'Risks':
           return [
             { type: "t", text: item.title || 'No Title' },
             { type: "t", text: item.category || 'Uncategorized' },
             { type: "t", text: getUserNameById(item.owner) || 'Unknown' }, // Use owner name instead of ID
-            { 
-              type: "b", 
+            {
+              type: "b",
               text: item.status || 'Unknown',
-              color: item.status === "open" 
-                ? "#FFA72699" 
-                : item.status === "closed" 
-                ? "#00ff0099" 
-                : "#3b82f699"
+              color: item.status === "open"
+                ? "#FFA72699"
+                : item.status === "closed"
+                  ? "#00ff0099"
+                  : "#3b82f699"
             },
-           
-            { 
-              type: "b", 
+
+            {
+              type: "b",
               text: item.severity || 'Unknown',
               color: item.severity === "high" || item.severity === "critical"
                 ? "#ff000099"
                 : item.severity === "medium"
-                ? "#ffff0099"
-                : "#00ff0099"
+                  ? "#ffff0099"
+                  : "#00ff0099"
             },
             { type: "t", text: item.last_reviewed ? new Date(item.last_reviewed).toLocaleDateString() : 'Never' },
             { type: "b", text: "View", color: "#3b82f6" }
           ];
-        
+
         case 'Governance':
           return [
             { type: "t", text: item.governance_name || 'No Name' },
             { type: "t", text: item.type || 'Unknown' },
             { type: "t", text: getUserNameById(item.owner) || 'Unassigned' }, // Use owner name instead of ID
-            { 
-              type: "b", 
+            {
+              type: "b",
               text: item.status || 'Unknown',
-              color: item.status === "active" 
-                ? "#00ff0099" 
+              color: item.status === "active"
+                ? "#00ff0099"
                 : item.status === "draft"
-                ? "#FFA72699"
-                : "#3b82f699"
+                  ? "#FFA72699"
+                  : "#3b82f699"
             },
             { type: "t", text: item.last_reviewed ? new Date(item.last_reviewed).toLocaleDateString() : "Never" },
-           
+
             { type: "b", text: "View", color: "#3b82f6" }
           ];
-        
+
         case 'Compliance':
           return [
             { type: "t", text: item.framework_name || 'No Name' },
@@ -305,74 +304,74 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
             { type: "t", text: item.control_count || '0' },
             { type: "b", text: "View", color: "#3b82f6" }
           ];
-        
+
         case 'Incidents':
           return [
             { type: "t", text: item.title || 'No Title' },
             { type: "t", text: item.category || 'Uncategorized' },
-            { 
-              type: "b", 
+            {
+              type: "b",
               text: item.status || 'Unknown',
               color: item.status === "open"
                 ? "#FFA72699"
                 : item.status === "closed"
-                ? "#00ff0099"
-                : "#3b82f699"
+                  ? "#00ff0099"
+                  : "#3b82f699"
             },
-            { 
-              type: "b", 
+            {
+              type: "b",
               text: item.severity || 'Unknown',
               color: item.severity === "high" || item.severity === "critical"
                 ? "#ff000099"
                 : item.severity === "medium"
-                ? "#ffff0099"
-                : "#00ff0099"
+                  ? "#ffff0099"
+                  : "#00ff0099"
             },
             { type: "t", text: item.reported_at ? new Date(item.reported_at).toLocaleDateString() : 'Unknown' },
             { type: "t", text: getUserNameById(item.owner) || 'Unassigned' }, // Use owner name instead of ID
             { type: "b", text: "View", color: "#3b82f6" }
           ];
-        
+
         case 'Threats':
           return [
             { type: "t", text: item.message || item.name || 'No Description' },
-            { 
-              type: "b", 
+            {
+              type: "b",
               text: item.severity || 'Unknown',
               color: item.severity === "high" || item.severity === "critical"
                 ? "#ff000099"
                 : item.severity === "medium"
-                ? "#ffff0099"
-                : "#00ff0099"
+                  ? "#ffff0099"
+                  : "#00ff0099"
             },
             { type: "t", text: item.detected_at || item.created_at ? new Date(item.detected_at || item.created_at).toLocaleDateString() : 'Unknown' },
             { type: "b", text: "View", color: "#3b82f6" }
           ];
-        
+
         case 'Configurations':
           return [
             { type: "t", text: item.key || 'No Key' },
             { type: "t", text: item.value || 'No Value' },
             { type: "b", text: "View", color: "#3b82f6" }
           ];
-        
+
         case 'Logs':
           return [
             { type: "t", text: formatTimestamp(item.timestamp) },
             { type: "t", text: getUserNameById(item.user_id) || 'System' }, // Use user name instead of ID
-            { 
-              type: "b", 
+            {
+              type: "b",
               text: item.action || 'Unknown',
               color: item.action === 'CREATE' ? '#10B981' :
-                     item.action === 'UPDATE' ? '#3B82F6' :
-                     item.action === 'DELETE' ? '#EF4444' : '#6B7280'
+                item.action === 'UPDATE' ? '#3B82F6' :
+                  item.action === 'DELETE' ? '#EF4444' : '#6B7280'
             },
             { type: "t", text: item.entity || 'Unknown' },
             { type: "t", text: item.entity_id || 'N/A' },
             { type: "t", text: formatDetails(item.details) },
             { type: "b", text: "View", color: "#3b82f6" }
           ];
-        
+
         default:
           return [
             { type: "t", text: index + 1 },
@@ -390,16 +389,16 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
     if (searchType === 'global') {
       return ["Module", "Title", "Description", "Actions"];
     }
-    
+
     switch (activeModule) {
       case 'Risks':
-        return [ "Title", "Category", "Owner", "Status",  "Severity", "Last Reviewed", "Actions"];
+        return ["Title", "Category", "Owner", "Status", "Severity", "Last Reviewed", "Actions"];
       case 'Governance':
         return ["Name", "Type", "Owner", "Status", "Last Reviewed", "Actions"];
       case 'Compliance':
         return ["Framework", "# Requirements", "# Controls", "Actions"];
       case 'Incidents':
-        return ["Title", "Category", "Status", "Severity", "Reported At", "Owner","Actions"];
+        return ["Title", "Category", "Status", "Severity", "Reported At", "Owner", "Actions"];
       case 'Threats':
         return ["Description", "Severity", "Time", "Actions"];
       case 'Configurations':
@@ -416,16 +415,16 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
     if (searchType === 'global') {
       return [5, 14, 15, 3];
     }
-    
+
     switch (activeModule) {
       case 'Risks':
-        return [ 12, 5, 7, 4, 4, 4, 3];
+        return [12, 5, 7, 4, 4, 4, 3];
       case 'Governance':
-        return [10, 3,6, 5, 4, 3];
+        return [10, 3, 6, 5, 4, 3];
       case 'Compliance':
         return [3, 3, 3, 1];
       case 'Incidents':
-        return [12, 5, 6, 5, 5, 8,4];
+        return [12, 5, 6, 5, 5, 8, 4];
       case 'Threats':
         return [16, 3, 3, 2];
       case 'Configurations':
@@ -440,7 +439,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
   const handleFieldClick = (item) => {
     const itemId = getItemId(item);
     const basePath = getBaseNavigationPath(item);
-    
+
     if (itemId && basePath) {
       const fullPath = `${basePath}`;
       console.log(fullPath)
@@ -467,7 +466,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
         sizes={getSizes()}
         ids={ids}
         height="300px"
-        fields={fieldsData.map((field, index) => 
+        fields={fieldsData.map((field, index) =>
           field.map((element) => {
             if (element.type === "b" && element.text === "View") {
               return {
@@ -479,7 +478,7 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
           })
         )}
         colors={[]}
-       
+
         navigation={results.map((item, index) => ({
           start: index,
           end: index,
@@ -489,51 +488,6 @@ function SearchResults({ activeModule, searchQuery, onClose }) {
     );
   };
 
-  const renderSimpleResults = () => {
-    if (!results || results.length === 0) {
-      return (
-        <div className="text-center py-8 text-gray-600 dark:text-gray-400">
-          No results found for "{searchQuery}"
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-3 max-h-96 overflow-y-auto pr-2 search-results-scrollbar">
-        {results.map((item, index) => {
-          const itemId = getItemId(item);
-          const basePath = getBaseNavigationPath(item);
-          const fullPath = `${basePath}`;
-          const moduleName = getModuleName(item);
-          const itemTitle = getItemTitle(item);
-
-          return (
-            <Field
-              key={index}
-              mode={index % 2 === 0 ? 1 : 2}
-              sizes={[100]}
-              id={itemId}
-              navigation={fullPath}
-              values={[
-                {
-                  type: "t",
-                  text: searchType === 'global' 
-                    ? `${moduleName}: ${itemTitle}` 
-                    : `${activeModule}: ${itemTitle}`
-                },
-                {
-                  type: "b",
-                  text: "View",
-                  color: "#3b82f6",
-                  click: () => handleFieldClick(item)
-                }
-              ]}
-            />
-          );
-        })}
-      </div>
-    );
-  };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex  justify-center z-50 p-4">

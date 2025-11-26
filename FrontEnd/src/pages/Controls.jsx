@@ -1,6 +1,4 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useEffect, useState } from 'react'
-import Card from '../components/Card'
+import { useEffect, useState } from 'react'
 import CardSlider from "../components/CardSlider"
 import { useNavigate, useParams } from 'react-router-dom'
 import { complianceAPI, usersAPI } from "../services/api"
@@ -17,7 +15,7 @@ function Controls() {
     const [error, setError] = useState(null);
 
     // Get current user and permissions
-    const { currentUser, permissions, loading: userLoading } = useUser();
+    const { permissions, loading: userLoading } = useUser();
 
     // Function to get user name by ID
     const getUserNameById = (userId) => {
@@ -58,21 +56,21 @@ function Controls() {
         const fetchControlsData = async () => {
             try {
                 setLoading(true);
-                
+
                 // Fetch users first
                 const usersData = await usersAPI.getAll();
                 setUsers(usersData);
-                
+
                 // Fetch requirement details
                 const requirementData = await complianceAPI.getRequirementById(id);
                 setRequirement(requirementData);
-                
+
                 // Fetch framework details
                 if (requirementData && requirementData.framework_id) {
                     const frameworkData = await complianceAPI.getFrameworkById(requirementData.framework_id);
                     setFramework(frameworkData);
                 }
-                
+
                 // Fetch controls for this requirement
                 const controlsData = await complianceAPI.getControlsByRequirement(id);
                 setControls(controlsData);
@@ -96,20 +94,20 @@ function Controls() {
             alert('You do not have permission to edit controls. Admin access required.');
             return;
         }
-         navigate(`/app/editControl/${controlId}`);
+        navigate(`/app/editControl/${controlId}`);
     };
 
     // Prepare data for CardSlider
     const fields = controls.map((control, index) => {
         const actionButtons = [];
-        
+
         if (permissions.isAdmin) {
             actionButtons.push(
-                { 
-                    type: "i", 
-                    text: "faPen", 
-                    color: "#26A7F6", 
-                    click: () => handleEditControl(control.control_id) 
+                {
+                    type: "i",
+                    text: "faPen",
+                    color: "#26A7F6",
+                    click: () => handleEditControl(control.control_id)
                 }
             );
         }
@@ -117,8 +115,8 @@ function Controls() {
         return [
             { type: "t", text: index + 1 },
             { type: "t", text: control.control_name },
-            { 
-                type: "b", 
+            {
+                type: "b",
                 text: getStatusDisplayText(control.status),
                 color: getStatusColor(control.status)
             },
@@ -150,7 +148,7 @@ function Controls() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                     You do not have permission to view controls.
                 </p>
-                <button 
+                <button
                     onClick={() => navigate('/app/dashboard')}
                     className="button buttonStyle"
                 >
@@ -166,7 +164,7 @@ function Controls() {
                 <h2>FrameWorks / framework name  / requirement name</h2>
                 <CardSlider
                     caption={{ text: `requirement name Controls` }}
-                    titles={permissions.isAdmin ? 
+                    titles={permissions.isAdmin ?
                         ["#", "Name", "Status", "Owner", "Last Reviewed", "Reference", "Notes", "Edit"] :
                         ["#", "Name", "Status", "Owner", "Last Reviewed", "Reference", "Notes"]
                     }
@@ -204,7 +202,7 @@ function Controls() {
             <h2>FrameWorks / {framework?.framework_name || "Unknown"} / {requirement.requirement_name}</h2>
             <CardSlider
                 caption={{ text: `${requirement.requirement_name} Controls` }}
-                titles={permissions.isAdmin ? 
+                titles={permissions.isAdmin ?
                     ["#", "Name", "Status", "Owner", "Last Reviewed", "Reference", "Notes", "Edit"] :
                     ["#", "Name", "Status", "Owner", "Last Reviewed", "Reference", "Notes"]
                 }

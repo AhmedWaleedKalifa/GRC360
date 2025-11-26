@@ -1,5 +1,9 @@
 const db = require("../db/queries/users");
-const { ConflictError, BadRequestError, NotFoundError } = require("../errors/errors");
+const {
+  ConflictError,
+  BadRequestError,
+  NotFoundError,
+} = require("../errors/errors");
 const { logAction } = require("./auditHelper");
 
 async function createUser(req, res, next) {
@@ -28,7 +32,7 @@ async function createUser(req, res, next) {
     await logAction(req, "CREATE", "user", newUser.user_id, {
       user_name,
       email,
-      role
+      role,
     });
 
     res.status(201).json(newUser);
@@ -87,7 +91,7 @@ async function updateUser(req, res, next) {
 
     // Log the action
     await logAction(req, "UPDATE", "user", parseInt(id), {
-      changed_fields: Object.keys(fields)
+      changed_fields: Object.keys(fields),
     });
 
     res.status(200).json(updatedUser);
@@ -109,10 +113,12 @@ async function deleteUser(req, res, next) {
     // Log the action
     await logAction(req, "DELETE", "user", parseInt(id), {
       user_name: deletedUser.user_name,
-      email: deletedUser.email
+      email: deletedUser.email,
     });
 
-    res.status(200).json({ message: "User deleted successfully", user: deletedUser });
+    res
+      .status(200)
+      .json({ message: "User deleted successfully", user: deletedUser });
   } catch (err) {
     next(err);
   }
@@ -125,7 +131,7 @@ async function searchUsers(req, res, next) {
     if (!q) {
       throw new BadRequestError("Search query is required");
     }
-    
+
     const searchQuery = q.trim();
     if (searchQuery.length === 0) {
       throw new BadRequestError("Search query cannot be empty");
@@ -134,12 +140,14 @@ async function searchUsers(req, res, next) {
     const users = await db.searchUsersByName(searchQuery);
 
     if (!users || users.length === 0) {
-      return res.status(404).json({ message: "No users found matching your search" });
+      return res
+        .status(404)
+        .json({ message: "No users found matching your search" });
     }
 
     res.status(200).json(users);
   } catch (err) {
-    console.error('Error in searchUsers:', err);
+    console.error("Error in searchUsers:", err);
     next(err);
   }
 }

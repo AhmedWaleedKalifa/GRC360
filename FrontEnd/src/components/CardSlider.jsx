@@ -1,18 +1,18 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import Field from './Field'
 import * as solidIcons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 function CardSlider({
-  height = 320,
-  titles,
-  sizes,
-  selectedId,
-  fields,
-  colors = [],
-  ids,
-  navigation = [{start:0, end: ids.length, path: "" }],
-  caption = { text: "", icon: "" }
+height = 320,
+titles,
+sizes,
+selectedId,
+fields,
+colors = [],
+ids,
+navigation = [{start:0, end: ids.length, path: "" }],
+caption = { text: "", icon: "" }
 }) {
   const containerRef = useRef(null);
   let result = 0.0;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { faCalculator, faInfoCircle, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -10,7 +10,7 @@ const RiskFormulaCard = () => {
     if (!isVisible) {
         return (
             <div className="flex justify-center mb-6">
-                <button 
+                <button
                     onClick={() => setIsVisible(true)}
                     className="button buttonStyle flex items-center"
                 >
@@ -30,14 +30,14 @@ const RiskFormulaCard = () => {
                     <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Risk Calculation Formula</h3>
                 </div>
                 <div className="flex gap-2">
-                    <button 
+                    <button
                         onClick={() => setShowDetails(!showDetails)}
                         className="button buttonStyle text-sm"
                     >
                         <FontAwesomeIcon icon={showDetails ? faInfoCircle : faInfoCircle} className="mr-1" />
                         {showDetails ? 'Less' : 'More'} Info
                     </button>
-                    <button 
+                    <button
                         onClick={() => setIsVisible(false)}
                         className="button buttonStyle text-sm"
                     >
@@ -46,7 +46,7 @@ const RiskFormulaCard = () => {
                     </button>
                 </div>
             </div>
-            
+
             {/* Always visible basic formula */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Formula Section */}
@@ -66,10 +66,10 @@ const RiskFormulaCard = () => {
                 <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border-2 border-green-200 dark:border-green-800">
                     <h4 className="font-bold text-lg mb-3 text-gray-900 dark:text-gray-100">Risk Matrix (5×5)</h4>
                     <div className="grid grid-cols-4 gap-2 text-center text-xs font-medium">
-                        <div className="bg-green-500 text-white p-2 rounded">1-5<br/>Low</div>
-                        <div className="bg-yellow-500 text-white p-2 rounded">6-10<br/>Medium</div>
-                        <div className="bg-orange-500 text-white p-2 rounded">11-15<br/>High</div>
-                        <div className="bg-red-500 text-white p-2 rounded">16-25<br/>Critical</div>
+                        <div className="bg-green-500 text-white p-2 rounded">1-5<br />Low</div>
+                        <div className="bg-yellow-500 text-white p-2 rounded">6-10<br />Medium</div>
+                        <div className="bg-orange-500 text-white p-2 rounded">11-15<br />High</div>
+                        <div className="bg-red-500 text-white p-2 rounded">16-25<br />Critical</div>
                     </div>
                 </div>
             </div>
@@ -126,7 +126,7 @@ const RiskFormulaCard = () => {
                         <div className="flex items-start">
                             <FontAwesomeIcon icon={faInfoCircle} className="text-blue-500 mt-1 mr-2" />
                             <div className="text-sm text-blue-800 dark:text-blue-200">
-                                <strong>Pro Tip:</strong> Regularly review and update likelihood and impact scores as conditions change. 
+                                <strong>Pro Tip:</strong> Regularly review and update likelihood and impact scores as conditions change.
                                 Consider additional factors like velocity and vulnerability for mature risk management.
                                 Use this formula consistently across all risks for accurate comparisons and prioritization.
                             </div>

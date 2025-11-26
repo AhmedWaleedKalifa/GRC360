@@ -4,7 +4,8 @@ const { logAction } = require("./auditHelper");
 
 async function createThreat(req, res, next) {
   try {
-    const { name, message, description, category, severity, detected_at } = req.body;
+    const { name, message, description, category, severity, detected_at } =
+      req.body;
 
     if (!name || !category || !severity) {
       throw new BadRequestError("Name, category, and severity are required");
@@ -15,9 +16,9 @@ async function createThreat(req, res, next) {
       message,
       description,
       category,
-      severity
+      severity,
     };
-    
+
     if (detected_at) {
       threatData.detected_at = detected_at;
     }
@@ -28,7 +29,7 @@ async function createThreat(req, res, next) {
     await logAction(req, "CREATE", "threat", newThreat.threat_id, {
       name,
       category,
-      severity
+      severity,
     });
 
     res.status(201).json(newThreat);
@@ -72,7 +73,9 @@ async function getThreatsByCategory(req, res, next) {
     const threats = await db.getThreatsByCategory(category);
 
     if (!threats || threats.length === 0) {
-      return res.status(404).json({ message: "No threats found in this category" });
+      return res
+        .status(404)
+        .json({ message: "No threats found in this category" });
     }
 
     res.status(200).json(threats);
@@ -101,7 +104,7 @@ async function updateThreat(req, res, next) {
     await logAction(req, "UPDATE", "threat", parseInt(id), {
       changed_fields: Object.keys(fields),
       old_severity: oldThreat.severity,
-      new_severity: updatedThreat.severity
+      new_severity: updatedThreat.severity,
     });
 
     res.status(200).json(updatedThreat);
@@ -123,10 +126,12 @@ async function deleteThreat(req, res, next) {
     // Log the action
     await logAction(req, "DELETE", "threat", parseInt(id), {
       name: deletedThreat.name,
-      category: deletedThreat.category
+      category: deletedThreat.category,
     });
 
-    res.status(200).json({ message: "Threat deleted successfully", threat: deletedThreat });
+    res
+      .status(200)
+      .json({ message: "Threat deleted successfully", threat: deletedThreat });
   } catch (err) {
     next(err);
   }
@@ -139,7 +144,7 @@ async function searchThreats(req, res, next) {
     if (!q) {
       throw new BadRequestError("Search query is required");
     }
-    
+
     const searchQuery = q.trim();
     if (searchQuery.length === 0) {
       throw new BadRequestError("Search query cannot be empty");
@@ -148,12 +153,14 @@ async function searchThreats(req, res, next) {
     const threats = await db.searchThreatsByName(searchQuery);
 
     if (!threats || threats.length === 0) {
-      return res.status(404).json({ message: "No threats found matching your search" });
+      return res
+        .status(404)
+        .json({ message: "No threats found matching your search" });
     }
 
     res.status(200).json(threats);
   } catch (err) {
-    console.error('Error in searchThreats:', err);
+    console.error("Error in searchThreats:", err);
     next(err);
   }
 }
