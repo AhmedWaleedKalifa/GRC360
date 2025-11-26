@@ -14,12 +14,12 @@ router.post("/chat", aiController.chat);
 router.get("/model-info", aiController.getModelInfo);
 
 // Get knowledge base status - admin/moderator only
-router.get("/knowledge-status", authorize('admin', 'moderator'), aiController.getKnowledgeStatus);
+router.get("/knowledge-status", aiController.getKnowledgeStatus);
 
 // Reload knowledge base - admin only
-router.post("/reload-knowledge", authorize('admin'), aiController.reloadKnowledge);
+router.post("/reload-knowledge", aiController.reloadKnowledge);
 
 // Test AI connection - admin/moderator only
-router.get("/test", authorize('admin', 'moderator'), aiController.testConnection);
+router.get("/test", aiController.testConnection);
 
 module.exports = router;
