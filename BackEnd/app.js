@@ -28,24 +28,32 @@ app.use(express.json()); // This parses JSON bodies
 app.use(express.urlencoded({ extended: true })); // This parses URL-encoded bodies
 
 // CORS configuration
+// CORS configuration
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   process.env.FRONTEND_URL2,
+  'https://69272fd483aaea52a1d06aab--grc36o.netlify.app',
+  'https://grc36o.netlify.app'
 ].filter(Boolean);
 
 app.use(
   cors({
     origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
+      
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       } else {
-        return callback(
-          new Error("CORS not allowed for this origin: " + origin)
-        );
+        console.log('CORS blocked for origin:', origin);
+        return callback(new Error("CORS not allowed for this origin"));
       }
     },
     credentials: true,
+    // Add these for streaming support
+    exposedHeaders: ['Content-Type', 'Transfer-Encoding', 'X-AI-Model'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-User-ID', 'X-User-Name', 'X-User-Email', 'X-User-Role']
   })
 );
 
