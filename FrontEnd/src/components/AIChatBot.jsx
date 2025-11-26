@@ -1,4 +1,4 @@
-// components/AIChatBot.jsx
+// components/AIChatBot.jsx - FIXED VERSION
 import { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +10,9 @@ const AIChatBot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef(null);
+
+  // Get token from localStorage
+  const getToken = () => localStorage.getItem('token');
 
   // Initialize with welcome message
   useEffect(() => {
@@ -26,73 +29,96 @@ const AIChatBot = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
- // In your AIChatBot.jsx - Update the handleSendMessage function
-const handleSendMessage = async (text) => {
-  if (isLoading || !text.trim()) return;
+  // FIXED: Include authentication token in the request
+  const handleSendMessage = async (text) => {
+    if (isLoading || !text.trim()) return;
 
-  setIsLoading(true);
-  const userMessage = { id: `user-${Date.now()}`, role: 'user', text };
-  const modelPlaceholder = { id: `model-${Date.now()}`, role: 'model', text: '' };
+    setIsLoading(true);
+    const userMessage = { id: `user-${Date.now()}`, role: 'user', text };
+    const modelPlaceholder = { id: `model-${Date.now()}`, role: 'model', text: '' };
 
-  const messagesWithUser = [...messages, userMessage];
-  setMessages([...messagesWithUser, modelPlaceholder]);
-  setInputText('');
+    const messagesWithUser = [...messages, userMessage];
+    setMessages([...messagesWithUser, modelPlaceholder]);
+    setInputText('');
 
-  try {
-    const response = await fetch(API_BASE_URL + '/api/ai/chat', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // Important for CORS with credentials
-      body: JSON.stringify({ history: messagesWithUser }),
-    });
+    try {
+      const token = getToken();
+      
+      console.log('🤖 Sending AI request with token:', token ? 'Present' : 'Missing');
+      
+      const response = await fetch(API_BASE_URL + '/api/ai/chat', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // ADD THIS LINE
+        },
+        credentials: 'include',
+        body: JSON.stringify({ history: messagesWithUser }),
+      });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let fullResponse = '';
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let fullResponse = '';
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
 
-      const chunk = decoder.decode(value, { stream: true });
-      fullResponse += chunk;
+        const chunk = decoder.decode(value, { stream: true });
+        fullResponse += chunk;
+
+        setMessages(prev => prev.map(msg =>
+          msg.id === modelPlaceholder.id ? { ...msg, text: fullResponse } : msg
+        ));
+      }
+
+    } catch (error) {
+      console.error('Chat error:', error);
+      let errorMessage = "I'm having trouble connecting to the AI service. ";
+      
+      if (error.message.includes('Failed to fetch')) {
+        errorMessage += "Please check your internet connection and ensure the backend server is running.";
+      } else if (error.message.includes('401')) {
+        errorMessage += "Authentication failed. Please log in again.";
+      } else if (error.message.includes('HTTP error')) {
+        errorMessage += `Server returned an error: ${error.message}`;
+      } else {
+        errorMessage += `Error: ${error.message}`;
+      }
 
       setMessages(prev => prev.map(msg =>
-        msg.id === modelPlaceholder.id ? { ...msg, text: fullResponse } : msg
+        msg.id === modelPlaceholder.id ? { ...msg, text: errorMessage } : msg
       ));
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-  } catch (error) {
-    console.error('Chat error:', error);
-    
-    let errorMessage = "I'm having trouble connecting to the AI service. ";
-    
-    if (error.message.includes('Failed to fetch')) {
-      errorMessage += "Please check your internet connection and ensure the backend server is running.";
-    } else if (error.message.includes('HTTP error')) {
-      errorMessage += `Server returned an error: ${error.message}`;
-    } else {
-      errorMessage += `Error: ${error.message}`;
-    }
-
-    setMessages(prev => prev.map(msg =>
-      msg.id === modelPlaceholder.id ? { ...msg, text: errorMessage } : msg
-    ));
-  } finally {
-    setIsLoading(false);
-  }
-};
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!inputText.trim()) return;
     handleSendMessage(inputText);
   };
+
+  // Check if user is authenticated
+  const isAuthenticated = () => !!getToken();
+
+  // Show login prompt if not authenticated
+  if (!isAuthenticated()) {
+    return (
+      <button
+        onClick={() => window.location.href = '/login'}
+        className="fixed bottom-28 right-8 z-50 flex items-center justify-center w-14 h-14 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-200"
+        title="Login to use AI Assistant"
+      >
+        <FontAwesomeIcon icon={faRobot} className="text-xl" />
+      </button>
+    );
+  }
 
   return (
     <>
@@ -109,7 +135,7 @@ const handleSendMessage = async (text) => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed  bottom-28 right-8 z-250 w-96 h-[60%] bg-gray-200 dark:bg-gray-800 rounded-2xl shadow-2xl border-2 border-gray-400 dark:border-gray-700/40 flex flex-col backdrop-blur-lg bg-gradient-to-r from-white/20 via-transparent to-white/20 dark:from-black/20 dark:via-transparent dark:to-black/20 ">
+        <div className="fixed bottom-28 right-8 z-250 w-96 h-[60%] bg-gray-200 dark:bg-gray-800 rounded-2xl shadow-2xl border-2 border-gray-400 dark:border-gray-700/40 flex flex-col backdrop-blur-lg bg-gradient-to-r from-white/20 via-transparent to-white/20 dark:from-black/20 dark:via-transparent dark:to-black/20 ">
           {/* Header */}
           <div className="flex items-center justify-between p-4 bg-gray-300/80 dark:bg-gray-700/80 rounded-t-2xl border-b border-gray-300/40 dark:border-gray-700/40">
             <div className="flex items-center space-x-3">
@@ -138,8 +164,8 @@ const handleSendMessage = async (text) => {
               >
                 <div
                   className={`max-w-[80%] rounded-lg px-4 py-2 ${message.role === 'user'
-                      ? 'bg-blue-500 text-white rounded-br-none shadow-xl'
-                      : 'bg-gray-300/80 dark:bg-gray-700/80 text-gray-800 dark:text-gray-200 rounded-bl-none shadow-xl'
+                    ? 'bg-blue-500 text-white rounded-br-none shadow-xl'
+                    : 'bg-gray-300/80 dark:bg-gray-700/80 text-gray-800 dark:text-gray-200 rounded-bl-none shadow-xl'
                     }`}
                 >
                   <p className="text-sm whitespace-pre-wrap break-words">{message.text}</p>
