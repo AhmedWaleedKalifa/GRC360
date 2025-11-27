@@ -4,16 +4,18 @@ const configurationController = require("../controllers/configurationsController
 const { authenticate, authorize } = require("../middleware/auth");
 const configurationRouter = express.Router();
 
-// All configuration routes require authentication and admin privileges
+// All configuration routes require authentication
 configurationRouter.use(authenticate);
-configurationRouter.use(authorize('admin'));
 
-configurationRouter.get("/", configurationController.getConfigurations);
-configurationRouter.get("/search", configurationController.searchConfigurations);
-configurationRouter.get("/:id", configurationController.getConfigurationById);
-configurationRouter.get("/key/:key", configurationController.getConfigurationByKey);
-configurationRouter.post("/", configurationController.createConfiguration);
-configurationRouter.put("/:id", configurationController.updateConfiguration);
-configurationRouter.delete("/:id", configurationController.deleteConfiguration);
+// GET routes - allow both admin and moderator
+configurationRouter.get("/",authorize('moderator',"admin"), configurationController.getConfigurations);
+configurationRouter.get("/search",authorize('moderator',"admin"), configurationController.searchConfigurations);
+configurationRouter.get("/:id",authorize('moderator',"admin"), configurationController.getConfigurationById);
+configurationRouter.get("/key/:key",authorize('moderator',"admin"), configurationController.getConfigurationByKey);
+
+// POST, PUT, DELETE routes - require admin only
+configurationRouter.post("/", authorize('admin'), configurationController.createConfiguration);
+configurationRouter.put("/:id", authorize('admin'), configurationController.updateConfiguration);
+configurationRouter.delete("/:id", authorize('admin'), configurationController.deleteConfiguration);
 
 module.exports = configurationRouter;
