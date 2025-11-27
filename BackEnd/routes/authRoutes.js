@@ -17,4 +17,9 @@ authRouter.post('/register', authController.register);
 authRouter.post('/login', authController.login);
 authRouter.post('/logout', authController.logout);
 
+// Email verification routes
+authRouter.post('/send-verification', authController.sendVerificationCode);
+authRouter.post('/verify-email', authController.verifyEmail);
+authRouter.post('/resend-verification', authController.resendVerificationCode);
+
 module.exports = authRouter;

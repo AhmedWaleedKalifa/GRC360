@@ -1,7 +1,8 @@
-// pages/Register.jsx
+// pages/Register.jsx - FIXED
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authAPI } from '../services/api';
+import EmailVerificationModal from '../components/EmailVerificationModal';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -9,10 +10,11 @@ const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'user' // Fixed to 'user' role
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
   const navigate = useNavigate();
 
   // Redirect if already authenticated
@@ -62,16 +64,40 @@ const Register = () => {
 
     try {
       const { confirmPassword, ...registerData } = formData;
-      // role is automatically set to 'user' - no need to send it
       const response = await authAPI.register(registerData);
-      console.log('Registration successful:', response);
-      navigate('/app/dashboard');
+      
+      if (response.requires_verification) {
+        // Show verification modal instead of redirecting
+        setRegisteredEmail(formData.email);
+        setShowVerificationModal(true);
+      } else {
+        // For existing users or if verification is not required
+        console.log('Registration successful:', response);
+        navigate('/app/dashboard');
+      }
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.');
       console.error('Registration error:', err);
     } finally {
       setLoading(false);
     }
+  };
+
+// pages/Register.jsx - FIXED success handler
+const handleVerificationSuccess = () => {
+  setShowVerificationModal(false);
+  // The auth data is already stored by the API, just navigate
+  navigate('/app/dashboard');
+};
+  const handleVerificationClose = () => {
+    setShowVerificationModal(false);
+    // Clear form and stay on register page
+    setFormData({
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    });
   };
 
   return (
@@ -135,8 +161,6 @@ const Register = () => {
               />
             </div>
 
-            {/* Role selection removed - all users register as 'user' */}
-
             <div className="inputContainer">
               <label htmlFor="password" className="label">
                 Password
@@ -172,8 +196,8 @@ const Register = () => {
             </div>
 
             <div className="text-xs text-gray-600 dark:text-gray-400 mb-4 p-3 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg">
-              <strong>Note:</strong> All new accounts are created as <span className="font-semibold text-blue-600 dark:text-blue-400">User</span> role. 
-              Administrator privileges can only be granted by existing administrators.
+              <strong>Note:</strong> All new accounts require email verification. 
+              You'll receive a 6-digit code to verify your email address after registration.
             </div>
 
             <button
@@ -205,6 +229,15 @@ const Register = () => {
           </div>
         </div>
       </div>
+
+      {/* Email Verification Modal */}
+      {showVerificationModal && (
+        <EmailVerificationModal
+          email={registeredEmail}
+          onSuccess={handleVerificationSuccess}
+          onClose={handleVerificationClose}
+        />
+      )}
     </div>
   );
 };

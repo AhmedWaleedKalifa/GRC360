@@ -1,15 +1,18 @@
-// pages/Login.jsx
+// pages/Login.jsx - FIXED
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authAPI } from '../services/api';
+import EmailVerificationModal from '../components/EmailVerificationModal';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState('');
   const navigate = useNavigate();
 
   // Redirect if already authenticated
@@ -29,19 +32,36 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
+    setLoading(true);
 
     try {
       const response = await authAPI.login(formData);
-      console.log('Login successful:', response);
-      navigate('/app/dashboard');
+      
+      if (response.requires_verification) {
+        // Show verification modal for unverified email
+        setUnverifiedEmail(formData.email);
+        setShowVerificationModal(true);
+      } else {
+        // Successful login
+        navigate('/app/dashboard');
+      }
     } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError(err.message || 'Login failed. Please check your credentials.');
       console.error('Login error:', err);
     } finally {
       setLoading(false);
     }
+  };
+
+  // FIXED: Remove manual storage
+  const handleVerificationSuccess = () => {
+    setShowVerificationModal(false);
+    navigate('/app/dashboard');
+  };
+
+  const handleVerificationClose = () => {
+    setShowVerificationModal(false);
   };
 
   return (
@@ -52,7 +72,7 @@ const Login = () => {
         </div>
         
         <div className="form cardStyle1">
-          <h1 className="formTitle">Sign in to GRC360</h1>
+          <h1 className="formTitle">Sign in to your account</h1>
           
           <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
             Or{' '}
@@ -124,7 +144,7 @@ const Login = () => {
             </button>
           </form>
 
-          <div className="loginSpanContainer mt-4">
+          <div className="loginSpanContainer">
             <span className="loginSpanText text-gray-600 dark:text-gray-400">
               Secure GRC Management Platform
             </span>
@@ -134,6 +154,15 @@ const Login = () => {
           </div>
         </div>
       </div>
+
+      {/* Email Verification Modal for unverified login */}
+      {showVerificationModal && (
+        <EmailVerificationModal
+          email={unverifiedEmail}
+          onSuccess={handleVerificationSuccess}
+          onClose={handleVerificationClose}
+        />
+      )}
     </div>
   );
 };

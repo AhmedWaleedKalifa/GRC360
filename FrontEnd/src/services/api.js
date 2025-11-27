@@ -1,4 +1,4 @@
-// services/api.js - Complete fixed version
+// services/api.js - Updated with email verification
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 // ========== UTILITY FUNCTIONS ==========
@@ -110,14 +110,19 @@ const mapCampaignStatus = (backendStatus) => {
 
 // ========== API IMPLEMENTATIONS ==========
 
-// Auth API
+// Auth API - UPDATED WITH EMAIL VERIFICATION
 const authAPI = {
   register: async (userData) => {
     const response = await apiRequest('/api/auth/register', {
       method: 'POST',
       body: userData,
     });
-    setAuthData(response.user, response.token);
+    
+    // Store auth data only if verification is not required
+    if (!response.requires_verification) {
+      setAuthData(response.user, response.token);
+    }
+    
     return response;
   },
 
@@ -126,13 +131,47 @@ const authAPI = {
       method: 'POST',
       body: credentials,
     });
-    setAuthData(response.user, response.token);
+    
+    // Only set auth data if login is successful (email verified)
+    if (response.user && response.token) {
+      setAuthData(response.user, response.token);
+    }
+    
     return response;
   },
 
   logout: async () => {
     await apiRequest('/api/auth/logout', { method: 'POST' });
     clearAuthData();
+  },
+
+  // NEW: Email verification endpoints
+  sendVerificationCode: async (email) => {
+    return await apiRequest('/api/auth/send-verification', {
+      method: 'POST',
+      body: { email },
+    });
+  },
+
+  // services/api.js - FIXED verifyEmail function
+verifyEmail: async (email, verificationCode) => {
+  const response = await apiRequest('/api/auth/verify-email', {
+    method: 'POST',
+    body: { email, verificationCode },
+  });
+  
+  // FIXED: Use the complete response data instead of trying to merge
+  if (response.user && response.token) {
+    setAuthData(response.user, response.token);
+  }
+  
+  return response;
+},
+  resendVerificationCode: async (email) => {
+    return await apiRequest('/api/auth/resend-verification', {
+      method: 'POST',
+      body: { email },
+    });
   },
 
   getCurrentUser: getCurrentUser,

@@ -275,120 +275,120 @@ require("dotenv").config();
 //     CREATE INDEX IF NOT EXISTS idx_campaign_modules_campaign ON campaign_modules(campaign_id);
 //     CREATE INDEX IF NOT EXISTS idx_user_assignments_user ON user_campaign_assignments(user_id);
 // `;
-const SQL = `
-CREATE TABLE IF NOT EXISTS training_modules (
-    module_id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    duration VARCHAR(20),
-    category VARCHAR(100) NOT NULL,
-    video_url VARCHAR(500),
-    importance VARCHAR(20) DEFAULT 'Medium' CHECK (importance IN ('Low', 'Medium', 'High')),
-    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'draft')),
-    sort_order INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
-CREATE TABLE IF NOT EXISTS training_module_steps (
-    step_id SERIAL PRIMARY KEY,
-    module_id INT NOT NULL REFERENCES training_modules(module_id) ON DELETE CASCADE,
-    step_type VARCHAR(20) NOT NULL CHECK (step_type IN ('video', 'quiz', 'document')),
-    title VARCHAR(255) NOT NULL,
-    content TEXT,
-    duration VARCHAR(20),
-    sort_order INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-CREATE TABLE IF NOT EXISTS quiz_questions (
-    question_id SERIAL PRIMARY KEY,
-    step_id INT NOT NULL REFERENCES training_module_steps(step_id) ON DELETE CASCADE,
-    question_text TEXT NOT NULL,
-    question_type VARCHAR(20) DEFAULT 'multiple_choice' CHECK (question_type IN ('multiple_choice', 'true_false')),
-    correct_answer INT NOT NULL,
-    explanation TEXT,
-    sort_order INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-CREATE TABLE IF NOT EXISTS quiz_options (
-    option_id SERIAL PRIMARY KEY,
-    question_id INT NOT NULL REFERENCES quiz_questions(question_id) ON DELETE CASCADE,
-    option_text TEXT NOT NULL,
-    option_order INT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-CREATE TABLE IF NOT EXISTS user_training_progress (
-    progress_id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
-    module_id INT NOT NULL REFERENCES training_modules(module_id) ON DELETE CASCADE,
-    status VARCHAR(20) DEFAULT 'not_started' CHECK (status IN ('not_started', 'in_progress', 'completed')),
-    progress_percentage INT DEFAULT 0 CHECK (progress_percentage >= 0 AND progress_percentage <= 100),
-    score INT CHECK (score >= 0 AND score <= 100),
-    started_at TIMESTAMP,
-    completed_at TIMESTAMP,
-    time_spent INT DEFAULT 0, -- in seconds
-    last_accessed TIMESTAMP DEFAULT NOW(),
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    UNIQUE(user_id, module_id)
-);
-CREATE TABLE IF NOT EXISTS user_quiz_attempts (
-    attempt_id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
-    module_id INT NOT NULL REFERENCES training_modules(module_id) ON DELETE CASCADE,
-    score INT NOT NULL CHECK (score >= 0 AND score <= 100),
-    time_spent INT NOT NULL, -- in seconds
-    total_questions INT NOT NULL,
-    correct_answers INT NOT NULL,
-    passed BOOLEAN DEFAULT FALSE,
-    completed_at TIMESTAMP DEFAULT NOW(),
-    created_at TIMESTAMP DEFAULT NOW()
-);
-CREATE TABLE IF NOT EXISTS user_question_answers (
-    answer_id SERIAL PRIMARY KEY,
-    attempt_id INT NOT NULL REFERENCES user_quiz_attempts(attempt_id) ON DELETE CASCADE,
-    question_id INT NOT NULL REFERENCES quiz_questions(question_id) ON DELETE CASCADE,
-    selected_option INT NOT NULL,
-    is_correct BOOLEAN NOT NULL,
-    answered_at TIMESTAMP DEFAULT NOW()
-);
-CREATE TABLE IF NOT EXISTS awareness_campaigns (
-    campaign_id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    status VARCHAR(20) DEFAULT 'draft' CHECK (status IN ('draft', 'active', 'completed', 'cancelled')),
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
-    target_audience VARCHAR(100), -- or INT REFERENCES departments(department_id) if you have departments
-    created_by INT REFERENCES users(user_id),
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
+// const SQL = `
+// CREATE TABLE IF NOT EXISTS training_modules (
+//     module_id SERIAL PRIMARY KEY,
+//     title VARCHAR(255) NOT NULL,
+//     description TEXT,
+//     duration VARCHAR(20),
+//     category VARCHAR(100) NOT NULL,
+//     video_url VARCHAR(500),
+//     importance VARCHAR(20) DEFAULT 'Medium' CHECK (importance IN ('Low', 'Medium', 'High')),
+//     status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'draft')),
+//     sort_order INT DEFAULT 0,
+//     created_at TIMESTAMP DEFAULT NOW(),
+//     updated_at TIMESTAMP DEFAULT NOW()
+// );
+// CREATE TABLE IF NOT EXISTS training_module_steps (
+//     step_id SERIAL PRIMARY KEY,
+//     module_id INT NOT NULL REFERENCES training_modules(module_id) ON DELETE CASCADE,
+//     step_type VARCHAR(20) NOT NULL CHECK (step_type IN ('video', 'quiz', 'document')),
+//     title VARCHAR(255) NOT NULL,
+//     content TEXT,
+//     duration VARCHAR(20),
+//     sort_order INT DEFAULT 0,
+//     created_at TIMESTAMP DEFAULT NOW()
+// );
+// CREATE TABLE IF NOT EXISTS quiz_questions (
+//     question_id SERIAL PRIMARY KEY,
+//     step_id INT NOT NULL REFERENCES training_module_steps(step_id) ON DELETE CASCADE,
+//     question_text TEXT NOT NULL,
+//     question_type VARCHAR(20) DEFAULT 'multiple_choice' CHECK (question_type IN ('multiple_choice', 'true_false')),
+//     correct_answer INT NOT NULL,
+//     explanation TEXT,
+//     sort_order INT DEFAULT 0,
+//     created_at TIMESTAMP DEFAULT NOW()
+// );
+// CREATE TABLE IF NOT EXISTS quiz_options (
+//     option_id SERIAL PRIMARY KEY,
+//     question_id INT NOT NULL REFERENCES quiz_questions(question_id) ON DELETE CASCADE,
+//     option_text TEXT NOT NULL,
+//     option_order INT NOT NULL,
+//     created_at TIMESTAMP DEFAULT NOW()
+// );
+// CREATE TABLE IF NOT EXISTS user_training_progress (
+//     progress_id SERIAL PRIMARY KEY,
+//     user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+//     module_id INT NOT NULL REFERENCES training_modules(module_id) ON DELETE CASCADE,
+//     status VARCHAR(20) DEFAULT 'not_started' CHECK (status IN ('not_started', 'in_progress', 'completed')),
+//     progress_percentage INT DEFAULT 0 CHECK (progress_percentage >= 0 AND progress_percentage <= 100),
+//     score INT CHECK (score >= 0 AND score <= 100),
+//     started_at TIMESTAMP,
+//     completed_at TIMESTAMP,
+//     time_spent INT DEFAULT 0, -- in seconds
+//     last_accessed TIMESTAMP DEFAULT NOW(),
+//     created_at TIMESTAMP DEFAULT NOW(),
+//     updated_at TIMESTAMP DEFAULT NOW(),
+//     UNIQUE(user_id, module_id)
+// );
+// CREATE TABLE IF NOT EXISTS user_quiz_attempts (
+//     attempt_id SERIAL PRIMARY KEY,
+//     user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+//     module_id INT NOT NULL REFERENCES training_modules(module_id) ON DELETE CASCADE,
+//     score INT NOT NULL CHECK (score >= 0 AND score <= 100),
+//     time_spent INT NOT NULL, -- in seconds
+//     total_questions INT NOT NULL,
+//     correct_answers INT NOT NULL,
+//     passed BOOLEAN DEFAULT FALSE,
+//     completed_at TIMESTAMP DEFAULT NOW(),
+//     created_at TIMESTAMP DEFAULT NOW()
+// );
+// CREATE TABLE IF NOT EXISTS user_question_answers (
+//     answer_id SERIAL PRIMARY KEY,
+//     attempt_id INT NOT NULL REFERENCES user_quiz_attempts(attempt_id) ON DELETE CASCADE,
+//     question_id INT NOT NULL REFERENCES quiz_questions(question_id) ON DELETE CASCADE,
+//     selected_option INT NOT NULL,
+//     is_correct BOOLEAN NOT NULL,
+//     answered_at TIMESTAMP DEFAULT NOW()
+// );
+// CREATE TABLE IF NOT EXISTS awareness_campaigns (
+//     campaign_id SERIAL PRIMARY KEY,
+//     title VARCHAR(255) NOT NULL,
+//     description TEXT,
+//     status VARCHAR(20) DEFAULT 'draft' CHECK (status IN ('draft', 'active', 'completed', 'cancelled')),
+//     start_date DATE NOT NULL,
+//     end_date DATE NOT NULL,
+//     target_audience VARCHAR(100), -- or INT REFERENCES departments(department_id) if you have departments
+//     created_by INT REFERENCES users(user_id),
+//     created_at TIMESTAMP DEFAULT NOW(),
+//     updated_at TIMESTAMP DEFAULT NOW()
+// );
 
-CREATE TABLE IF NOT EXISTS campaign_modules (
-    campaign_id INT NOT NULL REFERENCES awareness_campaigns(campaign_id) ON DELETE CASCADE,
-    module_id INT NOT NULL REFERENCES training_modules(module_id) ON DELETE CASCADE,
-    sort_order INT DEFAULT 0,
-    assigned_date DATE,
-    due_date DATE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (campaign_id, module_id)
-);
-CREATE TABLE IF NOT EXISTS user_campaign_assignments (
-    assignment_id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
-    campaign_id INT NOT NULL REFERENCES awareness_campaigns(campaign_id) ON DELETE CASCADE,
-    status VARCHAR(20) DEFAULT 'assigned' CHECK (status IN ('assigned', 'in_progress', 'completed')),
-    assigned_date TIMESTAMP DEFAULT NOW(),
-    completed_date TIMESTAMP,
-    created_at TIMESTAMP DEFAULT NOW(),
-    UNIQUE(user_id, campaign_id)
-);
- CREATE INDEX IF NOT EXISTS idx_user_progress_user ON user_training_progress(user_id);
-    CREATE INDEX IF NOT EXISTS idx_user_progress_module ON user_training_progress(module_id);
-    CREATE INDEX IF NOT EXISTS idx_quiz_attempts_user ON user_quiz_attempts(user_id);
-    CREATE INDEX IF NOT EXISTS idx_campaign_modules_campaign ON campaign_modules(campaign_id);
-    CREATE INDEX IF NOT EXISTS idx_user_assignments_user ON user_campaign_assignments(user_id);
-`;
+// CREATE TABLE IF NOT EXISTS campaign_modules (
+//     campaign_id INT NOT NULL REFERENCES awareness_campaigns(campaign_id) ON DELETE CASCADE,
+//     module_id INT NOT NULL REFERENCES training_modules(module_id) ON DELETE CASCADE,
+//     sort_order INT DEFAULT 0,
+//     assigned_date DATE,
+//     due_date DATE,
+//     created_at TIMESTAMP DEFAULT NOW(),
+//     PRIMARY KEY (campaign_id, module_id)
+// );
+// CREATE TABLE IF NOT EXISTS user_campaign_assignments (
+//     assignment_id SERIAL PRIMARY KEY,
+//     user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+//     campaign_id INT NOT NULL REFERENCES awareness_campaigns(campaign_id) ON DELETE CASCADE,
+//     status VARCHAR(20) DEFAULT 'assigned' CHECK (status IN ('assigned', 'in_progress', 'completed')),
+//     assigned_date TIMESTAMP DEFAULT NOW(),
+//     completed_date TIMESTAMP,
+//     created_at TIMESTAMP DEFAULT NOW(),
+//     UNIQUE(user_id, campaign_id)
+// );
+//  CREATE INDEX IF NOT EXISTS idx_user_progress_user ON user_training_progress(user_id);
+//     CREATE INDEX IF NOT EXISTS idx_user_progress_module ON user_training_progress(module_id);
+//     CREATE INDEX IF NOT EXISTS idx_quiz_attempts_user ON user_quiz_attempts(user_id);
+//     CREATE INDEX IF NOT EXISTS idx_campaign_modules_campaign ON campaign_modules(campaign_id);
+//     CREATE INDEX IF NOT EXISTS idx_user_assignments_user ON user_campaign_assignments(user_id);
+// `;
 let ssl = false;
 if (process.env.DB_SSL_CERT_B64) {
   const sslCert = Buffer.from(process.env.DB_SSL_CERT_B64, "base64").toString(
